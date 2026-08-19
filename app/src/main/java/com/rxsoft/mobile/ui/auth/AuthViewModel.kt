@@ -77,8 +77,9 @@ class AuthViewModel @Inject constructor(
         _serverUrl.value = url
     }
 
-    fun saveServerUrl() {
-        serverUrlManager.setUrl(_serverUrl.value)
+    fun saveServerUrl(url: String = _serverUrl.value) {
+        _serverUrl.value = url
+        serverUrlManager.setUrl(url)
     }
 
     fun login(username: String, password: String) {

@@ -135,12 +135,15 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(SpacingTokens.lg))
                 AppTextField(
                     value = serverUrl,
-                    onValueChange = { urlChanged = true },
+                    onValueChange = { viewModel.updateServerUrl(it); urlChanged = true },
                     label = "Server URL",
                     trailingIcon = Icons.Default.Refresh,
                     trailingIconDescription = "Restore default URL",
                     onTrailingIconClick = {
                         viewModel.updateServerUrl("http://10.0.2.2:8000/api/")
+                        viewModel.saveServerUrl("http://10.0.2.2:8000/api/")
+                        urlChanged = false
+                        showUrlSaved = true
                     },
                 )
                 if (urlChanged) {
@@ -148,7 +151,7 @@ fun LoginScreen(
                     AppPrimaryButton(
                         text = "Save URL",
                         onClick = {
-                            viewModel.updateServerUrl(serverUrl)
+                            viewModel.saveServerUrl(serverUrl)
                             urlChanged = false
                             showUrlSaved = true
                         },
