@@ -1,15 +1,16 @@
-# Graph Report - /Users/john/develop/rxsoft/rxsoft-mobile  (2026-07-09)
+# Graph Report - rxsoft-mobile  (2026-08-19)
 
 ## Corpus Check
-- cluster-only mode — file stats not available
+- 152 files · ~34,395 words
+- Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 851 nodes · 1243 edges · 76 communities (51 shown, 25 thin omitted)
-- Extraction: 90% EXTRACTED · 10% INFERRED · 0% AMBIGUOUS · INFERRED: 124 edges (avg confidence: 0.8)
-- Token cost: 2,298 input · 3,798 output
+- 1012 nodes · 1374 edges · 119 communities (79 shown, 40 thin omitted)
+- Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 124 edges (avg confidence: 0.8)
+- Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ccfeae7a`
+- Built from commit: `9d4e4dfa`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -85,6 +86,40 @@
 - Healthcare UX Specialist
 - Preview Generator
 - Principal Design Engineer
+- 09-material3-expert.md
+- RxSoft Mobile Agent
+- ListScreenTemplate
+- ListResponse
+- ReportsApi
+- LoginScreen
+- host.sh
+- 10-android-animation-expert.md
+- 11-compose-testing-expert.md
+- SalesApi
+- Compose Screen — rxsoft-mobile
+- 18-form-engineer.md
+- AppEmptyState
+- 21-healthcare-ux.md
+- 22-state-management.md
+- 24-theme-customization.md
+- AppCard
+- 13-design-system-documentation.md
+- 19-data-table-engineer.md
+- 20-dashboard-engineer.md
+- AppErrorState
+- 23-preview-generator.md
+- dependencies
+- Design Token Engineer
+- Component Engineer
+- Accessibility Specialist
+- Material 3 Expert
+- Android Animation Expert
+- Compose Testing Expert
+- Design System Documentation Expert
+- Theme Engineer
+- Form Engineer
+- State Management Engineer
+- Theme Customization Engineer
 
 ## God Nodes (most connected - your core abstractions)
 1. `PosTerminalViewModel` - 30 edges
@@ -92,11 +127,11 @@
 3. `ListScreenTemplate()` - 19 edges
 4. `Screen` - 19 edges
 5. `UiState` - 19 edges
-6. `EnterPinViewModel` - 18 edges
-7. `ItemDto` - 17 edges
-8. `AuthViewModel` - 17 edges
-9. `StockAdjustmentViewModel` - 17 edges
-10. `PosRepository` - 16 edges
+6. `ItemDto` - 18 edges
+7. `EnterPinViewModel` - 18 edges
+8. `PosRepository` - 17 edges
+9. `NetworkModule` - 17 edges
+10. `AuthViewModel` - 17 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `PosTerminalScreen()` --calls--> `ReceiptLine`  [INFERRED]
@@ -113,18 +148,15 @@
 ## Import Cycles
 - None detected.
 
-## Hyperedges (group relationships)
-- **Design System Foundation** — skills_01_design_system_architect_skill, skills_02_design_token_engineer_skill, skills_03_component_engineer_skill, skills_09_material3_expert_skill [INFERRED 0.75]
-
-## Communities (76 total, 25 thin omitted)
+## Communities (119 total, 40 thin omitted)
 
 ### Community 0 - "Inventory Items API"
-Cohesion: 0.07
-Nodes (24): InventoryApi, Map, String, ItemsApi, Map, String, Map, String (+16 more)
+Cohesion: 0.08
+Nodes (21): ItemsApi, List, Map, String, CreateItemRequest, OrgItemDto, PatchItemRequest, toItemDto() (+13 more)
 
 ### Community 1 - "UI State Components"
-Cohesion: 0.06
-Nodes (36): AppEmptyState(), Composable, ImageVector, Modifier, String, Unit, AppErrorState(), Modifier (+28 more)
+Cohesion: 0.27
+Nodes (11): AppLinearProgress(), AppLoadingOverlay(), AppLoadingState(), AppPageLoading(), AppSkeletonLoader(), Boolean, Int, Modifier (+3 more)
 
 ### Community 2 - "Cart & Checkout UI"
 Cohesion: 0.06
@@ -140,15 +172,15 @@ Nodes (27): AddProductCard(), CheckoutScreen(), EmptyCartCard(), CheckoutViewMod
 
 ### Community 5 - "Medicine Catalog"
 Cohesion: 0.07
-Nodes (20): MedicineCard(), MedicineCatalogScreen(), Int, List, StateFlow, String, ViewModel, MedicineCatalogViewModel (+12 more)
+Nodes (18): Int, List, StateFlow, String, ViewModel, MedicineCatalogViewModel, Product, Int (+10 more)
 
 ### Community 6 - "Sales Reports API"
-Cohesion: 0.07
-Nodes (22): Map, String, ReportsApi, DailySalesReport, PaymentMethodSummary, TopSellingItem, SalesMetrics, List (+14 more)
+Cohesion: 0.12
+Nodes (12): Map, String, DailySalesReport, PaymentMethodSummary, TopSellingItem, List, Result, ReportsRepository (+4 more)
 
 ### Community 7 - "Item List Screen"
-Cohesion: 0.07
-Nodes (24): ItemCard(), ItemListScreen(), ItemListViewModel, Boolean, List, StateFlow, String, ViewModel (+16 more)
+Cohesion: 0.09
+Nodes (20): StateFlow, String, ViewModel, PosOrderDetailViewModel, PosOrderListScreen(), SaleCard(), Boolean, List (+12 more)
 
 ### Community 8 - "POS Sale Creation"
 Cohesion: 0.10
@@ -167,8 +199,8 @@ Cohesion: 0.11
 Nodes (24): Bundle, MainActivity, AppNavigation(), Checkout, Customers, Inventory, ItemForm, Items (+16 more)
 
 ### Community 12 - "Authentication API"
-Cohesion: 0.10
-Nodes (13): AuthApi, AuthResponse, CurrentUserResponse, LoginRequest, ModuleInfoDto, RefreshRequest, Interceptor, Response (+5 more)
+Cohesion: 0.13
+Nodes (10): AuthApi, AuthResponse, CurrentUserResponse, LoginRequest, ModuleInfoDto, RefreshRequest, AuthRepository, Boolean (+2 more)
 
 ### Community 13 - "Auth ViewModel"
 Cohesion: 0.16
@@ -187,56 +219,52 @@ Cohesion: 0.14
 Nodes (14): Bundle, Context, printReceipt(), ReceiptData, ReceiptLine, ReceiptPrintAdapter, Array, CancellationSignal (+6 more)
 
 ### Community 17 - "Network & Payment Methods"
-Cohesion: 0.19
-Nodes (5): PaymentMethodsApi, Moshi, NetworkModule, OkHttpClient, Retrofit
+Cohesion: 0.17
+Nodes (6): PaymentMethodsApi, UploadApi, Moshi, NetworkModule, OkHttpClient, Retrofit
 
 ### Community 18 - "Login Screen"
-Cohesion: 0.32
-Nodes (10): LoginScreen(), AppIconButton(), AppOutlinedButton(), AppPrimaryButton(), AppSecondaryButton(), AppTextButton(), Boolean, ImageVector (+2 more)
+Cohesion: 0.36
+Nodes (8): LoginScreen(), AppOutlinedButton(), AppPrimaryButton(), AppSecondaryButton(), AppTextButton(), Boolean, Modifier, String
 
 ### Community 19 - "Text Field & Item Form"
-Cohesion: 0.15
-Nodes (11): AppTextField(), Boolean, ImageVector, Modifier, String, Unit, ItemFormScreen(), String (+3 more)
+Cohesion: 0.17
+Nodes (10): AppTextField(), Boolean, ImageVector, Modifier, String, Unit, StockAdjustmentScreen(), ImeAction (+2 more)
 
 ### Community 20 - "Common API DTOs"
 Cohesion: 0.18
 Nodes (10): Annotation, ApiErrorDetail, ApiErrorResponse, Moshi, Set, ListResponseAdapterFactory, ListResponseMeta, PaginationQuery (+2 more)
 
 ### Community 21 - "Product Detail UI"
-Cohesion: 0.17
-Nodes (9): Modifier, String, ProductImage(), ImageVector, Modifier, String, RoundedIconButton(), String (+1 more)
-
-### Community 22 - "Design System Roles"
-Cohesion: 0.20
-Nodes (12): Design System Architect, Design Token Engineer, Component Engineer, Accessibility Specialist, Material 3 Expert, Android Animation Expert, Compose Testing Expert, Design System Documentation Expert (+4 more)
+Cohesion: 0.12
+Nodes (15): Always Check, Buttons, Contrast, Focus, Forms, Healthcare Rules, Images, Lists (+7 more)
 
 ### Community 23 - "Medicine & Profile UI"
 Cohesion: 0.29
 Nodes (10): Medicine, MedicineCard(), MedicineCatalogScreen(), sampleMedicines(), BottomNavigationBar(), androidx, Int, String (+2 more)
 
 ### Community 24 - "HTTP Logging Interceptor"
-Cohesion: 0.24
-Nodes (8): bodyToString(), Interceptor, Map, Response, String, redactHeaders(), TraceLoggingInterceptor, okhttp3
+Cohesion: 0.17
+Nodes (9): Modifier, String, ProductImage(), ImageVector, Modifier, String, RoundedIconButton(), String (+1 more)
 
 ### Community 25 - "Token Manager Module"
-Cohesion: 0.22
-Nodes (5): AppModule, Context, String, TokenManager, Flow
+Cohesion: 0.05
+Nodes (25): AuthInterceptor, Interceptor, Response, Interceptor, Response, ServerUrlInterceptor, Interceptor, Response (+17 more)
 
 ### Community 26 - "POS Terminal Search"
-Cohesion: 0.29
-Nodes (8): AppSearchBar(), Modifier, String, CartItemRow(), CustomerSearchDialog(), CartItem, PosTerminalScreen(), ProductSearchItem()
+Cohesion: 0.39
+Nodes (7): AppIconButton(), ImageVector, CartItemRow(), CustomerSearchDialog(), CartItem, PosTerminalScreen(), ProductSearchItem()
 
 ### Community 27 - "Settings ViewModel"
 Cohesion: 0.27
 Nodes (6): AppModule, Set, StateFlow, String, ViewModel, SettingsViewModel
 
 ### Community 28 - "Configuration API"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (5): ConfigApi, OrganisationConfig, PriceListDto, PriceListItemDto, UserPosConfig
 
 ### Community 29 - "Bottom Nav & Stock Adjustment"
-Cohesion: 0.28
-Nodes (7): AppBottomNav(), BottomNavTab, List, Modifier, String, StockAdjustmentScreen(), MainScaffold()
+Cohesion: 0.38
+Nodes (6): AppBottomNav(), BottomNavTab, List, Modifier, String, MainScaffold()
 
 ### Community 30 - "Prescription Upload"
 Cohesion: 0.36
@@ -251,7 +279,7 @@ Cohesion: 0.32
 Nodes (3): Boolean, StateFlow, SessionManager
 
 ### Community 33 - "BigDecimal Adapter"
-Cohesion: 0.38
+Cohesion: 0.47
 Nodes (3): BigDecimalAdapter, BigDecimal, Double
 
 ### Community 34 - "Top App Bar"
@@ -279,20 +307,24 @@ Cohesion: 0.40
 Nodes (5): Boolean, ImageVector, String, ModuleToggleCard(), SettingsScreen()
 
 ### Community 40 - "Server URL Manager"
-Cohesion: 0.40
-Nodes (3): SharedPreferences, String, ServerUrlManager
+Cohesion: 0.33
+Nodes (5): AppSearchBar(), Modifier, String, MedicineCard(), MedicineCatalogScreen()
+
+### Community 41 - "Image Upload API"
+Cohesion: 0.15
+Nodes (12): API Services, Architecture, Build Variants, Design System, Features, Layers, Navigation, Project Structure (+4 more)
 
 ### Community 42 - "Auth Interceptor"
-Cohesion: 0.50
-Nodes (3): AuthInterceptor, Interceptor, Response
+Cohesion: 0.25
+Nodes (6): ItemListViewModel, Boolean, List, StateFlow, String, ViewModel
 
 ### Community 43 - "Chip Component"
 Cohesion: 0.40
 Nodes (4): AppFilterChip(), Boolean, Modifier, String
 
 ### Community 44 - "Dialog Components"
-Cohesion: 0.60
-Nodes (4): AppAlertDialog(), AppInfoDialog(), Modifier, String
+Cohesion: 0.32
+Nodes (6): AppAlertDialog(), AppInfoDialog(), Modifier, String, ItemFormScreen(), String
 
 ### Community 45 - "Badge Component"
 Cohesion: 0.50
@@ -302,25 +334,101 @@ Nodes (3): AppBadge(), Int, Modifier
 Cohesion: 0.83
 Nodes (3): gradlew script, die(), warn()
 
+### Community 76 - "09-material3-expert.md"
+Cohesion: 0.18
+Nodes (10): Components, Icons, Layout, Mission, Motion, Never, Output, Principles (+2 more)
+
+### Community 77 - "RxSoft Mobile Agent"
+Cohesion: 0.20
+Nodes (9): Adding a screen, API base URL, Architecture, Auth, Design system, Key commands, Overview, RxSoft Mobile Agent (+1 more)
+
+### Community 78 - "ListScreenTemplate"
+Cohesion: 0.20
+Nodes (9): androidx, Boolean, Composable, List, Modifier, String, T, Unit (+1 more)
+
+### Community 79 - "ListResponse"
+Cohesion: 0.38
+Nodes (3): InventoryApi, Map, String
+
+### Community 83 - "10-android-animation-expert.md"
+Cohesion: 0.22
+Nodes (8): Durations, Healthcare, Mission, Never, Output, Performance, Preferred APIs, Use Cases
+
+### Community 84 - "11-compose-testing-expert.md"
+Cohesion: 0.22
+Nodes (8): Accessibility, Assertions, Generate, Mission, Output, Performance, Test Tags, Verify
+
+### Community 85 - "SalesApi"
+Cohesion: 0.25
+Nodes (4): Map, String, SalesApi, ListResponse
+
+### Community 86 - "Compose Screen — rxsoft-mobile"
+Cohesion: 0.25
+Nodes (7): Compose Screen — rxsoft-mobile, Inputs, Purpose, Refactoring, When not to invoke, When to invoke, Workflow
+
+### Community 87 - "18-form-engineer.md"
+Cohesion: 0.25
+Nodes (7): Generate, Input Components, Mission, Output, Principles, States, Validation
+
+### Community 88 - "AppEmptyState"
+Cohesion: 0.29
+Nodes (6): AppEmptyState(), Composable, ImageVector, Modifier, String, Unit
+
+### Community 89 - "21-healthcare-ux.md"
+Cohesion: 0.29
+Nodes (6): Mission, Never, Optimize, Output, Principles, Users
+
+### Community 90 - "22-state-management.md"
+Cohesion: 0.29
+Nodes (6): Avoid, Generate, Mission, Output, Principles, Support
+
+### Community 91 - "24-theme-customization.md"
+Cohesion: 0.29
+Nodes (6): Architecture, Generate, Mission, Output, Persistence, Support
+
+### Community 93 - "AppCard"
+Cohesion: 0.33
+Nodes (8): AppCard(), AppOutlinedCard(), Modifier, String, Unit, DailySalesScreen(), ReportSummaryCard(), TopItemCard()
+
+### Community 94 - "13-design-system-documentation.md"
+Cohesion: 0.33
+Nodes (5): Document, Include, Mission, Output, Style
+
+### Community 95 - "19-data-table-engineer.md"
+Cohesion: 0.33
+Nodes (5): Features, Healthcare Examples, Mission, Output, Performance
+
+### Community 96 - "20-dashboard-engineer.md"
+Cohesion: 0.33
+Nodes (5): Charts, Components, Layout, Mission, Output
+
+### Community 97 - "AppErrorState"
+Cohesion: 0.25
+Nodes (6): AppErrorState(), Modifier, String, Unit, String, PosOrderDetailScreen()
+
+### Community 98 - "23-preview-generator.md"
+Cohesion: 0.40
+Nodes (4): Generate, Mission, Output, Preview Data
+
 ## Knowledge Gaps
-- **37 isolated node(s):** `ModuleInfoDto`, `ListResponseMeta`, `ApiErrorResponse`, `ApiErrorDetail`, `PaginationQuery` (+32 more)
+- **154 isolated node(s):** `@opencode-ai/plugin`, `ModuleInfoDto`, `ListResponseMeta`, `ApiErrorResponse`, `ApiErrorDetail` (+149 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **25 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **40 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `MainScaffold()` connect `Bottom Nav & Stock Adjustment` to `UI State Components`, `Stock Adjustment`, `Prescription Upload Cards`, `Profile Screen`, `Sales Reports API`, `Item List Screen`, `Settings Screen`, `Checkout ViewModel`, `Customer API`, `App Navigation`, `Medicine Catalog`, `Auth ViewModel`, `Text Field & Item Form`, `Product Detail UI`, `POS Terminal Search`?**
-  _High betweenness centrality (0.219) - this node is a cross-community bridge._
-- **Why does `UiState` connect `Item List Screen` to `UI State Components`, `Stock Adjustment`, `Checkout ViewModel`, `Medicine Catalog`, `Sales Reports API`, `POS Sale Creation`, `Customer API`, `Auth ViewModel`?**
-  _High betweenness centrality (0.146) - this node is a cross-community bridge._
-- **Why does `NetworkModule` connect `Network & Payment Methods` to `Inventory Items API`, `BigDecimal Adapter`, `Pricing API`, `Sales Reports API`, `Image Upload API`, `Customer API`, `Authentication API`, `HTTP Logging Interceptor`?**
-  _High betweenness centrality (0.109) - this node is a cross-community bridge._
+- **Why does `MainScaffold()` connect `Bottom Nav & Stock Adjustment` to `AppErrorState`, `Stock Adjustment`, `Prescription Upload Cards`, `Profile Screen`, `Checkout ViewModel`, `Item List Screen`, `Settings Screen`, `Server URL Manager`, `Customer API`, `App Navigation`, `Dialog Components`, `Auth ViewModel`, `Medicine Catalog`, `LoginScreen`, `Text Field & Item Form`, `HTTP Logging Interceptor`, `POS Terminal Search`, `AppCard`?**
+  _High betweenness centrality (0.147) - this node is a cross-community bridge._
+- **Why does `NetworkModule` connect `Network & Payment Methods` to `Pricing API`, `Customer API`, `Authentication API`, `ListResponse`, `ReportsApi`, `SalesApi`, `Token Manager Module`, `Configuration API`?**
+  _High betweenness centrality (0.117) - this node is a cross-community bridge._
+- **Why does `ItemDto` connect `Inventory Items API` to `Stock Adjustment`, `POS Sale Creation`, `Auth Interceptor`, `LoginScreen`, `POS Terminal Search`?**
+  _High betweenness centrality (0.094) - this node is a cross-community bridge._
 - **Are the 18 inferred relationships involving `MainScaffold()` (e.g. with `CustomerListScreen()` and `AppBottomNav()`) actually correct?**
   _`MainScaffold()` has 18 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 9 inferred relationships involving `ListScreenTemplate()` (e.g. with `CustomerListScreen()` and `AppEmptyState()`) actually correct?**
   _`ListScreenTemplate()` has 9 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `ModuleInfoDto`, `ListResponseMeta`, `ApiErrorResponse` to the rest of the system?**
-  _37 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `@opencode-ai/plugin`, `ModuleInfoDto`, `ListResponseMeta` to the rest of the system?**
+  _154 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Inventory Items API` be split into smaller, more focused modules?**
-  _Cohesion score 0.06604324956165984 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08418367346938775 - nodes in this community are weakly interconnected._
