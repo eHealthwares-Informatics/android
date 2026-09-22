@@ -18,4 +18,7 @@ interface CustomersApi {
 
     @POST("customers")
     suspend fun createCustomer(@Body request: CreateCustomerRequest): CustomerDto
+
+    @GET("suppliers")
+    suspend fun listSuppliers(@QueryMap params: Map<String, String>): ListResponse<CustomerDto>
 }

@@ -7,6 +7,9 @@ interface ItemsApi {
     @GET("items")
     suspend fun listItems(@QueryMap params: Map<String, String>): ListResponse<ItemDto>
 
+    @GET("items/me")
+    suspend fun listOrgItems(): List<OrgItemDto>
+
     @GET("items/{id}")
     suspend fun getItem(@Path("id") id: String): ItemDto
 

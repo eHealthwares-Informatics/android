@@ -27,18 +27,20 @@ class StockBalanceViewModel @Inject constructor(
     private var currentPage = 1
     private var hasMore = true
     private var currentSearch: String? = null
+    private var currentCategoryCode: String? = null
 
     init {
         loadStockBalances()
     }
 
-    fun loadStockBalances(search: String? = null) {
+    fun loadStockBalances(search: String? = null, categoryCode: String? = null) {
         currentSearch = search
+        currentCategoryCode = categoryCode
         currentPage = 1
         hasMore = true
         viewModelScope.launch {
             _stockBalances.value = UiState.Loading
-            inventoryRepository.getStockBalances(search = search, page = 1)
+            inventoryRepository.getStockBalances(search = search, page = 1, categoryCode = categoryCode)
                 .onSuccess {
                     _stockBalances.value = UiState.Success(it)
                     hasMore = it.size >= 20
@@ -55,7 +57,7 @@ class StockBalanceViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoadingMore.value = true
             currentPage++
-            inventoryRepository.getStockBalances(search = currentSearch, page = currentPage)
+            inventoryRepository.getStockBalances(search = currentSearch, page = currentPage, categoryCode = currentCategoryCode)
                 .onSuccess { items ->
                     val current = (_stockBalances.value as? UiState.Success)?.data ?: emptyList()
                     _stockBalances.value = UiState.Success(current + items)

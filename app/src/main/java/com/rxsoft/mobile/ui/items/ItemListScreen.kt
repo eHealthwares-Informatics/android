@@ -28,6 +28,7 @@ fun ItemListScreen(
     viewModel: ItemListViewModel = androidx.hilt.navigation.compose.hiltViewModel(),
     onAddItem: () -> Unit = {},
     onEditItem: (String) -> Unit = {},
+    onMenuClick: (() -> Unit)? = null,
 ) {
     val itemsState by viewModel.items.collectAsState()
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
@@ -36,6 +37,7 @@ fun ItemListScreen(
         title = "Items",
         state = itemsState,
         isLoadingMore = isLoadingMore,
+        onMenuClick = onMenuClick,
         searchQuery = "",
         onSearchQueryChange = { viewModel.loadItems(it.ifBlank { null }) },
         onRefresh = { viewModel.loadItems() },
@@ -58,7 +60,7 @@ fun ItemListScreen(
 
 @Composable
 private fun ItemCard(item: ItemDto, onClick: () -> Unit) {
-    AppCard(onClick = onClick) {
+    AppCard(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
         Text(item.name, style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(com.rxsoft.mobile.ui.designsystem.token.SpacingTokens.lg)) {
             Text("Code: ${item.code ?: "-"}", style = MaterialTheme.typography.bodySmall)

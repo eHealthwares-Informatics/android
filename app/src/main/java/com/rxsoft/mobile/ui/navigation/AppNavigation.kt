@@ -6,20 +6,22 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.Inventory2
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Medication
-import androidx.compose.material.icons.filled.People
-import androidx.compose.material.icons.filled.PointOfSale
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Store
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -32,19 +34,32 @@ import com.rxsoft.mobile.ui.auth.AppScreen
 import com.rxsoft.mobile.ui.auth.AuthViewModel
 import com.rxsoft.mobile.ui.auth.EnterPinScreen
 import com.rxsoft.mobile.ui.auth.LoginScreen
+import com.rxsoft.mobile.ui.chat.ChatScreen
+import com.rxsoft.mobile.ui.chat.ConversationListScreen
 import com.rxsoft.mobile.ui.customers.CustomerListScreen
-import com.rxsoft.mobile.ui.designsystem.components.AppBottomNav
-import com.rxsoft.mobile.ui.designsystem.components.BottomNavTab
+import com.rxsoft.mobile.ui.designsystem.components.AppSideDrawer
+import com.rxsoft.mobile.ui.designsystem.components.DrawerMenuItem
+import com.rxsoft.mobile.ui.designsystem.components.DrawerMenuSection
+import com.rxsoft.mobile.ui.designsystem.components.PharmacyMenuSections
 import com.rxsoft.mobile.ui.designsystem.token.MotionTokens
 import com.rxsoft.mobile.ui.inventory.StockAdjustmentScreen
 import com.rxsoft.mobile.ui.inventory.StockBalanceScreen
 import com.rxsoft.mobile.ui.items.ItemFormScreen
 import com.rxsoft.mobile.ui.items.ItemListScreen
+import com.rxsoft.mobile.ui.orders.CreateOrderScreen
+import com.rxsoft.mobile.ui.orders.OrderLinesScreen
+import com.rxsoft.mobile.ui.orders.OrderListScreen
+import com.rxsoft.mobile.ui.purchases.PurchaseListScreen
 import com.rxsoft.mobile.ui.pos.PosOrderDetailScreen
 import com.rxsoft.mobile.ui.pos.PosOrderListScreen
 import com.rxsoft.mobile.ui.pos.PosTerminalScreen
+import com.rxsoft.mobile.ui.pos.SaleLinesScreen
+import com.rxsoft.mobile.ui.pricing.PriceListItemsScreen
+import com.rxsoft.mobile.ui.pricing.PriceListScreen
 import com.rxsoft.mobile.ui.prescription.UploadPrescriptionScreen
 import com.rxsoft.mobile.ui.profile.ProfileScreen
+import com.rxsoft.mobile.ui.profile.UserDetailScreen
+import com.rxsoft.mobile.ui.analytics.AnalyticsScreen
 import com.rxsoft.mobile.ui.reports.DailySalesScreen
 import com.rxsoft.mobile.ui.settings.AppModule
 import com.rxsoft.mobile.ui.settings.SettingsScreen
@@ -52,54 +67,283 @@ import com.rxsoft.mobile.ui.settings.SettingsViewModel
 import com.rxsoft.mobile.ui.shop.CheckoutScreen
 import com.rxsoft.mobile.ui.shop.MedicineCatalogScreen
 import com.rxsoft.mobile.ui.shop.ProductDetailScreen
+import com.rxsoft.mobile.ui.designsystem.theme.ThemeSettingsScreen
+import com.rxsoft.mobile.ui.splash.SplashScreen
+import com.rxsoft.mobile.ui.sync.SyncLoadingScreen
+import kotlinx.coroutines.launch
 
-sealed class Screen(val route: String, val title: String, val icon: androidx.compose.ui.graphics.vector.ImageVector?) {
-    data object Login : Screen("login", "Login", null)
-    data object PinSetup : Screen("pin_setup", "Create PIN", null)
-    data object PinUnlock : Screen("pin_unlock", "Enter PIN", null)
-    data object Shop : Screen("shop", "Shop", Icons.Default.Store)
-    data object ProductDetail : Screen("shop/product/{itemId}", "Product Detail", null) {
+sealed class Screen(val route: String, val title: String, val icon: androidx.compose.ui.graphics.vector.ImageVector? = null) {
+    data object Login : Screen("login", "Login")
+    data object PinSetup : Screen("pin_setup", "Create PIN")
+    data object PinUnlock : Screen("pin_unlock", "Enter PIN")
+    data object Shop : Screen("shop", "Shop")
+    data object ProductDetail : Screen("shop/product/{itemId}", "Product Detail") {
         fun createRoute(itemId: String) = "shop/product/$itemId"
     }
-    data object Checkout : Screen("shop/checkout", "Checkout", null)
-    data object Prescription : Screen("prescription", "Prescription", null)
-    data object Profile : Screen("profile", "Profile", null)
-    data object Pos : Screen("pos", "POS", Icons.Default.PointOfSale)
-    data object PosTerminal : Screen("pos/terminal", "New Sale", null)
-    data object PosDetail : Screen("pos/{saleId}", "Order Detail", null) {
+    data object Checkout : Screen("shop/checkout", "Checkout")
+    data object Prescription : Screen("prescription", "Prescription")
+    data object Profile : Screen("profile", "Profile")
+    data object UserDetail : Screen("user-detail", "User Detail")
+    data object ThemeSettings : Screen("theme_settings", "Appearance")
+    data object Pos : Screen("pos", "Sales")
+    data object Orders : Screen("orders", "Order")
+    data object CreateOrder : Screen("orders/new", "New Order")
+    data object OrderLines : Screen("orders/lines", "Order Lines")
+    data object Purchases : Screen("purchases", "Purchase")
+    data object PosTerminal : Screen("pos/terminal", "New Sale")
+    data object SaleLines : Screen("pos/lines", "Sales Lines")
+    data object PosDetail : Screen("pos/{saleId}", "Order Detail") {
         fun createRoute(saleId: String) = "pos/$saleId"
     }
-    data object Customers : Screen("customers", "Customers", Icons.Default.People)
-    data object Items : Screen("items", "Items", Icons.Default.Medication)
-    data object ItemForm : Screen("items/form/{itemId}", "Item Form", null) {
+    data object Customers : Screen("customers", "Customers")
+    data object Items : Screen("items", "Items")
+    data object ItemForm : Screen("items/form/{itemId}", "Item Form") {
         fun createRoute(itemId: String?) = "items/form/${itemId ?: "new"}"
     }
-    data object Inventory : Screen("inventory", "Stock", Icons.Default.Inventory2)
-    data object StockAdjustment : Screen("inventory/adjust", "Stock Adjustment", null)
-    data object Reports : Screen("reports", "Reports", Icons.Default.BarChart)
-    data object Settings : Screen("settings", "Settings", Icons.Default.Settings)
+    data object Inventory : Screen("inventory", "Stock Balance")
+    data object StockAdjustment : Screen("inventory/adjust", "Stock Adjustment")
+    data object PriceLists : Screen("price-lists", "Price Lists")
+    data object PriceListItems : Screen("price-lists/{priceListId}", "Prices") {
+        fun createRoute(priceListId: String) = "price-lists/$priceListId"
+    }
+    data object Reports : Screen("reports", "Reports")
+    data object Analytics : Screen("analytics", "Analytics")
+    data object Settings : Screen("settings", "Settings")
+    data object Chat : Screen("chat", "Messages")
+    data object ChatThread : Screen("chat/{conversationId}?title={title}", "Chat") {
+        fun createRoute(conversationId: String, title: String?) =
+            "chat/$conversationId" + (title?.let { "?title=${android.net.Uri.encode(it)}" } ?: "")
+    }
 }
+
+/** Routes that appear as top-level drawer destinations (used to highlight in the drawer). */
+private val drawerRoutes = setOf(
+    Screen.Pos.route,
+    Screen.PosTerminal.route,
+    Screen.SaleLines.route,
+    Screen.Orders.route,
+    Screen.OrderLines.route,
+    Screen.Purchases.route,
+    Screen.Customers.route,
+    Screen.PriceLists.route,
+    Screen.Shop.route,
+    Screen.UserDetail.route,
+    Screen.Items.route,
+    Screen.Inventory.route,
+    Screen.Reports.route,
+    Screen.Analytics.route,
+    Screen.Settings.route,
+    Screen.Chat.route,
+)
+
+/** Drawer routes for the shop-only mobile shopper shell. */
+private val shopperDrawerRoutes = setOf(
+    Screen.Shop.route,
+    Screen.UserDetail.route,
+    Screen.Chat.route,
+)
 
 @Composable
 fun AppNavigation() {
     val authViewModel: AuthViewModel = hiltViewModel()
     val screenState by authViewModel.screenState.collectAsState()
+    val syncProgress by authViewModel.syncProgress.collectAsState()
+    val syncError by authViewModel.syncError.collectAsState()
+    val canContinueOffline by authViewModel.canContinueOffline.collectAsState()
+    var splashDone by remember { mutableStateOf(false) }
+    var pinResetTrigger by remember { mutableIntStateOf(0) }
 
-    when (screenState) {
-        is AppScreen.Loading -> Unit
-        is AppScreen.Login -> LoginScreen(
+    LaunchedEffect(Unit) {
+        authViewModel.resetPinTrigger.collect {
+            pinResetTrigger++
+        }
+    }
+
+    when {
+        !splashDone -> {
+            SplashScreen(onSplashFinished = { splashDone = true })
+        }
+        screenState is AppScreen.Loading -> {
+            Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
+        }
+        screenState is AppScreen.Login -> LoginScreen(
             onLoginSuccess = { authViewModel.onLoginSuccess() },
         )
-        is AppScreen.PinSetup -> EnterPinScreen(
+        screenState is AppScreen.PinSetup -> EnterPinScreen(
             onNavigateToHome = { authViewModel.onPinAuthenticated() },
             onNavigateToLogin = { authViewModel.onPinCancelled() },
         )
-        is AppScreen.PinUnlock -> EnterPinScreen(
+        screenState is AppScreen.PinUnlock -> EnterPinScreen(
             onNavigateToHome = { authViewModel.onPinAuthenticated() },
             onNavigateToLogin = { authViewModel.onPinCancelled() },
+            resetTrigger = pinResetTrigger,
         )
-        is AppScreen.Main -> MainScaffold(authViewModel)
+        screenState is AppScreen.Syncing -> SyncLoadingScreen(
+            progress = syncProgress,
+            error = syncError,
+            canContinueOffline = canContinueOffline,
+            onRetry = { authViewModel.retryStartupSync() },
+            onContinueOffline = { authViewModel.continueOffline() },
+        )
+        screenState is AppScreen.ShopperAuth -> LoginScreen(
+            onLoginSuccess = { authViewModel.onLoginSuccess() },
+            startInPhoneMode = true,
+        )
+        screenState is AppScreen.Main -> {
+            val main = screenState as AppScreen.Main
+            when {
+                main.guest -> GuestShopScreen(onSignIn = { authViewModel.requireLogin() })
+                main.shopper -> ShopperScaffold(authViewModel)
+                else -> MainScaffold(authViewModel)
+            }
+        }
     }
+}
+
+/** Shop-only shell for self-onboarded mobile shoppers (no POS/inventory). */
+@Composable
+private fun ShopperScaffold(authViewModel: AuthViewModel) {
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+    val sections = listOf(
+        DrawerMenuSection(
+            title = "Shop",
+            icon = Icons.Default.Store,
+            items = listOf(
+                DrawerMenuItem(route = Screen.Shop.route, title = "Catalog", icon = Icons.Default.Medication),
+            ),
+        ),
+        DrawerMenuSection(
+            title = "Account",
+            icon = Icons.Default.AccountCircle,
+            items = listOf(
+                DrawerMenuItem(route = Screen.UserDetail.route, title = "User Detail", icon = Icons.Default.AccountCircle),
+            ),
+        ),
+        DrawerMenuSection(
+            title = "Chat",
+            icon = Icons.Default.ChatBubble,
+            items = listOf(
+                DrawerMenuItem(route = Screen.Chat.route, title = "Messages", icon = Icons.Default.ChatBubble),
+            ),
+        ),
+    )
+
+    val showDrawer = currentRoute in shopperDrawerRoutes
+    val onNavigate: (String) -> Unit = { route ->
+        navController.navigate(route) {
+            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+    val scope = rememberCoroutineScope()
+    val openDrawer: () -> Unit = { scope.launch { drawerState.open() } }
+
+    val content: @Composable () -> Unit = {
+        Scaffold { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = Screen.Shop.route,
+                modifier = Modifier.padding(innerPadding),
+            ) {
+                composable(Screen.Shop.route) {
+                    authViewModel.recordActivity()
+                    MedicineCatalogScreen(
+                        onProductClick = { product ->
+                            navController.navigate(Screen.ProductDetail.createRoute(product.id))
+                        },
+                        onCartClick = { navController.navigate(Screen.Checkout.route) },
+                        onMenuClick = openDrawer,
+                    )
+                }
+                composable(
+                    route = Screen.ProductDetail.route,
+                    arguments = listOf(navArgument("itemId") { type = NavType.StringType }),
+                ) { backStackEntry ->
+                    val itemId = backStackEntry.arguments?.getString("itemId") ?: return@composable
+                    authViewModel.recordActivity()
+                    ProductDetailScreen(
+                        itemId = itemId,
+                        onBack = { navController.popBackStack() },
+                        onAddToCart = { navController.navigate(Screen.Checkout.route) },
+                    )
+                }
+                composable(Screen.Checkout.route) {
+                    authViewModel.recordActivity()
+                    CheckoutScreen(
+                        onBack = { navController.popBackStack() },
+                        onAddProduct = {
+                            navController.navigate(Screen.Shop.route) {
+                                popUpTo(Screen.Shop.route) { inclusive = true }
+                            }
+                        },
+                        onOrderCreated = {
+                            navController.navigate(Screen.Shop.route) {
+                                popUpTo(Screen.Shop.route) { inclusive = true }
+                            }
+                        },
+                    )
+                }
+                composable(Screen.Chat.route) {
+                    authViewModel.recordActivity()
+                    ConversationListScreen(
+                        onConversationClick = { conversationId, title ->
+                            navController.navigate(Screen.ChatThread.createRoute(conversationId, title))
+                        },
+                        onBack = { navController.popBackStack() },
+                    )
+                }
+                composable(
+                    route = Screen.ChatThread.route,
+                    arguments = listOf(
+                        navArgument("conversationId") { type = NavType.StringType },
+                        navArgument("title") { type = NavType.StringType; defaultValue = "" },
+                    ),
+                ) { backStackEntry ->
+                    val conversationId = backStackEntry.arguments?.getString("conversationId") ?: return@composable
+                    val title = backStackEntry.arguments?.getString("title")?.ifEmpty { null }
+                    authViewModel.recordActivity()
+                    ChatScreen(
+                        conversationId = conversationId,
+                        title = title,
+                        onBack = { navController.popBackStack() },
+                    )
+                }
+                composable(Screen.UserDetail.route) {
+                    authViewModel.recordActivity()
+                    UserDetailScreen(
+                        onBack = null,
+                        onMenuClick = openDrawer,
+                        onSignOut = { authViewModel.logout() },
+                    )
+                }
+            }
+        }
+    }
+
+    if (showDrawer) {
+        AppSideDrawer(
+            sections = sections,
+            currentRoute = currentRoute,
+            onNavigate = onNavigate,
+            drawerState = drawerState,
+        ) { content() }
+    } else {
+        content()
+    }
+}
+
+@Composable
+private fun GuestShopScreen(onSignIn: () -> Unit) {
+    MedicineCatalogScreen(
+        onProductClick = {},
+        onCartClick = { onSignIn() },
+        onSignIn = onSignIn,
+    )
 }
 
 @Composable
@@ -108,49 +352,84 @@ fun MainScaffold(authViewModel: AuthViewModel) {
     val settingsViewModel: SettingsViewModel = hiltViewModel()
     val activeModules by settingsViewModel.activeModules.collectAsState()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
+    val currentRoute = navBackStackEntry?.destination?.route
 
-    val tabScreens = buildList {
-        if (activeModules.contains(AppModule.POS)) {
-            add(Screen.Pos)
-            add(Screen.Customers)
-            add(Screen.Items)
-            add(Screen.Inventory)
-            add(Screen.Reports)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+    // Build drawer sections based on active modules.
+    val sections = remember(activeModules) {
+        buildList {
+            // Sales section (POS, Orders, Purchases)
+            if (activeModules.contains(AppModule.POS)) {
+                add(PharmacyMenuSections.sales)
+            }
+            // Shop section
+            if (activeModules.contains(AppModule.SHOP)) {
+                add(PharmacyMenuSections.shop)
+            }
+            // Inventory section (its own module — must NOT be triggered by POS)
+            if (activeModules.contains(AppModule.INVENTORY)) {
+                add(PharmacyMenuSections.inventory)
+            }
+            // Reports & Analytics (its own module — must NOT be triggered by POS)
+            if (activeModules.contains(AppModule.SALES)) {
+                add(PharmacyMenuSections.reports)
+                add(PharmacyMenuSections.analytics)
+            }
+            // Settings
+            add(PharmacyMenuSections.settings)
         }
-        if (activeModules.contains(AppModule.SHOP)) {
-            add(Screen.Shop)
-        }
-        add(Screen.Settings)
     }
 
-    val bottomNavTabs = tabScreens.map { screen ->
-        BottomNavTab(
-            route = screen.route,
-            title = screen.title,
-            icon = screen.icon!!,
+    // Only show drawer on top-level screens.
+    val showDrawer = currentRoute in drawerRoutes
+
+    val onNavigate: (String) -> Unit = { route ->
+        navController.navigate(route) {
+            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
+    val coroutineScope = rememberCoroutineScope()
+    val openDrawer: () -> Unit = {
+        coroutineScope.launch { drawerState.open() }
+    }
+
+    // Wrapper that conditionally shows the drawer.
+    if (showDrawer) {
+        AppSideDrawer(
+            sections = sections,
+            currentRoute = currentRoute,
+            onNavigate = onNavigate,
+            drawerState = drawerState,
+        ) {
+            MainContent(
+                navController = navController,
+                authViewModel = authViewModel,
+                settingsViewModel = settingsViewModel,
+                onMenuClick = openDrawer,
+            )
+        }
+    } else {
+        MainContent(
+            navController = navController,
+            authViewModel = authViewModel,
+            settingsViewModel = settingsViewModel,
+            onMenuClick = null,
         )
     }
+}
 
-    val showBottomBar = currentDestination?.route in tabScreens.map { it.route }
-
-    Scaffold(
-        bottomBar = {
-            if (showBottomBar) {
-                AppBottomNav(
-                    tabs = bottomNavTabs,
-                    currentRoute = currentDestination?.route,
-                    onTabSelected = { tab ->
-                        navController.navigate(tab.route) {
-                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                )
-            }
-        },
-    ) { innerPadding ->
+@Composable
+private fun MainContent(
+    navController: NavHostController,
+    authViewModel: AuthViewModel,
+    settingsViewModel: SettingsViewModel,
+    onMenuClick: (() -> Unit)?,
+) {
+    Scaffold { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = Screen.Pos.route,
@@ -172,17 +451,36 @@ fun MainScaffold(authViewModel: AuthViewModel) {
                 authViewModel.recordActivity()
                 PosOrderListScreen(
                     posConfigManager = authViewModel.posConfigManager,
-                    onNewSale = {
-                        val config = authViewModel.posConfigManager.config.value
-                        if (config?.stockLocation != null) {
-                            navController.navigate(Screen.PosTerminal.route)
-                        } else {
-                            Log.e("AppNav", "Cannot navigate to POS terminal: stock location not configured")
-                            authViewModel.posConfigManager.loadConfig()
-                        }
-                    },
+                    onMenuClick = onMenuClick,
+                    onNewSale = { navController.navigate(Screen.PosTerminal.route) },
                     onSaleClick = { saleId -> navController.navigate(Screen.PosDetail.createRoute(saleId)) },
                 )
+            }
+            composable(Screen.Orders.route) {
+                authViewModel.recordActivity()
+                OrderListScreen(
+                    onBack = null,
+                    onMenuClick = onMenuClick,
+                    onNewOrder = { navController.navigate(Screen.CreateOrder.route) },
+                )
+            }
+            composable(Screen.CreateOrder.route) {
+                authViewModel.recordActivity()
+                CreateOrderScreen(
+                    onBack = { navController.popBackStack() },
+                    onSaved = { navController.popBackStack() },
+                )
+            }
+            composable(Screen.OrderLines.route) {
+                authViewModel.recordActivity()
+                OrderLinesScreen(
+                    onBack = null,
+                    onMenuClick = onMenuClick,
+                )
+            }
+            composable(Screen.Purchases.route) {
+                authViewModel.recordActivity()
+                PurchaseListScreen(onMenuClick = onMenuClick)
             }
             composable(Screen.PosTerminal.route) {
                 authViewModel.recordActivity()
@@ -193,6 +491,13 @@ fun MainScaffold(authViewModel: AuthViewModel) {
                         }
                     },
                     onBack = { navController.popBackStack() },
+                )
+            }
+            composable(Screen.SaleLines.route) {
+                authViewModel.recordActivity()
+                SaleLinesScreen(
+                    onBack = null,
+                    onMenuClick = onMenuClick,
                 )
             }
             composable(
@@ -206,7 +511,27 @@ fun MainScaffold(authViewModel: AuthViewModel) {
 
             composable(Screen.Customers.route) {
                 authViewModel.recordActivity()
-                CustomerListScreen()
+                CustomerListScreen(onMenuClick = onMenuClick)
+            }
+
+            composable(Screen.PriceLists.route) {
+                authViewModel.recordActivity()
+                PriceListScreen(
+                    onBack = null,
+                    onMenuClick = onMenuClick,
+                    onOpen = { id -> navController.navigate(Screen.PriceListItems.createRoute(id)) },
+                )
+            }
+            composable(
+                route = Screen.PriceListItems.route,
+                arguments = listOf(navArgument("priceListId") { type = NavType.StringType }),
+            ) { backStackEntry ->
+                val priceListId = backStackEntry.arguments?.getString("priceListId") ?: return@composable
+                authViewModel.recordActivity()
+                PriceListItemsScreen(
+                    priceListId = priceListId,
+                    onBack = { navController.popBackStack() },
+                )
             }
 
             composable(Screen.Items.route) {
@@ -214,6 +539,7 @@ fun MainScaffold(authViewModel: AuthViewModel) {
                 ItemListScreen(
                     onAddItem = { navController.navigate(Screen.ItemForm.createRoute(null)) },
                     onEditItem = { itemId -> navController.navigate(Screen.ItemForm.createRoute(itemId)) },
+                    onMenuClick = onMenuClick,
                 )
             }
             composable(
@@ -233,6 +559,7 @@ fun MainScaffold(authViewModel: AuthViewModel) {
                 authViewModel.recordActivity()
                 StockBalanceScreen(
                     onAdjustmentClick = { navController.navigate(Screen.StockAdjustment.route) },
+                    onMenuClick = onMenuClick,
                 )
             }
             composable(Screen.StockAdjustment.route) {
@@ -240,9 +567,14 @@ fun MainScaffold(authViewModel: AuthViewModel) {
                 StockAdjustmentScreen(onBack = { navController.popBackStack() })
             }
 
+            composable(Screen.Analytics.route) {
+                authViewModel.recordActivity()
+                AnalyticsScreen(onMenuClick = onMenuClick)
+            }
+
             composable(Screen.Reports.route) {
                 authViewModel.recordActivity()
-                DailySalesScreen()
+                DailySalesScreen(onMenuClick = onMenuClick)
             }
 
             composable(Screen.Shop.route) {
@@ -294,7 +626,24 @@ fun MainScaffold(authViewModel: AuthViewModel) {
 
             composable(Screen.Profile.route) {
                 authViewModel.recordActivity()
-                ProfileScreen()
+                ProfileScreen(
+                    onAppearance = { navController.navigate(Screen.ThemeSettings.route) },
+                )
+            }
+
+            composable(Screen.UserDetail.route) {
+                authViewModel.recordActivity()
+                UserDetailScreen(
+                    onBack = null,
+                    onMenuClick = onMenuClick,
+                    onAppearance = { navController.navigate(Screen.ThemeSettings.route) },
+                    onSignOut = { authViewModel.logout() },
+                )
+            }
+
+            composable(Screen.ThemeSettings.route) {
+                authViewModel.recordActivity()
+                ThemeSettingsScreen(onBack = { navController.popBackStack() })
             }
 
             composable(Screen.Settings.route) {
@@ -302,6 +651,33 @@ fun MainScaffold(authViewModel: AuthViewModel) {
                 SettingsScreen(
                     externalVm = settingsViewModel,
                     onSignOut = { authViewModel.logout() },
+                    onMenuClick = onMenuClick,
+                )
+            }
+
+            composable(Screen.Chat.route) {
+                authViewModel.recordActivity()
+                ConversationListScreen(
+                    onConversationClick = { conversationId, title ->
+                        navController.navigate(Screen.ChatThread.createRoute(conversationId, title))
+                    },
+                    onBack = { navController.popBackStack() },
+                )
+            }
+            composable(
+                route = Screen.ChatThread.route,
+                arguments = listOf(
+                    navArgument("conversationId") { type = NavType.StringType },
+                    navArgument("title") { type = NavType.StringType; defaultValue = "" },
+                ),
+            ) { backStackEntry ->
+                val conversationId = backStackEntry.arguments?.getString("conversationId") ?: return@composable
+                val title = backStackEntry.arguments?.getString("title")?.ifEmpty { null }
+                authViewModel.recordActivity()
+                ChatScreen(
+                    conversationId = conversationId,
+                    title = title,
+                    onBack = { navController.popBackStack() },
                 )
             }
         }

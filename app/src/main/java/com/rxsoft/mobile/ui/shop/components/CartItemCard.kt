@@ -89,7 +89,7 @@ fun CartItemCard(
                 }
                 Spacer(Modifier.height(SpacingTokens.md))
                 Text(
-                    text = "$${String.format("%.2f", item.totalPrice)}",
+                    text = java.text.NumberFormat.getCurrencyInstance(java.util.Locale("en", "NG")).format(item.totalPrice),
                     style = MaterialTheme.typography.titleMedium
                 )
             }

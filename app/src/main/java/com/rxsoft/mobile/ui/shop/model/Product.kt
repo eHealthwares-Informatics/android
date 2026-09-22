@@ -10,5 +10,8 @@ data class Product(
     val unit: String = "",
     val description: String = "",
     val category: String = "",
+    val code: String? = null,
+    val barcode: String? = null,
+    val uomId: String? = null,
     var isFavourite: Boolean = false
 )

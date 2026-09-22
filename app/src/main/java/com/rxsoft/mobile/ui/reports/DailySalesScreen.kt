@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,33 +29,56 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import com.rxsoft.mobile.data.remote.dto.DailySalesReport
+import com.rxsoft.mobile.data.remote.dto.DailySalesRow
 import com.rxsoft.mobile.data.remote.dto.TopSellingItem
 import com.rxsoft.mobile.ui.designsystem.components.AppCard
 import com.rxsoft.mobile.ui.designsystem.components.AppEmptyState
 import com.rxsoft.mobile.ui.designsystem.components.AppErrorState
 import com.rxsoft.mobile.ui.designsystem.components.AppLoadingState
 import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
+import com.rxsoft.mobile.ui.designsystem.components.DateRangeFilterRow
 import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
 import com.rxsoft.mobile.util.UiState
 import java.text.NumberFormat
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailySalesScreen(
+    onMenuClick: (() -> Unit)? = null,
     viewModel: DailySalesViewModel = androidx.hilt.navigation.compose.hiltViewModel(),
 ) {
-    val reportState by viewModel.report.collectAsState()
+    val reportState by viewModel.dailyRows.collectAsState()
     val topItemsState by viewModel.topItems.collectAsState()
     var isRefreshing by remember { mutableStateOf(false) }
+
+    val fromDateStr by viewModel.fromDate.collectAsState()
+    val toDateStr by viewModel.toDate.collectAsState()
+    var showFromPicker by remember { mutableStateOf(false) }
+    var showToPicker by remember { mutableStateOf(false) }
+    val fmt = remember { DateTimeFormatter.ISO_LOCAL_DATE }
+    val fromLocalDate = remember(fromDateStr) { fromDateStr?.let { LocalDate.parse(it, fmt) } }
+    val toLocalDate = remember(toDateStr) { toDateStr?.let { LocalDate.parse(it, fmt) } }
 
     LaunchedEffect(reportState) {
         if (reportState !is UiState.Loading) isRefreshing = false
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        AppTopAppBar(title = "Reports")
+        AppTopAppBar(title = "Reports", onMenuClick = onMenuClick)
+
+        DateRangeFilterRow(
+            fromDate = viewModel.fromDisplay,
+            toDate = viewModel.toDisplay,
+            onFromDateClick = { showFromPicker = true },
+            onToDateClick = { showToPicker = true },
+            onClear = { viewModel.clearDateRange() },
+            onQuickSelect = { from, to -> viewModel.setDateRange(from, to) },
+        )
 
         PullToRefreshBox(
             modifier = Modifier.fillMaxSize(),
@@ -74,10 +99,8 @@ fun DailySalesScreen(
                     )
                 }
                 is UiState.Success -> {
-                    if (state.data.totalSales == null && state.data.totalTransactions == null &&
-                        topItemsState !is UiState.Success
-                    ) {
-                        AppEmptyState(title = "No sales data", subtitle = "Sales data will appear here once transactions are made")
+                    if (state.data.isEmpty() && topItemsState !is UiState.Success) {
+                        AppEmptyState(title = "No sales data", subtitle = "Sales data will appear here once transactions")
                     } else {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
@@ -87,6 +110,16 @@ fun DailySalesScreen(
                             item { ReportSummaryCard(state.data) }
                             item {
                                 Text(
+                                    "Daily Breakdown",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            }
+                            items(state.data, key = { it.day }) { row ->
+                                DailyRowCard(row)
+                            }
+                            item {
+                                Text(
                                     "Top Selling Items",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
@@ -94,7 +127,7 @@ fun DailySalesScreen(
                             }
                             when (val topState = topItemsState) {
                                 is UiState.Success -> {
-                                    items(topState.data, key = { it.itemId ?: it.hashCode().toString() }) { item ->
+                                    items(topState.data, key = { it.itemCode ?: it.hashCode().toString() }) { item ->
                                         TopItemCard(item)
                                     }
                                 }
@@ -118,14 +151,58 @@ fun DailySalesScreen(
             }
         }
     }
+
+    if (showFromPicker) {
+        val state = rememberDatePickerState(
+            initialSelectedDateMillis = fromLocalDate?.let {
+                it.atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
+            },
+        )
+        DatePickerDialog(
+            onDismissRequest = { showFromPicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    state.selectedDateMillis?.let { millis ->
+                        val picked = Instant.ofEpochMilli(millis).atZone(ZoneId.of("UTC")).toLocalDate()
+                        viewModel.setDateRange(picked, toLocalDate)
+                    }
+                    showFromPicker = false
+                }) { Text("OK") }
+            },
+            dismissButton = { TextButton(onClick = { showFromPicker = false }) { Text("Cancel") } },
+        ) { DatePicker(state = state) }
+    }
+
+    if (showToPicker) {
+        val state = rememberDatePickerState(
+            initialSelectedDateMillis = toLocalDate?.let {
+                it.atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
+            },
+        )
+        DatePickerDialog(
+            onDismissRequest = { showToPicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    state.selectedDateMillis?.let { millis ->
+                        val picked = Instant.ofEpochMilli(millis).atZone(ZoneId.of("UTC")).toLocalDate()
+                        viewModel.setDateRange(fromLocalDate, picked)
+                    }
+                    showToPicker = false
+                }) { Text("OK") }
+            },
+            dismissButton = { TextButton(onClick = { showToPicker = false }) { Text("Cancel") } },
+        ) { DatePicker(state = state) }
+    }
 }
 
 @Composable
-private fun ReportSummaryCard(report: DailySalesReport) {
+private fun ReportSummaryCard(rows: List<DailySalesRow>) {
     val format = remember { NumberFormat.getCurrencyInstance(Locale("en", "NG")) }
+    val totalAmount = rows.sumOf { it.totalAmount }
+    val totalSales = rows.sumOf { it.salesCount }
 
     AppCard {
-        Text("Today's Summary", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text("Daily Sales", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(SpacingTokens.md))
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -134,7 +211,7 @@ private fun ReportSummaryCard(report: DailySalesReport) {
             Column {
                 Text("Revenue", style = MaterialTheme.typography.bodySmall)
                 Text(
-                    report.totalSales?.let { format.format(it) } ?: "--",
+                    format.format(totalAmount),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                 )
@@ -142,11 +219,30 @@ private fun ReportSummaryCard(report: DailySalesReport) {
             Column(horizontalAlignment = Alignment.End) {
                 Text("Transactions", style = MaterialTheme.typography.bodySmall)
                 Text(
-                    report.totalTransactions?.toString() ?: "--",
+                    totalSales.toString(),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun DailyRowCard(row: DailySalesRow) {
+    val format = remember { NumberFormat.getCurrencyInstance(Locale("en", "NG")) }
+
+    AppCard {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(row.day, fontWeight = FontWeight.Medium)
+                Text("${row.salesCount} sale(s)", style = MaterialTheme.typography.bodySmall)
+            }
+            Text(format.format(row.totalAmount), fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -162,12 +258,10 @@ private fun TopItemCard(item: TopSellingItem) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(item.itemName ?: "Unknown", fontWeight = FontWeight.Medium)
-                Text("Qty: ${item.totalQuantity}", style = MaterialTheme.typography.bodySmall)
+                Text(item.itemCode ?: "Unknown", fontWeight = FontWeight.Medium)
+                Text("Qty: ${item.quantitySold}", style = MaterialTheme.typography.bodySmall)
             }
-            item.totalRevenue?.let {
-                Text(format.format(it), fontWeight = FontWeight.Bold)
-            }
+            Text(format.format(item.revenue), fontWeight = FontWeight.Bold)
         }
     }
 }

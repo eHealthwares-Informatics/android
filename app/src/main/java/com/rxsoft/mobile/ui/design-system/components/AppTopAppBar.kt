@@ -3,6 +3,7 @@ package com.rxsoft.mobile.ui.designsystem.components
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +24,7 @@ fun AppTopAppBar(
     title: String,
     modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
+    onMenuClick: (() -> Unit)? = null,
     backDescription: String = "Back",
     actions: @Composable RowScope.() -> Unit = {},
 ) {
@@ -45,6 +47,16 @@ fun AppTopAppBar(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = backDescription,
+                    )
+                }
+            } else if (onMenuClick != null) {
+                IconButton(
+                    onClick = onMenuClick,
+                    modifier = Modifier.semantics { contentDescription = "Open menu" },
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = "Menu",
                     )
                 }
             }

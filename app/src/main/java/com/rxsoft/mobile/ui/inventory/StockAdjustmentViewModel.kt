@@ -11,6 +11,8 @@ import com.rxsoft.mobile.data.repository.PosRepository
 import com.rxsoft.mobile.util.PosConfigManager
 import com.rxsoft.mobile.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,6 +26,8 @@ class StockAdjustmentViewModel @Inject constructor(
     private val inventoryRepository: InventoryRepository,
     private val posConfigManager: PosConfigManager
 ) : ViewModel() {
+
+    private var searchJob: Job? = null
 
     private val _searchResults = MutableStateFlow<UiState<List<ItemDto>>>(UiState.Idle)
     val searchResults: StateFlow<UiState<List<ItemDto>>> = _searchResults.asStateFlow()
@@ -48,13 +52,15 @@ class StockAdjustmentViewModel @Inject constructor(
     }
 
     fun searchItems(query: String) {
+        searchJob?.cancel()
         if (query.length < 2) {
             _searchResults.value = UiState.Idle
             return
         }
-        viewModelScope.launch {
+        searchJob = viewModelScope.launch {
+            delay(250)
             _searchResults.value = UiState.Loading
-            posRepository.searchItems(query)
+            posRepository.searchOrgItems(query)
                 .onSuccess { _searchResults.value = UiState.Success(it) }
                 .onFailure { _searchResults.value = UiState.Error(it.message ?: "Search failed") }
         }

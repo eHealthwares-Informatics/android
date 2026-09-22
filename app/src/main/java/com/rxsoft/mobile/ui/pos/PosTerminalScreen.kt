@@ -1,7 +1,9 @@
 package com.rxsoft.mobile.ui.pos
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.layout.Box
@@ -45,6 +47,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -88,14 +91,32 @@ fun PosTerminalScreen(
     val selectedCustomer by viewModel.selectedCustomer.collectAsState()
     val paymentMethods by viewModel.paymentMethods.collectAsState()
     val checkoutState by viewModel.checkoutState.collectAsState()
+    val stockGate by viewModel.stockGate.collectAsState()
+    val adjustingItemId by viewModel.adjustingItemId.collectAsState()
+    val adjustError by viewModel.adjustError.collectAsState()
     val selectedPaymentMethod by viewModel.selectedPaymentMethod.collectAsState()
-    val pricingMode by viewModel.pricingMode.collectAsState()
+    val priceLists by viewModel.priceLists.collectAsState()
+    val selectedPriceListId by viewModel.selectedPriceListId.collectAsState()
     val context = LocalContext.current
 
     var showPaymentDialog by remember { mutableStateOf(false) }
+    var showNoStockDialog by remember { mutableStateOf(false) }
     var showSearchResults by remember { mutableStateOf(false) }
     var showCustomerSearch by remember { mutableStateOf(false) }
     val format = NumberFormat.getCurrencyInstance(Locale("en", "NG"))
+
+    LaunchedEffect(stockGate) {
+        when (stockGate) {
+            is StockGate.Ready -> {
+                showNoStockDialog = false
+                viewModel.loadPaymentMethods()
+                showPaymentDialog = true
+                viewModel.consumeStockGate()
+            }
+            is StockGate.Missing -> showNoStockDialog = true
+            else -> {}
+        }
+    }
 
     LaunchedEffect(checkoutState) {
         if (checkoutState is UiState.Success) {
@@ -228,23 +249,25 @@ fun PosTerminalScreen(
                 }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = SpacingTokens.screenHorizontal),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Pricing:", style = MaterialTheme.typography.bodySmall)
-                Spacer(modifier = Modifier.width(SpacingTokens.sm))
-                AppFilterChip(
-                    selected = pricingMode == "retail",
-                    onClick = { viewModel.setPricingMode("retail") },
-                    label = "Retail",
-                )
-                Spacer(modifier = Modifier.width(SpacingTokens.sm))
-                AppFilterChip(
-                    selected = pricingMode == "wholesale",
-                    onClick = { viewModel.setPricingMode("wholesale") },
-                    label = "Wholesale",
-                )
+            if (priceLists.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = SpacingTokens.screenHorizontal),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Price list:", style = MaterialTheme.typography.bodySmall)
+                    Spacer(modifier = Modifier.width(SpacingTokens.sm))
+                    priceLists.forEach { pl ->
+                        AppFilterChip(
+                            selected = selectedPriceListId == pl.id,
+                            onClick = { viewModel.setPriceList(pl.id) },
+                            label = pl.name.ifBlank { pl.code },
+                        )
+                        Spacer(modifier = Modifier.width(SpacingTokens.sm))
+                    }
+                }
             }
 
             HorizontalDivider()
@@ -300,8 +323,7 @@ fun PosTerminalScreen(
                 AppPrimaryButton(
                     text = "Pay - ${format.format(viewModel.subtotal)}",
                     onClick = {
-                        viewModel.loadPaymentMethods()
-                        showPaymentDialog = true
+                        viewModel.prepareCheckout()
                     },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = cartItems.isNotEmpty(),
@@ -405,6 +427,89 @@ fun PosTerminalScreen(
             }
         )
     }
+
+    if (showNoStockDialog) {
+        NoStockBalanceDialog(
+            items = (stockGate as? StockGate.Missing)?.items.orEmpty(),
+            adjustingItemId = adjustingItemId,
+            error = adjustError,
+            onAdjust = { itemId, qty -> viewModel.adjustStockFor(itemId, qty) },
+            onDismiss = {
+                showNoStockDialog = false
+                viewModel.consumeStockGate()
+            },
+        )
+    }
+}
+
+@Composable
+private fun NoStockBalanceDialog(
+    items: List<CartItem>,
+    adjustingItemId: String?,
+    error: String?,
+    onAdjust: (String, BigDecimal) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val qtyByItem = remember { mutableStateMapOf<String, String>() }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        shape = ShapeTokens.dialog,
+        title = { Text("No stock balance") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(SpacingTokens.sm)) {
+                Text(
+                    "These items have no stock at your location. Adjust the stock before paying.",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                items.forEach { cartItem ->
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            cartItem.item.name,
+                            fontWeight = FontWeight.Medium,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        OutlinedTextField(
+                            value = qtyByItem[cartItem.item.id] ?: "",
+                            onValueChange = { qtyByItem[cartItem.item.id] = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            label = { Text("Adjustment quantity") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            enabled = adjustingItemId == null,
+                        )
+                    }
+                }
+                if (adjustingItemId != null) {
+                    Text(
+                        "Adjusting…",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
+                error?.let {
+                    Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                }
+            }
+        },
+        confirmButton = {
+            AppPrimaryButton(
+                text = "Apply adjustment",
+                onClick = {
+                    items.forEach { cartItem ->
+                        val qty = qtyByItem[cartItem.item.id]?.toBigDecimalOrNull()
+                        if (qty != null && qty.compareTo(BigDecimal.ZERO) != 0) {
+                            onAdjust(cartItem.item.id, qty)
+                        }
+                    }
+                },
+                enabled = adjustingItemId == null,
+            )
+        },
+        dismissButton = {
+            AppTextButton(text = "Cancel", onClick = onDismiss)
+        },
+    )
 }
 
 @Composable

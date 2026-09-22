@@ -41,6 +41,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rxsoft.mobile.data.local.SyncStateEntity
 import com.rxsoft.mobile.ui.designsystem.components.AppOutlinedButton
 import com.rxsoft.mobile.ui.designsystem.components.AppTextButton
 import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
@@ -50,12 +51,16 @@ import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
 @Composable
 fun SettingsScreen(
     onSignOut: () -> Unit = {},
+    onMenuClick: (() -> Unit)? = null,
     externalVm: SettingsViewModel? = null
 ) {
     val resolvedVm = externalVm ?: hiltViewModel<SettingsViewModel>()
     val serverUrl by resolvedVm.serverUrl.collectAsState()
     val activeModules by resolvedVm.activeModules.collectAsState()
     val posConfig by resolvedVm.posConfigManager.config.collectAsState()
+    val syncTimeoutSeconds by resolvedVm.syncTimeoutSeconds.collectAsState()
+    val syncStates by resolvedVm.syncStates.collectAsState()
+    val syncProgress by resolvedVm.syncProgress.collectAsState()
     var editingUrl by remember { mutableStateOf(false) }
     var urlInput by remember(serverUrl) { mutableStateOf(serverUrl) }
     var showSignOutDialog by remember { mutableStateOf(false) }
@@ -86,7 +91,7 @@ fun SettingsScreen(
 
     Scaffold(
         topBar = {
-            AppTopAppBar(title = "Settings")
+            AppTopAppBar(title = "Settings", onMenuClick = onMenuClick)
         }
     ) { innerPadding ->
         Column(
@@ -162,6 +167,53 @@ fun SettingsScreen(
                     }
                 }
             }
+
+            Spacer(Modifier.height(SpacingTokens.xxxl))
+            Text("Data", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.height(SpacingTokens.md))
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = ShapeTokens.xl,
+            ) {
+                Column(modifier = Modifier.padding(SpacingTokens.xl)) {
+                    Text("Startup sync timeout", style = MaterialTheme.typography.titleSmall)
+                    Spacer(Modifier.height(SpacingTokens.xxs))
+                    Text(
+                        "How long the launch screen waits for the catalog sync before continuing offline.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.height(SpacingTokens.sm))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(SpacingTokens.md),
+                    ) {
+                        AppOutlinedButton(
+                            text = "-5s",
+                            onClick = { resolvedVm.setSyncTimeoutSeconds(syncTimeoutSeconds - 5) },
+                        )
+                        Text(
+                            "$syncTimeoutSeconds s",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        AppOutlinedButton(
+                            text = "+5s",
+                            onClick = { resolvedVm.setSyncTimeoutSeconds(syncTimeoutSeconds + 5) },
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(SpacingTokens.xxxl))
+            Text("Sync", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.height(SpacingTokens.md))
+            SyncSection(
+                states = syncStates,
+                isSyncing = syncProgress.running,
+                onSyncNow = { resolvedVm.syncNow() },
+            )
 
             Spacer(Modifier.height(SpacingTokens.xxxl))
             Text("Server", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
@@ -264,4 +316,70 @@ private fun ModuleToggleCard(
             Switch(checked = isActive, onCheckedChange = { onToggle() })
         }
     }
+}
+
+@Composable
+private fun SyncSection(
+    states: List<SyncStateEntity>,
+    isSyncing: Boolean,
+    onSyncNow: () -> Unit,
+) {
+    val byKey = states.associateBy { it.entity }
+    val keys = listOf(
+        "items", "priceLists", "priceListItems", "stockLocations",
+        "stockBalances", "customers", "categories", "uoms",
+    )
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = ShapeTokens.xl,
+    ) {
+        Column(modifier = Modifier.padding(SpacingTokens.xl)) {
+            Text("Offline catalog", style = MaterialTheme.typography.titleSmall)
+            Spacer(Modifier.height(SpacingTokens.sm))
+            keys.forEach { key ->
+                val lastSync = byKey[key]?.lastSyncAt
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = SpacingTokens.xxs),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(syncEntityLabel(key), style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        text = if (lastSync != null && lastSync > 0) formatSyncTime(lastSync) else "Never",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            Spacer(Modifier.height(SpacingTokens.md))
+            Button(
+                onClick = onSyncNow,
+                enabled = !isSyncing,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(if (isSyncing) "Syncing…" else "Sync now")
+            }
+        }
+    }
+}
+
+private fun syncEntityLabel(key: String): String = when (key) {
+    "items" -> "Items"
+    "priceLists" -> "Price lists"
+    "priceListItems" -> "Prices"
+    "stockLocations" -> "Stock locations"
+    "stockBalances" -> "Stock balances"
+    "customers" -> "Customers"
+    "categories" -> "Categories"
+    "uoms" -> "Units of measure"
+    else -> key
+}
+
+private fun formatSyncTime(millis: Long): String {
+    if (millis <= 0) return "Never"
+    val fmt = java.text.SimpleDateFormat("dd MMM yyyy, HH:mm", java.util.Locale.getDefault())
+    return fmt.format(java.util.Date(millis))
 }

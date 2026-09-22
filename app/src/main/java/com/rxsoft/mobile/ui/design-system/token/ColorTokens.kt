@@ -43,6 +43,7 @@ object BrandColors {
 }
 
 object ColorTokens {
+    // Legacy M3 light/dark
     val primaryLight = BrandColors.blue800
     val onPrimaryLight = BrandColors.neutral0
     val primaryContainerLight = BrandColors.blue50
@@ -101,14 +102,49 @@ object ColorTokens {
     val inversePrimaryDark = BrandColors.blue800
     val scrimDark = BrandColors.neutral0.copy(alpha = 0.32f)
 
-    val success = BrandColors.green500
+    // Semantic healthcare (light)
+    val success = Color(0xFF16A34A)
     val onSuccess = BrandColors.neutral0
-    val warning = BrandColors.orange500
+    val successContainer = Color(0xFFDCFCE7)
+    val onSuccessContainer = Color(0xFF14532D)
+    val warning = Color(0xFFF59E0B)
     val onWarning = BrandColors.neutral0
-    val info = BrandColors.blue500
+    val warningContainer = Color(0xFFFEF3C7)
+    val onWarningContainer = Color(0xFF78350F)
+    val info = Color(0xFF3B82F6)
     val onInfo = BrandColors.neutral0
+    val infoContainer = Color(0xFFDBEAFE)
+    val onInfoContainer = Color(0xFF1E3A5F)
+    val pending = Color(0xFFF59E0B)
+    val pendingContainer = Color(0xFFFEF3C7)
+    val scheduled = Color(0xFF2563EB)
+    val scheduledContainer = Color(0xFFDBEAFE)
+    val inProgress = Color(0xFF16A34A)
+    val inProgressContainer = Color(0xFFDCFCE7)
+    val completed = Color(0xFF6B7280)
+    val completedContainer = Color(0xFFF1F5F9)
+    val cancelled = Color(0xFF9CA3AF)
+    val cancelledContainer = Color(0xFFF1F5F9)
+    val critical = Color(0xFFDC2626)
+    val criticalContainer = Color(0xFFFEE2E2)
+    val onCriticalContainer = Color(0xFF7F1D1D)
 
+    // KPI accents
+    val kpiBlue = Color(0xFF1565C0)
+    val kpiBlueLight = Color(0xFFDBEAFE)
+    val kpiGreen = Color(0xFF16A34A)
+    val kpiGreenLight = Color(0xFFDCFCE7)
+    val kpiPurple = Color(0xFF7C3AED)
+    val kpiPurpleLight = Color(0xFFEDE9FE)
+    val kpiOrange = Color(0xFFF97316)
+    val kpiOrangeLight = Color(0xFFFFF7ED)
+
+    // Shop (backward compat)
     val shopAccent = BrandColors.cyan400
     val shopBackground = BrandColors.neutral100
     val shopSurfaceVariant = BrandColors.neutral200
+
+    // Notification
+    val notificationBadge = Color(0xFFDC2626)
+    val onNotificationBadge = BrandColors.neutral0
 }

@@ -1,6 +1,5 @@
 package com.rxsoft.mobile.ui.designsystem.token
 
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 object SpacingTokens {
@@ -14,6 +13,8 @@ object SpacingTokens {
     val xxl = 24.dp
     val xxxl = 32.dp
     val xxxxl = 48.dp
+    val xxxxxl = 64.dp
+    // Semantic aliases
     val section = lg
     val cardPadding = lg
     val screenHorizontal = lg

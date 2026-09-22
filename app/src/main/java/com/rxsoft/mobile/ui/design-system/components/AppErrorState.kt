@@ -1,12 +1,14 @@
 package com.rxsoft.mobile.ui.designsystem.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material3.Icon
@@ -28,33 +30,32 @@ fun AppErrorState(
     onRetry: (() -> Unit)? = null,
     retryLabel: String = "Retry",
 ) {
-    Box(
+    // Scrollable so a PullToRefreshBox parent can still receive the pull gesture.
+    Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(SpacingTokens.xl)
             .semantics { contentDescription = "Error state: $message" },
-        contentAlignment = Alignment.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.ErrorOutline,
-                contentDescription = null,
-                modifier = Modifier.size(64.dp),
-                tint = MaterialTheme.colorScheme.error,
-            )
-            Spacer(modifier = Modifier.height(SpacingTokens.lg))
-            Text(
-                text = message,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.error,
-                textAlign = TextAlign.Center,
-            )
-            if (onRetry != null) {
-                Spacer(modifier = Modifier.height(SpacingTokens.xxl))
-                AppPrimaryButton(text = retryLabel, onClick = onRetry)
-            }
+        Icon(
+            imageVector = Icons.Outlined.ErrorOutline,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.error,
+        )
+        Spacer(modifier = Modifier.height(SpacingTokens.lg))
+        Text(
+            text = message,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.error,
+            textAlign = TextAlign.Center,
+        )
+        if (onRetry != null) {
+            Spacer(modifier = Modifier.height(SpacingTokens.xxl))
+            AppPrimaryButton(text = retryLabel, onClick = onRetry)
         }
     }
 }

@@ -4,6 +4,7 @@ import com.rxsoft.mobile.data.remote.api.*
 import com.rxsoft.mobile.data.remote.dto.BigDecimalAdapter
 import com.rxsoft.mobile.data.remote.dto.ListResponseAdapterFactory
 import com.rxsoft.mobile.data.remote.interceptor.AuthInterceptor
+import com.rxsoft.mobile.data.remote.interceptor.ServerUrlInterceptor
 import com.rxsoft.mobile.data.remote.interceptor.TokenRefreshInterceptor
 import com.rxsoft.mobile.data.remote.interceptor.TraceLoggingInterceptor
 import com.rxsoft.mobile.util.ServerUrlManager
@@ -27,11 +28,13 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(
+        serverUrlInterceptor: ServerUrlInterceptor,
         authInterceptor: AuthInterceptor,
         tokenRefreshInterceptor: TokenRefreshInterceptor,
         traceLoggingInterceptor: TraceLoggingInterceptor,
     ): OkHttpClient {
         return OkHttpClient.Builder()
+            .addInterceptor(serverUrlInterceptor)
             .addInterceptor(authInterceptor)
             .addInterceptor(tokenRefreshInterceptor)
             .addInterceptor(traceLoggingInterceptor)
@@ -54,8 +57,9 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient, serverUrlManager: ServerUrlManager, moshi: Moshi): Retrofit {
+        val baseUrl = serverUrlManager.getUrl().let { if (it.endsWith("/")) it else "$it/" }
         return Retrofit.Builder()
-            .baseUrl(serverUrlManager.getUrl())
+            .baseUrl(baseUrl)
             .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
@@ -100,6 +104,36 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideUploadApi(retrofit: Retrofit): UploadApi = retrofit.create(UploadApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideWebsiteApi(retrofit: Retrofit): WebsiteApi = retrofit.create(WebsiteApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideGenericProductsApi(retrofit: Retrofit): GenericProductsApi = retrofit.create(GenericProductsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun providePurchasesApi(retrofit: Retrofit): PurchasesApi = retrofit.create(PurchasesApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideSyncApi(retrofit: Retrofit): SyncApi = retrofit.create(SyncApi::class.java)
+
+    @Provides
+    @Singleton
+    fun providePaymentsApi(retrofit: Retrofit): PaymentsApi = retrofit.create(PaymentsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideChatApi(retrofit: Retrofit): ChatApi = retrofit.create(ChatApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideServerUrlInterceptor(serverUrlManager: ServerUrlManager): ServerUrlInterceptor {
+        return ServerUrlInterceptor(serverUrlManager)
+    }
 
     @Provides
     @Singleton

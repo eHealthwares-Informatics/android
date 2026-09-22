@@ -16,6 +16,7 @@ import com.rxsoft.mobile.util.UiState
 
 @Composable
 fun CustomerListScreen(
+    onMenuClick: (() -> Unit)? = null,
     viewModel: CustomerListViewModel = androidx.hilt.navigation.compose.hiltViewModel(),
 ) {
     val customersState by viewModel.customers.collectAsState()
@@ -24,6 +25,7 @@ fun CustomerListScreen(
     ListScreenTemplate(
         title = "Customers",
         state = customersState,
+        onMenuClick = onMenuClick,
         isLoadingMore = isLoadingMore,
         searchQuery = "",
         onSearchQueryChange = { viewModel.loadCustomers(it.ifBlank { null }) },
@@ -40,7 +42,7 @@ fun CustomerListScreen(
 
 @Composable
 private fun CustomerCard(customer: CustomerDto) {
-    AppCard {
+    AppCard(modifier = Modifier.fillMaxWidth()) {
         Text(customer.name, style = MaterialTheme.typography.titleMedium)
         customer.phone?.let {
             Text(it, style = MaterialTheme.typography.bodySmall)

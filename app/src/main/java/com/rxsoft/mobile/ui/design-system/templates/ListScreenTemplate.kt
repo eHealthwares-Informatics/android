@@ -42,6 +42,7 @@ fun <T> ListScreenTemplate(
     modifier: Modifier = Modifier,
     isLoadingMore: Boolean = false,
     onBack: (() -> Unit)? = null,
+    onMenuClick: (() -> Unit)? = null,
     searchQuery: String = "",
     onSearchQueryChange: ((String) -> Unit)? = null,
     onRefresh: (() -> Unit)? = null,
@@ -53,6 +54,7 @@ fun <T> ListScreenTemplate(
     fab: @Composable (() -> Unit)? = null,
     configMissing: Boolean = false,
     configMessage: String? = null,
+    onListScrollDirection: ((scrollingDown: Boolean) -> Unit)? = null,
     listContent: LazyListScope.(listData: List<T>) -> Unit,
 ) {
     val listState = rememberLazyListState()
@@ -75,12 +77,41 @@ fun <T> ListScreenTemplate(
         }
     }
 
+    // Report scroll direction so hosts can react (e.g. hide/show a bottom bar):
+    // scrolling down hides, scrolling up (or reaching the top) shows.
+    if (onListScrollDirection != null) {
+        LaunchedEffect(listState) {
+            var lastIndex = listState.firstVisibleItemIndex
+            var lastOffset = listState.firstVisibleItemScrollOffset
+            var accumulated = 0
+            snapshotFlow {
+                listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset
+            }.collect { (index, offset) ->
+                val delta = if (index == lastIndex) offset - lastOffset else (index - lastIndex) * 600
+                accumulated += delta
+                if (index == 0 && offset == 0) {
+                    onListScrollDirection(false)
+                    accumulated = 0
+                } else if (accumulated > 120) {
+                    onListScrollDirection(true)
+                    accumulated = 0
+                } else if (accumulated < -120) {
+                    onListScrollDirection(false)
+                    accumulated = 0
+                }
+                lastIndex = index
+                lastOffset = offset
+            }
+        }
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
             AppTopAppBar(
                 title = title,
                 onBack = onBack,
+                onMenuClick = onMenuClick,
                 actions = topBarActions,
             )
         },
@@ -90,15 +121,9 @@ fun <T> ListScreenTemplate(
             }
         },
     ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-        ) {
+        val body: @Composable () -> Unit = {
             if (configMissing) {
-                AppErrorState(
-                    message = configMessage ?: "POS configuration not available",
-                )
+                ErrorList(message = configMessage ?: "POS configuration not available")
             } else when (state) {
                 is UiState.Idle, is UiState.Loading -> {
                     if (searchQuery.isEmpty() && onSearchQueryChange != null) {
@@ -108,7 +133,7 @@ fun <T> ListScreenTemplate(
                     }
                 }
                 is UiState.Error -> {
-                    AppErrorState(
+                    ErrorList(
                         message = state.message,
                         onRetry = if (onRefresh != null) {{ onRefresh() }} else null,
                     )
@@ -116,77 +141,105 @@ fun <T> ListScreenTemplate(
                 is UiState.Success -> {
                     val items = state.data
                     if (items.isEmpty() && !isLoadingMore) {
-                        AppEmptyState(
+                        EmptyList(
                             title = emptyTitle,
                             subtitle = emptySubtitle,
-                            icon = Icons.Outlined.Inbox,
                             action = emptyAction,
                         )
                     } else {
-                        val listModifier = if (onRefresh != null) {
-                            PullToRefreshBox(
-                                modifier = Modifier.fillMaxSize(),
-                                isRefreshing = isRefreshing,
-                                onRefresh = {
-                                    isRefreshing = true
-                                    onRefresh()
-                                },
-                            ) {
-                                LazyColumn(
-                                    modifier = Modifier.fillMaxSize(),
-                                    state = listState,
-                                    contentPadding = PaddingValues(
-                                        horizontal = SpacingTokens.screenHorizontal,
-                                        vertical = SpacingTokens.section,
-                                    ),
-                                    verticalArrangement = Arrangement.spacedBy(SpacingTokens.sm),
-                                ) {
-                                    listContent(items)
-                                    if (isLoadingMore) {
-                                        item {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .semantics { contentDescription = "Loading more" },
-                                                contentAlignment = Alignment.Center,
-                                            ) {
-                                                androidx.compose.material3.CircularProgressIndicator(
-                                                    modifier = Modifier.padding(SpacingTokens.sm),
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            LazyColumn(
-                                modifier = Modifier.fillMaxSize(),
-                                state = listState,
-                                contentPadding = PaddingValues(
-                                    horizontal = SpacingTokens.screenHorizontal,
-                                    vertical = SpacingTokens.section,
-                                ),
-                                verticalArrangement = Arrangement.spacedBy(SpacingTokens.sm),
-                            ) {
-                                listContent(items)
-                                if (isLoadingMore) {
-                                    item {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .semantics { contentDescription = "Loading more" },
-                                            contentAlignment = Alignment.Center,
-                                        ) {
-                                            androidx.compose.material3.CircularProgressIndicator(
-                                                modifier = Modifier.padding(SpacingTokens.sm),
-                                            )
-                                        }
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            state = listState,
+                            contentPadding = PaddingValues(
+                                horizontal = SpacingTokens.screenHorizontal,
+                                vertical = SpacingTokens.section,
+                            ),
+                            verticalArrangement = Arrangement.spacedBy(SpacingTokens.sm),
+                        ) {
+                            listContent(items)
+                            if (isLoadingMore) {
+                                item {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .semantics { contentDescription = "Loading more" },
+                                        contentAlignment = Alignment.Center,
+                                    ) {
+                                        androidx.compose.material3.CircularProgressIndicator(
+                                            modifier = Modifier.padding(SpacingTokens.sm),
+                                        )
                                     }
                                 }
                             }
                         }
                     }
                 }
+            }
+        }
+
+        if (onRefresh != null) {
+            PullToRefreshBox(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                isRefreshing = isRefreshing,
+                onRefresh = {
+                    isRefreshing = true
+                    onRefresh()
+                },
+            ) {
+                body()
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+            ) {
+                body()
+            }
+        }
+    }
+}
+
+/** Scrollable error state so pull-to-refresh works while an error is shown. */
+@Composable
+private fun ErrorList(message: String, onRetry: (() -> Unit)? = null) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item {
+            Box(
+                modifier = Modifier
+                    .fillParentMaxSize()
+                    .padding(horizontal = SpacingTokens.screenHorizontal),
+                contentAlignment = Alignment.Center,
+            ) {
+                AppErrorState(message = message, onRetry = onRetry)
+            }
+        }
+    }
+}
+
+/** Scrollable empty state so pull-to-refresh works while the list is empty. */
+@Composable
+private fun EmptyList(
+    title: String,
+    subtitle: String?,
+    action: @Composable (() -> Unit)? = null,
+) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item {
+            Box(
+                modifier = Modifier
+                    .fillParentMaxSize()
+                    .padding(horizontal = SpacingTokens.screenHorizontal),
+                contentAlignment = Alignment.Center,
+            ) {
+                AppEmptyState(
+                    title = title,
+                    subtitle = subtitle,
+                    icon = Icons.Outlined.Inbox,
+                    action = action,
+                )
             }
         }
     }

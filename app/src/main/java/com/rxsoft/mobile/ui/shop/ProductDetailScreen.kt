@@ -83,7 +83,7 @@ fun ProductDetailScreen(
                         text = "Buy Now",
                         modifier = Modifier.weight(1.2f),
                         onClick = {
-                            product?.let { viewModel.addToCart(it) }
+                            product?.let { viewModel.addToCart(it, quantity) }
                             onAddToCart()
                         }
                     )
@@ -134,7 +134,9 @@ fun ProductDetailScreen(
                     AppTextButton(text = "Read More", onClick = { })
                     Spacer(Modifier.height(SpacingTokens.xxl))
                     Text(
-                        text = "$${String.format("%.2f", product?.price ?: 0.0)}",
+                        text = java.text.NumberFormat
+                            .getCurrencyInstance(java.util.Locale("en", "NG"))
+                            .format(product?.price ?: 0.0),
                         style = MaterialTheme.typography.headlineMedium,
                     )
                     Spacer(Modifier.height(100.dp))

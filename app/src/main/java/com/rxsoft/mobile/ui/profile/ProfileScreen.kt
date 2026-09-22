@@ -17,8 +17,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.Group
-import androidx.compose.material.icons.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,17 +32,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.rxsoft.mobile.R
 import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
-import com.rxsoft.mobile.ui.designsystem.token.ColorTokens
 import com.rxsoft.mobile.ui.designsystem.token.ShapeTokens
 import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
 
@@ -53,10 +49,13 @@ fun ProfileScreen(
     onPersonalDetails: () -> Unit = {},
     onIdentification: () -> Unit = {},
     onFamilyMembers: () -> Unit = {},
-    onAccountCredit: () -> Unit = {}
+    onAccountCredit: () -> Unit = {},
+    onAppearance: () -> Unit = {},
 ) {
+    val colors = MaterialTheme.colorScheme
+
     Scaffold(
-        containerColor = ColorTokens.shopBackground,
+        containerColor = colors.background,
         topBar = {
             AppTopAppBar(title = "Profile")
         }
@@ -84,17 +83,16 @@ fun ProfileScreen(
                         modifier = Modifier
                             .size(90.dp)
                             .clip(CircleShape),
-                        contentScale = ContentScale.Crop,
                     )
                     Spacer(Modifier.height(SpacingTokens.md))
                     Text(name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                    Text(phone, color = Color.Gray)
+                    Text(phone, color = colors.onSurfaceVariant)
                 }
             }
             Spacer(Modifier.height(SpacingTokens.xl))
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = ColorTokens.shopAccent),
+                colors = CardDefaults.cardColors(containerColor = colors.primary),
                 shape = ShapeTokens.xxl,
             ) {
                 Row(
@@ -105,20 +103,20 @@ fun ProfileScreen(
                 ) {
                     Surface(
                         shape = CircleShape,
-                        color = Color.White.copy(alpha = .2f),
+                        color = colors.onPrimary.copy(alpha = .2f),
                         modifier = Modifier.size(52.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Outlined.Star, contentDescription = "Reward points", tint = Color.White)
+                            Icon(Icons.Outlined.Star, contentDescription = "Reward points", tint = colors.onPrimary)
                         }
                     }
                     Spacer(Modifier.width(SpacingTokens.lg))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Reward Points", color = Color.White)
+                        Text("Reward Points", color = colors.onPrimary)
                         Text(
                             rewardPoints.toString(),
                             style = MaterialTheme.typography.headlineMedium,
-                            color = Color.White,
+                            color = colors.onPrimary,
                             fontWeight = FontWeight.Bold,
                         )
                     }
@@ -129,18 +127,20 @@ fun ProfileScreen(
             ProfileMenuItem(icon = Icons.Outlined.Badge, title = "Saved Identification", onClick = onIdentification)
             ProfileMenuItem(icon = Icons.Outlined.Group, title = "Family Members", onClick = onFamilyMembers)
             ProfileMenuItem(icon = Icons.Outlined.AccountBalanceWallet, title = "Account Credit", onClick = onAccountCredit)
+            ProfileMenuItem(icon = Icons.Outlined.Palette, title = "Appearance", onClick = onAppearance)
         }
     }
 }
 
 @Composable
 private fun ProfileMenuItem(icon: ImageVector, title: String, onClick: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = SpacingTokens.sm)
-            .clickable(onClick = onClick)
-            .semantics { contentDescription = title },
+            .clickable(onClick = onClick),
         shape = ShapeTokens.xl,
     ) {
         Row(
@@ -152,15 +152,15 @@ private fun ProfileMenuItem(icon: ImageVector, title: String, onClick: () -> Uni
             Surface(
                 modifier = Modifier.size(44.dp),
                 shape = CircleShape,
-                color = ColorTokens.shopAccent.copy(alpha = .15f),
+                color = colors.primaryContainer,
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(icon, contentDescription = title, tint = ColorTokens.shopAccent)
+                    Icon(icon, contentDescription = title, tint = colors.onPrimaryContainer)
                 }
             }
             Spacer(Modifier.width(SpacingTokens.lg))
             Text(title, modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
-            Icon(Icons.Outlined.KeyboardArrowRight, contentDescription = "$title, navigate", tint = Color.Gray)
+            Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = "$title, navigate", tint = colors.onSurfaceVariant)
         }
     }
 }

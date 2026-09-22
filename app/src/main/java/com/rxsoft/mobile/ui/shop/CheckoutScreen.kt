@@ -1,5 +1,7 @@
 package com.rxsoft.mobile.ui.shop
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -27,19 +28,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rxsoft.mobile.ui.designsystem.components.AppFilterChip
 import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
 import com.rxsoft.mobile.ui.designsystem.token.ElevationTokens
 import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
 import com.rxsoft.mobile.ui.shop.components.CartItemCard
 import com.rxsoft.mobile.ui.shop.components.PaymentSummary
 import com.rxsoft.mobile.ui.shop.components.PrimaryButton
-import com.rxsoft.mobile.ui.shop.components.RoundedIconButton
 import com.rxsoft.mobile.ui.shop.components.VoucherCard
 import com.rxsoft.mobile.util.UiState
+import com.rxsoft.mobile.util.payment.PaymentProviderType
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun CheckoutScreen(
@@ -50,12 +57,42 @@ fun CheckoutScreen(
 ) {
     val cartItems by viewModel.cartItems.collectAsState()
     val checkoutState by viewModel.checkoutState.collectAsState()
+    val selectedProvider by viewModel.selectedProvider.collectAsState()
+    val format = remember { NumberFormat.getCurrencyInstance(Locale("en", "NG")) }
+
+    var pendingReference by remember { mutableStateOf<String?>(null) }
+    var pendingProvider by remember { mutableStateOf<PaymentProviderType?>(null) }
+
+    val checkoutLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        val reference = pendingReference
+        val provider = pendingProvider
+        if (reference != null && provider != null) {
+            viewModel.onCheckoutReturned(reference, provider)
+        }
+        pendingReference = null
+        pendingProvider = null
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is PaymentEvent.LaunchCheckout -> {
+                    pendingReference = event.reference
+                    pendingProvider = event.provider
+                    val intent = viewModel.buildCheckoutIntent(event.provider, event.url)
+                    checkoutLauncher.launch(intent)
+                }
+            }
+        }
+    }
 
     LaunchedEffect(checkoutState) {
         if (checkoutState is UiState.Success) {
-            val saleId = (checkoutState as UiState.Success<*>).data
-            if (saleId is com.rxsoft.mobile.data.remote.dto.SaleDto) {
-                onOrderCreated(saleId.id)
+            val sale = (checkoutState as UiState.Success<*>).data
+            if (sale is com.rxsoft.mobile.data.remote.dto.SaleDto) {
+                onOrderCreated(sale.id)
             }
         }
     }
@@ -77,7 +114,7 @@ fun CheckoutScreen(
                     PrimaryButton(
                         text = "Pay Now",
                         enabled = cartItems.isNotEmpty() && checkoutState !is UiState.Loading,
-                        onClick = { viewModel.checkout() }
+                        onClick = { viewModel.pay() }
                     )
                 }
             }
@@ -103,14 +140,31 @@ fun CheckoutScreen(
                 }
             }
 
+            item {
+                PaymentMethodCard(
+                    providers = viewModel.providers,
+                    selected = selectedProvider,
+                    isInstalled = { viewModel.isProviderAppInstalled(it) },
+                    onSelect = { viewModel.selectProvider(it) },
+                )
+            }
             item { AddProductCard(onClick = onAddProduct) }
             item { VoucherCard(onClick = { }) }
             item {
                 PaymentSummary(
-                    subtotal = "$${String.format("%.2f", viewModel.subtotal)}",
-                    delivery = "$0.00",
-                    total = "$${String.format("%.2f", viewModel.subtotal)}"
+                    subtotal = format.format(viewModel.subtotal),
+                    delivery = format.format(0.0),
+                    total = format.format(viewModel.subtotal)
                 )
+            }
+            if (checkoutState is UiState.Error) {
+                item {
+                    Text(
+                        (checkoutState as UiState.Error).message,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
             }
             item { Spacer(Modifier.height(80.dp)) }
         }
@@ -118,19 +172,54 @@ fun CheckoutScreen(
 }
 
 @Composable
+private fun PaymentMethodCard(
+    providers: List<PaymentProviderType>,
+    selected: PaymentProviderType,
+    isInstalled: (PaymentProviderType) -> Boolean,
+    onSelect: (PaymentProviderType) -> Unit,
+) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(SpacingTokens.xl)) {
+            Text("Payment method", style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(SpacingTokens.md))
+            Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.sm)) {
+                providers.forEach { provider ->
+                    AppFilterChip(
+                        selected = selected == provider,
+                        onClick = { onSelect(provider) },
+                        label = provider.displayName,
+                    )
+                }
+            }
+            if (selected.usesGateway) {
+                Spacer(Modifier.height(SpacingTokens.sm))
+                Text(
+                    text = when {
+                        !selected.supportsOnlineCheckout ->
+                            "${selected.displayName} requires a configured POS terminal."
+                        isInstalled(selected) ->
+                            "${selected.displayName} app detected — paying in the app."
+                        else ->
+                            "Paying with ${selected.displayName} via secure checkout."
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun AddProductCard(onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-    ) {
+    Card(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.padding(SpacingTokens.xl),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(SpacingTokens.lg),
         ) {
             Box(
-                modifier = Modifier
-                    .size(42.dp),
+                modifier = Modifier.size(42.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(imageVector = Icons.Outlined.Add, contentDescription = "Add product")

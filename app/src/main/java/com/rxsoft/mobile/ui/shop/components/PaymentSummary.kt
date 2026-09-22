@@ -17,9 +17,9 @@ import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
 
 @Composable
 fun PaymentSummary(
-    subtotal: String = "$0.00",
-    delivery: String = "$0.00",
-    total: String = "$0.00",
+    subtotal: String = "₦0.00",
+    delivery: String = "₦0.00",
+    total: String = "₦0.00",
     modifier: Modifier = Modifier
 ) {
     Card(

@@ -14,12 +14,14 @@ android {
         applicationId = "com.rxsoft.mobile"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 14
+        versionName = "1.9.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8000/api/\"")
+        // Default web channel for the Conversation Engine chat (same id as the prognocare app).
+        buildConfigField("String", "DEFAULT_WEB_CHANNEL_ID", "\"69bd061c11bf835d976c4e2f\"")
     }
     buildTypes {
         release {
@@ -28,6 +30,16 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+
+    // Name the built APK with a `-rxsoft` suffix, e.g. app-debug-1.8.2-rxsoft.apk
+    applicationVariants.all {
+        val variantName = name
+        val vName = versionName
+        outputs.all {
+            (this as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName =
+                "app-${variantName}-${vName}-rxsoft.apk"
         }
     }
 
@@ -78,8 +90,16 @@ dependencies {
     implementation(libs.moshi)
     ksp(libs.moshi.codegen)
 
+    // Chat realtime (Conversation Engine socket)
+    implementation(libs.socketio.client)
+
     // Data
     implementation(libs.androidx.datastore.preferences)
+
+    // Room (offline SQLite cache)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 
     // Images
     implementation(libs.coil.compose)

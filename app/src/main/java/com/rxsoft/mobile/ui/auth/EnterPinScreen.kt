@@ -4,8 +4,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +21,7 @@ import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
@@ -45,45 +43,55 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlin.math.roundToInt
 
-private val DarkBackground = Color(0xFF121212)
-private val KeySurface = Color(0xFF2C2C2C)
-private val KeyPressed = Color(0xFF3D3D3D)
-private val DotFill = Color(0xFF0066FF)
-private val DotEmpty = Color(0xFF555555)
-private val AccentBlue = Color(0xFF4A90D9)
-
 @Composable
 fun EnterPinScreen(
     onNavigateToHome: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {},
+    resetTrigger: Int = 0,
     viewModel: EnterPinViewModel = hiltViewModel()
 ) {
+    val colors = MaterialTheme.colorScheme
     val mode by viewModel.mode.collectAsState()
     val pin by viewModel.pin.collectAsState()
     val error by viewModel.error.collectAsState()
+    val remainingAttempts by viewModel.remainingAttempts.collectAsState()
     val shakeTrigger by viewModel.shakeTrigger.collectAsState()
     val navigation by viewModel.navigation.collectAsState()
     val isVerifying by viewModel.isVerifying.collectAsState()
+
+    LaunchedEffect(resetTrigger) {
+        if (resetTrigger > 0) {
+            viewModel.resetState()
+        }
+    }
+
+    // Always start with a blank pad when the PIN screen is shown.
+    LaunchedEffect(Unit) {
+        viewModel.resetState()
+    }
 
     var showForgotPinDialog by remember { mutableStateOf(false) }
 
     if (showForgotPinDialog) {
         AlertDialog(
             onDismissRequest = { showForgotPinDialog = false },
-            title = { Text("Forgot PIN", color = Color.White) },
-            text = { Text("You'll need to sign in again to reset your PIN.", color = Color(0xFF9E9E9E)) },
-            containerColor = Color(0xFF1E1E1E),
+            title = { Text("Forgot PIN", color = colors.onSurface) },
+            text = { Text("You'll need to sign in again to reset your PIN.", color = colors.onSurfaceVariant) },
+            containerColor = colors.surface,
             confirmButton = {
                 TextButton(onClick = {
                     showForgotPinDialog = false
+                    // Wipe the in-memory PIN state before leaving so a fresh
+                    // session starts from a blank PIN pad.
+                    viewModel.resetState()
                     viewModel.onForgotPin()
                 }) {
-                    Text("Sign In Again", color = AccentBlue)
+                    Text("Sign In Again", color = colors.primary)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showForgotPinDialog = false }) {
-                    Text("Cancel", color = Color(0xFF9E9E9E))
+                    Text("Cancel", color = colors.onSurfaceVariant)
                 }
             },
         )
@@ -116,7 +124,7 @@ fun EnterPinScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = DarkBackground
+        color = colors.background
     ) {
         Column(
             modifier = Modifier
@@ -129,7 +137,7 @@ fun EnterPinScreen(
             Icon(
                 imageVector = Icons.Default.Fingerprint,
                 contentDescription = "Fingerprint",
-                tint = AccentBlue,
+                tint = colors.primary,
                 modifier = Modifier.size(48.dp),
             )
 
@@ -137,7 +145,7 @@ fun EnterPinScreen(
 
             Text(
                 text = viewModel.title,
-                color = Color.White,
+                color = colors.onSurface,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.SemiBold,
             )
@@ -146,7 +154,7 @@ fun EnterPinScreen(
 
             Text(
                 text = viewModel.subtitle,
-                color = Color(0xFF9E9E9E),
+                color = colors.onSurfaceVariant,
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 48.dp),
@@ -164,8 +172,20 @@ fun EnterPinScreen(
                 Spacer(Modifier.height(12.dp))
                 Text(
                     text = error!!,
-                    color = Color(0xFFFF5252),
+                    color = colors.error,
                     fontSize = 13.sp,
+                    textAlign = TextAlign.Center,
+                )
+            }
+
+            // Durable attempts countdown: stays visible (even after the user
+            // starts typing again) until the PIN is verified successfully.
+            if (remainingAttempts != null && mode is PinMode.Unlock) {
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = "$remainingAttempts attempt${if (remainingAttempts == 1) "" else "s"} remaining",
+                    color = if ((remainingAttempts ?: 5) <= 2) colors.error else colors.onSurfaceVariant,
+                    fontSize = 12.sp,
                     textAlign = TextAlign.Center,
                 )
             }
@@ -193,6 +213,7 @@ fun EnterPinScreen(
 
 @Composable
 private fun PinDots(pin: String, length: Int, error: Boolean) {
+    val colors = MaterialTheme.colorScheme
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -204,9 +225,9 @@ private fun PinDots(pin: String, length: Int, error: Boolean) {
                     .size(14.dp)
                     .clip(CircleShape)
                     .background(
-                        if (error) Color(0xFFFF5252)
-                        else if (isFilled) DotFill
-                        else DotEmpty
+                        if (error) colors.error
+                        else if (isFilled) colors.primary
+                        else colors.outline
                     )
             )
         }
@@ -252,13 +273,14 @@ private fun KeyButton(
     onDigit: (String) -> Unit,
     enabled: Boolean,
 ) {
+    val colors = MaterialTheme.colorScheme
     Box(
         modifier = Modifier
             .size(76.dp)
             .clip(CircleShape)
-            .background(KeySurface)
+            .background(colors.surfaceVariant)
             .clickable(
-                interactionSource = remember { MutableInteractionSource() },
+                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
                 indication = androidx.compose.material3.ripple(bounded = true),
                 enabled = enabled,
             ) { onDigit(digit) },
@@ -266,7 +288,7 @@ private fun KeyButton(
     ) {
         Text(
             text = digit,
-            color = Color.White,
+            color = colors.onSurface,
             fontSize = 28.sp,
             fontWeight = FontWeight.Normal,
         )
@@ -278,6 +300,7 @@ private fun DeleteButton(
     onDelete: () -> Unit,
     enabled: Boolean,
 ) {
+    val colors = MaterialTheme.colorScheme
     Box(
         modifier = Modifier
             .size(76.dp)
@@ -288,7 +311,7 @@ private fun DeleteButton(
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
             contentDescription = "Delete",
-            tint = Color(0xFF9E9E9E),
+            tint = colors.onSurfaceVariant,
             modifier = Modifier.size(28.dp),
         )
     }
@@ -300,6 +323,7 @@ private fun PinBottomActions(
     onCancel: () -> Unit,
     onForgotPin: () -> Unit,
 ) {
+    val colors = MaterialTheme.colorScheme
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -310,7 +334,7 @@ private fun PinBottomActions(
         TextButton(onClick = onCancel) {
             Text(
                 text = "Cancel",
-                color = Color(0xFF9E9E9E),
+                color = colors.onSurfaceVariant,
                 fontSize = 14.sp,
             )
         }
@@ -319,7 +343,7 @@ private fun PinBottomActions(
             TextButton(onClick = onForgotPin) {
                 Text(
                     text = "Forgot PIN",
-                    color = AccentBlue,
+                    color = colors.primary,
                     fontSize = 14.sp,
                 )
             }

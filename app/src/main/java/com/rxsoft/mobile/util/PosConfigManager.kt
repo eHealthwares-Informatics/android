@@ -47,4 +47,24 @@ class PosConfigManager @Inject constructor(
         _configState.value = UiState.Idle
         loadConfig()
     }
+
+    /**
+     * Force a fresh fetch of the POS config (server `getOrCreate`), persist it in
+     * memory and return it. Used to resolve a missing stock location before
+     * starting a sale. Returns null on failure.
+     */
+    suspend fun fetchConfig(): UserPosConfig? {
+        _configState.value = UiState.Loading
+        return posRepository.getUserPosConfig()
+            .onSuccess { config ->
+                Log.d("PosConfigManager", "Config refreshed: store=${config.storeId}, loc=${config.stockLocation?.name}")
+                _config.value = config
+                _configState.value = UiState.Success(config)
+            }
+            .getOrElse { e ->
+                Log.e("PosConfigManager", "Failed to refresh config: ${e.message}", e)
+                _configState.value = UiState.Error(e.message ?: "Failed to load POS configuration")
+                null
+            }
+    }
 }

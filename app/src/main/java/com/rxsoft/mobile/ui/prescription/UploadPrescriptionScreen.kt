@@ -32,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -42,7 +41,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.rxsoft.mobile.R
 import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
-import com.rxsoft.mobile.ui.designsystem.token.ColorTokens
 import com.rxsoft.mobile.ui.designsystem.token.ShapeTokens
 import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
 
@@ -55,8 +53,10 @@ fun UploadPrescriptionScreen(
     onPrescriptionMedicine: () -> Unit = {},
     onGeneralMedicine: () -> Unit = {}
 ) {
+    val colors = MaterialTheme.colorScheme
+
     Scaffold(
-        containerColor = ColorTokens.shopBackground,
+        containerColor = colors.background,
         topBar = {
             AppTopAppBar(
                 title = "",
@@ -84,7 +84,7 @@ fun UploadPrescriptionScreen(
                 Text(
                     "Simply upload your prescription and our licensed pharmacists will handle the rest.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray,
+                    color = colors.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(SpacingTokens.xxl))
                 UploadCard(onUpload = onUploadPrescription)
@@ -120,6 +120,8 @@ fun UploadPrescriptionScreen(
 
 @Composable
 private fun UploadCard(onUpload: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = ShapeTokens.xl,
@@ -130,11 +132,11 @@ private fun UploadCard(onUpload: () -> Unit) {
         ) {
             Surface(
                 shape = ShapeTokens.textField,
-                color = ColorTokens.shopSurfaceVariant,
+                color = colors.surfaceVariant,
                 modifier = Modifier.size(56.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(Icons.Outlined.UploadFile, contentDescription = "Upload prescription", tint = ColorTokens.shopAccent)
+                    Icon(Icons.Outlined.UploadFile, contentDescription = "Upload prescription", tint = colors.primary)
                 }
             }
             Spacer(Modifier.width(SpacingTokens.lg))
@@ -142,15 +144,15 @@ private fun UploadCard(onUpload: () -> Unit) {
                 Text("Prescription", fontWeight = FontWeight.SemiBold)
                 Text(
                     "Maximum size 800 KB",
-                    color = Color.Gray,
+                    color = colors.onSurfaceVariant,
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
             Button(
                 onClick = onUpload,
-                colors = ButtonDefaults.buttonColors(containerColor = ColorTokens.shopAccent),
+                colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
             ) {
-                Text("Upload")
+                Text("Upload", color = colors.onPrimary)
             }
         }
     }
@@ -166,9 +168,10 @@ private fun CreateRequestCard(onClick: () -> Unit) {
             modifier = Modifier.padding(SpacingTokens.xl),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            val colors = MaterialTheme.colorScheme
             Surface(
                 shape = ShapeTokens.textField,
-                color = ColorTokens.shopSurfaceVariant,
+                color = colors.surfaceVariant,
                 modifier = Modifier.size(56.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {

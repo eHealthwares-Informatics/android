@@ -13,13 +13,14 @@ class ShopCart @Inject constructor() {
     private val _items = MutableStateFlow<List<CartItem>>(emptyList())
     val items: StateFlow<List<CartItem>> = _items.asStateFlow()
 
-    fun add(product: Product) {
+    fun add(product: Product, quantity: Int = 1) {
+        if (quantity <= 0) return
         val current = _items.value.toMutableList()
         val existing = current.indexOfFirst { it.product.id == product.id }
         if (existing >= 0) {
-            current[existing] = current[existing].copy(quantity = current[existing].quantity + 1)
+            current[existing] = current[existing].copy(quantity = current[existing].quantity + quantity)
         } else {
-            current.add(CartItem(product = product))
+            current.add(CartItem(product = product, quantity = quantity))
         }
         _items.value = current
     }

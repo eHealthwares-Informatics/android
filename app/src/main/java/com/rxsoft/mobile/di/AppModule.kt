@@ -1,6 +1,7 @@
 package com.rxsoft.mobile.di
 
 import android.content.Context
+import com.rxsoft.mobile.data.local.ChatStateStore
 import com.rxsoft.mobile.util.TokenManager
 import dagger.Module
 import dagger.Provides
@@ -17,5 +18,11 @@ object AppModule {
     @Singleton
     fun provideTokenManager(@ApplicationContext context: Context): TokenManager {
         return TokenManager(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideChatStateStore(@ApplicationContext context: Context): ChatStateStore {
+        return ChatStateStore(context)
     }
 }

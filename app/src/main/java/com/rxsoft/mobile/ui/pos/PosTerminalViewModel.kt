@@ -3,17 +3,32 @@ package com.rxsoft.mobile.ui.pos
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rxsoft.mobile.data.local.CachedPriceListEntity
+import com.rxsoft.mobile.data.local.CachedStockBalanceEntity
+import com.rxsoft.mobile.data.local.PriceDao
+import com.rxsoft.mobile.data.local.PriceListDao
+import com.rxsoft.mobile.data.local.StockBalanceDao
 import com.rxsoft.mobile.data.remote.dto.*
+import com.rxsoft.mobile.data.repository.InventoryRepository
 import com.rxsoft.mobile.data.repository.PosRepository
 import com.rxsoft.mobile.util.PosConfigManager
 import com.rxsoft.mobile.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import javax.inject.Inject
+
+/** Gate checked before payment: all cart items must have stock at the location. */
+sealed interface StockGate {
+    data object Idle : StockGate
+    data object Ready : StockGate
+    data class Missing(val items: List<CartItem>) : StockGate
+}
 
 data class CartItem(
     val item: ItemDto,
@@ -29,8 +44,21 @@ data class CartItem(
 @HiltViewModel
 class PosTerminalViewModel @Inject constructor(
     private val posRepository: PosRepository,
-    private val posConfigManager: PosConfigManager
+    private val posConfigManager: PosConfigManager,
+    private val inventoryRepository: InventoryRepository,
+    private val stockBalanceDao: StockBalanceDao,
+    private val priceListDao: PriceListDao,
+    private val priceDao: PriceDao,
 ) : ViewModel() {
+
+    private val _stockGate = MutableStateFlow<StockGate>(StockGate.Idle)
+    val stockGate: StateFlow<StockGate> = _stockGate.asStateFlow()
+
+    private val _adjustingItemId = MutableStateFlow<String?>(null)
+    val adjustingItemId: StateFlow<String?> = _adjustingItemId.asStateFlow()
+
+    private val _adjustError = MutableStateFlow<String?>(null)
+    val adjustError: StateFlow<String?> = _adjustError.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -56,8 +84,11 @@ class PosTerminalViewModel @Inject constructor(
     private val _selectedPaymentMethod = MutableStateFlow<PaymentMethodDto?>(null)
     val selectedPaymentMethod: StateFlow<PaymentMethodDto?> = _selectedPaymentMethod.asStateFlow()
 
-    private val _pricingMode = MutableStateFlow("retail")
-    val pricingMode: StateFlow<String> = _pricingMode.asStateFlow()
+    private val _priceLists = MutableStateFlow<List<CachedPriceListEntity>>(emptyList())
+    val priceLists: StateFlow<List<CachedPriceListEntity>> = _priceLists.asStateFlow()
+
+    private val _selectedPriceListId = MutableStateFlow<String?>(null)
+    val selectedPriceListId: StateFlow<String?> = _selectedPriceListId.asStateFlow()
 
     val currentStockLocationName: String?
         get() = posConfigManager.config.value?.stockLocation?.name
@@ -70,28 +101,74 @@ class PosTerminalViewModel @Inject constructor(
 
     init {
         posConfigManager.loadConfig()
+        loadPriceLists()
+        viewModelScope.launch {
+            posConfigManager.config.collect { cfg ->
+                if (_selectedPriceListId.value == null) {
+                    cfg?.defaultPriceList?.id?.let { _selectedPriceListId.value = it }
+                }
+            }
+        }
+    }
+
+    private fun loadPriceLists() {
+        viewModelScope.launch {
+            val lists = try {
+                priceListDao.all().filter { it.isActive }
+            } catch (e: Exception) {
+                emptyList()
+            }
+            _priceLists.value = lists
+            if (_selectedPriceListId.value == null) {
+                _selectedPriceListId.value =
+                    lists.firstOrNull { it.isDefault }?.id ?: lists.firstOrNull()?.id
+            }
+        }
+    }
+
+    /** Switch the price list used for cart pricing and re-price existing lines. */
+    fun setPriceList(priceListId: String) {
+        if (_selectedPriceListId.value == priceListId) return
+        _selectedPriceListId.value = priceListId
+        repriceCart()
+    }
+
+    private fun repriceCart() {
+        val listId = _selectedPriceListId.value ?: return
+        viewModelScope.launch {
+            val updated = _cartItems.value.map { cart ->
+                val price = try {
+                    priceDao.unitPrice(listId, cart.item.id)
+                } catch (e: Exception) {
+                    null
+                }
+                val parsed = price?.toBigDecimalOrNull()
+                if (parsed != null) cart.copy(unitPrice = parsed) else cart
+            }
+            _cartItems.value = updated
+        }
     }
 
     val configState: StateFlow<UiState<UserPosConfig>> = posConfigManager.configState
 
+    private var searchJob: Job? = null
+
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
+        searchJob?.cancel()
         if (query.length >= 2) {
-            searchItems(query)
+            searchJob = viewModelScope.launch {
+                delay(250)
+                _searchResults.value = UiState.Loading
+                posRepository.searchOrgItems(query)
+                    .onSuccess { _searchResults.value = UiState.Success(it) }
+                    .onFailure { e ->
+                        Log.e("PosTerminalVM", "Item search failed: ${e.message}", e)
+                        _searchResults.value = UiState.Error(e.message ?: "Search failed")
+                    }
+            }
         } else {
             _searchResults.value = UiState.Idle
-        }
-    }
-
-    private fun searchItems(query: String) {
-        viewModelScope.launch {
-            _searchResults.value = UiState.Loading
-            posRepository.searchItems(query)
-                .onSuccess { _searchResults.value = UiState.Success(it) }
-                .onFailure { e ->
-                    Log.e("PosTerminalVM", "Item search failed: ${e.message}", e)
-                    _searchResults.value = UiState.Error(e.message ?: "Search failed")
-                }
         }
     }
 
@@ -206,10 +283,6 @@ class PosTerminalViewModel @Inject constructor(
         _selectedPaymentMethod.value = method
     }
 
-    fun setPricingMode(mode: String) {
-        _pricingMode.value = mode
-    }
-
     fun checkout() {
         val cart = _cartItems.value
         val checkoutConfig = posConfig
@@ -292,4 +365,87 @@ class PosTerminalViewModel @Inject constructor(
     fun resetCheckoutState() {
         _checkoutState.value = UiState.Idle
     }
+
+    // ── Stock gate ───────────────────────────────────────────────────────────
+
+    /** Check the cart against local stock balances before allowing payment. */
+    fun prepareCheckout() {
+        viewModelScope.launch {
+            val locationId = posConfig?.stockLocation?.id
+            if (locationId == null) {
+                _stockGate.value = StockGate.Ready
+                return@launch
+            }
+            val missing = _cartItems.value.filterNot { hasStock(it.item.id, locationId) }
+            _stockGate.value = if (missing.isEmpty()) StockGate.Ready else StockGate.Missing(missing)
+        }
+    }
+
+    fun consumeStockGate() {
+        _stockGate.value = StockGate.Idle
+    }
+
+    private suspend fun hasStock(itemId: String, locationId: String): Boolean {
+        val balances = stockBalanceDao.forItem(itemId).filter { it.locationId == locationId }
+        if (balances.isEmpty()) return false
+        return balances.any { (it.quantityOnHand.toBigDecimalOrNull() ?: BigDecimal.ZERO) > BigDecimal.ZERO }
+    }
+
+    /**
+     * Adjust stock for an item: reload the latest balance, post the adjustment,
+     * then persist the returned balance locally.
+     */
+    fun adjustStockFor(itemId: String, delta: BigDecimal, reason: String = "POS stock adjustment") {
+        viewModelScope.launch {
+            val locationId = posConfig?.stockLocation?.id
+            if (locationId == null) {
+                _adjustError.value = "No stock location configured"
+                return@launch
+            }
+            _adjustingItemId.value = itemId
+            _adjustError.value = null
+
+            // 1. Reload the current balance (fresh read) before adjusting.
+            inventoryRepository.findStockBalance(itemId, locationId)
+
+            // 2. Post the adjustment.
+            inventoryRepository.adjustStock(
+                AdjustStockRequest(
+                    itemId = itemId,
+                    locationId = locationId,
+                    deltaQuantity = delta,
+                    reason = reason,
+                ),
+            )
+                .onSuccess { balance ->
+                    // 3. Update the local cache with the server's new balance.
+                    stockBalanceDao.upsertAll(listOf(balance.toCachedStockBalance()))
+                }
+                .onFailure { e ->
+                    Log.e("PosTerminalVM", "Stock adjustment failed: ${e.message}", e)
+                    _adjustError.value = e.message ?: "Adjustment failed"
+                }
+
+            _adjustingItemId.value = null
+            prepareCheckout()
+        }
+    }
 }
+
+/** Map an API stock balance onto the local cache row. */
+private fun StockBalanceDto.toCachedStockBalance(): CachedStockBalanceEntity = CachedStockBalanceEntity(
+    id = id,
+    itemId = item?.id,
+    itemCode = item?.code,
+    itemName = item?.name,
+    locationId = location?.id,
+    locationName = location?.name,
+    lotId = lot?.id,
+    lotCode = lot?.code,
+    quantityOnHand = quantityOnHand.toString(),
+    quantityReserved = quantityReserved.toString(),
+    averageCost = averageCost?.toString(),
+    reorderMinQty = reorderMinQty?.toString(),
+    reorderMaxQty = reorderMaxQty?.toString(),
+    updatedAt = null,
+)

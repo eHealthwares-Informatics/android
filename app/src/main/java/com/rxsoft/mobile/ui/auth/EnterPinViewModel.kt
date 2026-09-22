@@ -44,6 +44,10 @@ class EnterPinViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
+    /** Remaining unlock attempts; persists across keystrokes so the countdown stays visible. */
+    private val _remainingAttempts = MutableStateFlow<Int?>(null)
+    val remainingAttempts: StateFlow<Int?> = _remainingAttempts.asStateFlow()
+
     private val _shakeTrigger = MutableStateFlow(0)
     val shakeTrigger: StateFlow<Int> = _shakeTrigger.asStateFlow()
 
@@ -147,19 +151,33 @@ class EnterPinViewModel @Inject constructor(
         _navigation.value = null
     }
 
+    /**
+     * Clears all in-memory PIN entry state (entered digits, first-entry buffer,
+     * errors, verification flag and the attempts countdown) and re-syncs the
+     * mode with what is actually stored. Used when leaving the PIN screen
+     * (e.g. "Sign In Again") so a fresh session starts from a blank PIN pad.
+     */
+    fun resetState() {
+        _pin.value = ""
+        _firstPin.value = ""
+        _error.value = null
+        _shakeTrigger.value = 0
+        _isVerifying.value = false
+        _remainingAttempts.value = null
+        _navigation.value = null
+        _mode.value = if (pinManager.isPinSet()) PinMode.Unlock else PinMode.SetupCreate
+    }
+
     private fun handlePinMatch() {
         val creds = pinManager.getStoredCredentials()
-        val username = creds?.username ?: run {
+        if (creds == null) {
             Log.e(TAG, "No stored credentials found for PIN setup")
-            _error.value = "Error saving PIN. Please sign in again."
+            _error.value = "Please sign in again to set up your PIN."
+            _pin.value = ""
+            _navigation.value = PinNavigationEvent.NavigateToLogin
             return
         }
-        val password = creds?.password ?: run {
-            Log.e(TAG, "No stored password found for PIN setup")
-            _error.value = "Error saving PIN. Please sign in again."
-            return
-        }
-        pinManager.createPin(_pin.value, username, password, creds?.refreshToken)
+        pinManager.createPin(_pin.value, creds.username, creds.password, creds.refreshToken)
         _navigation.value = PinNavigationEvent.NavigateToHome
     }
 
@@ -180,10 +198,11 @@ class EnterPinViewModel @Inject constructor(
 
         if (!pinManager.verifyPin(_pin.value)) {
             val remaining = pinManager.remainingAttempts
+            _remainingAttempts.value = maxOf(remaining, 0)
             _error.value = if (remaining <= 0) {
                 "Too many incorrect attempts. Please sign in again."
             } else {
-                "Incorrect PIN. $remaining attempt${if (remaining != 1) "s" else ""} remaining."
+                "Incorrect PIN"
             }
             _shakeTrigger.value++
             _pin.value = ""
@@ -203,18 +222,21 @@ class EnterPinViewModel @Inject constructor(
                 _error.value = "Session expired. Please sign in again."
                 _isVerifying.value = false
                 _pin.value = ""
+                _navigation.value = PinNavigationEvent.NavigateToLogin
                 return@launch
             }
             val result = authRepository.login(creds.username, creds.password)
             _isVerifying.value = false
             if (result.isSuccess) {
                 Log.d(TAG, "Silent re-authentication succeeded")
+                _remainingAttempts.value = null
                 _navigation.value = PinNavigationEvent.NavigateToHome
             } else {
+                // Keep the PIN so the user can retry once the network/server is
+                // reachable. Choosing "Sign in again" resets it explicitly.
                 Log.e(TAG, "Silent re-authentication failed: ${result.exceptionOrNull()?.message}")
-                _error.value = "Session expired. Please sign in again."
-                pinManager.clearAll()
-                _navigation.value = PinNavigationEvent.NavigateToLogin
+                _error.value = "Couldn't verify your session. Check your connection and try again."
+                _pin.value = ""
             }
         }
     }

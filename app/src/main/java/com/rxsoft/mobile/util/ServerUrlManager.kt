@@ -16,6 +16,20 @@ class ServerUrlManager @Inject constructor(
 
     companion object {
         private const val KEY = "api_base_url"
+        private const val CONVERSATION_KEY = "conversation_base_url"
+    }
+
+    /**
+     * Base URL of the Conversation Engine (chat REST + socket). Defaults to
+     * the main API host when no explicit conversation URL has been saved.
+     */
+    fun getConversationUrl(): String {
+        return prefs.getString(CONVERSATION_KEY, null)
+            ?: getUrl().trimEnd('/').removeSuffix("/api")
+    }
+
+    fun setConversationUrl(url: String) {
+        prefs.edit().putString(CONVERSATION_KEY, url).commit()
     }
 
     fun getUrl(): String {
