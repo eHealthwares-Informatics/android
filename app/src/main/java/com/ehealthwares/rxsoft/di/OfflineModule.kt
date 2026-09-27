@@ -9,10 +9,12 @@ import com.rxsoft.mobile.data.local.CustomerDao
 import com.rxsoft.mobile.data.local.MIGRATION_2_3
 import com.rxsoft.mobile.data.local.MIGRATION_3_4
 import com.rxsoft.mobile.data.local.MIGRATION_4_5
+import com.rxsoft.mobile.data.local.MIGRATION_5_6
 import com.rxsoft.mobile.data.local.OfflineDatabase
 import com.rxsoft.mobile.data.local.OfflineItemDao
 import com.rxsoft.mobile.data.local.PaymentMethodDao
 import com.rxsoft.mobile.data.local.PendingOrderDao
+import com.rxsoft.mobile.data.local.PendingSaleDao
 import com.rxsoft.mobile.data.local.PendingStockAdjustmentDao
 import com.rxsoft.mobile.data.local.PriceDao
 import com.rxsoft.mobile.data.local.PriceListDao
@@ -35,7 +37,7 @@ object OfflineModule {
     @Singleton
     fun provideOfflineDatabase(@ApplicationContext context: Context): OfflineDatabase {
         return Room.databaseBuilder(context, OfflineDatabase::class.java, "rxsoft_offline.db")
-            .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+            .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
             .fallbackToDestructiveMigration()
             .build()
     }
@@ -81,4 +83,7 @@ object OfflineModule {
 
     @Provides
     fun providePendingStockAdjustmentDao(db: OfflineDatabase): PendingStockAdjustmentDao = db.pendingStockAdjustmentDao()
+
+    @Provides
+    fun providePendingSaleDao(db: OfflineDatabase): PendingSaleDao = db.pendingSaleDao()
 }

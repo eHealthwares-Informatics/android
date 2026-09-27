@@ -239,3 +239,14 @@ data class PendingStockAdjustmentEntity(
     val pushAttempts: Int = 0,
     val lastError: String? = null,
 )
+
+/** POS sale queued while offline, pushed on reconnect. */
+@Entity(tableName = "pending_sales")
+data class PendingSaleEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val clientRef: String,
+    val saleJson: String,
+    val createdAt: Long,
+    val pushAttempts: Int = 0,
+    val lastError: String? = null,
+)

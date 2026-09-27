@@ -8,6 +8,7 @@ import android.net.NetworkRequest
 import android.util.Log
 import com.rxsoft.mobile.data.repository.InventoryRepository
 import com.rxsoft.mobile.data.repository.OrdersRepository
+import com.rxsoft.mobile.data.repository.PosRepository
 import com.rxsoft.mobile.data.repository.SyncRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -32,6 +33,7 @@ class OfflineSyncManager @Inject constructor(
     private val ordersRepository: OrdersRepository,
     private val syncRepository: SyncRepository,
     private val inventoryRepository: InventoryRepository,
+    private val posRepository: PosRepository,
 ) {
     companion object {
         private const val TAG = "OfflineSyncManager"
@@ -91,6 +93,12 @@ class OfflineSyncManager @Inject constructor(
                     if (count > 0) Log.d(TAG, "Pushed $count pending stock adjustment(s)")
                 }
                 .onFailure { e -> Log.w(TAG, "Stock adjustment push failed: ${e.message}") }
+
+            posRepository.syncPendingSales()
+                .onSuccess { count ->
+                    if (count > 0) Log.d(TAG, "Pushed $count pending sale(s)")
+                }
+                .onFailure { e -> Log.w(TAG, "Pending sale push failed: ${e.message}") }
         } finally {
             _isSyncing.value = false
         }

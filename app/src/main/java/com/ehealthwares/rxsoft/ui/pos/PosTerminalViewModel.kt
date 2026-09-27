@@ -12,6 +12,7 @@ import com.rxsoft.mobile.data.remote.dto.*
 import com.rxsoft.mobile.data.repository.InventoryRepository
 import com.rxsoft.mobile.data.repository.StockAdjustResult
 import com.rxsoft.mobile.data.repository.PosRepository
+import com.rxsoft.mobile.data.repository.SaleSubmitResult
 import com.rxsoft.mobile.util.PosConfigManager
 import com.rxsoft.mobile.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -351,10 +352,18 @@ class PosTerminalViewModel @Inject constructor(
                     CreateSalePayment(paymentMethodId = paymentMethod.id, amount = total)
                 )
             )
-            posRepository.createSale(request)
-                .onSuccess { sale ->
-                    Log.d("PosTerminalVM", "Sale created: ${sale.saleNumber}")
-                    _checkoutState.value = UiState.Success(sale)
+            posRepository.createSaleOrQueue(request)
+                .onSuccess { result ->
+                    when (result) {
+                        is SaleSubmitResult.Pushed -> {
+                            Log.d("PosTerminalVM", "Sale created: ${result.sale.saleNumber}")
+                            _checkoutState.value = UiState.Success(result.sale)
+                        }
+                        is SaleSubmitResult.Queued -> {
+                            Log.w("PosTerminalVM", "Sale queued offline: ${result.clientRef}")
+                            _checkoutState.value = UiState.Error("Sale queued for sync when online")
+                        }
+                    }
                 }
                 .onFailure { e ->
                     Log.e("PosTerminalVM", "Sale creation failed: ${e.message}", e)

@@ -4,14 +4,18 @@ import com.rxsoft.mobile.data.local.CachedItemEntity
 import com.rxsoft.mobile.data.local.CachedPaymentMethodEntity
 import com.rxsoft.mobile.data.local.OfflineItemDao
 import com.rxsoft.mobile.data.local.PaymentMethodDao
+import com.rxsoft.mobile.data.local.PendingSaleDao
+import com.rxsoft.mobile.data.local.PendingSaleEntity
 import com.rxsoft.mobile.data.local.PriceDao
 import com.rxsoft.mobile.data.remote.api.*
 import com.rxsoft.mobile.data.remote.dto.*
+import com.squareup.moshi.Moshi
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.math.BigDecimal
+import java.util.UUID
 import javax.inject.Inject
 
 class PosRepository @Inject constructor(
@@ -25,13 +29,50 @@ class PosRepository @Inject constructor(
     private val offlineItemDao: OfflineItemDao,
     private val priceDao: PriceDao,
     private val paymentMethodDao: PaymentMethodDao,
+    private val pendingSaleDao: PendingSaleDao,
+    private val moshi: Moshi,
 ) {
+    private val createSaleAdapter by lazy {
+        moshi.adapter(CreateSaleRequest::class.java)
+    }
+
     suspend fun createSale(request: CreateSaleRequest): Result<SaleDto> {
         return try {
             Result.success(salesApi.createSale(request))
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    suspend fun createSaleOrQueue(request: CreateSaleRequest): SaleSubmitResult {
+        return try {
+            SaleSubmitResult.Pushed(salesApi.createSale(request))
+        } catch (e: Exception) {
+            val clientRef = UUID.randomUUID().toString()
+            pendingSaleDao.insert(
+                PendingSaleEntity(
+                    clientRef = clientRef,
+                    saleJson = createSaleAdapter.toJson(request),
+                    createdAt = System.currentTimeMillis(),
+                ),
+            )
+            SaleSubmitResult.Queued(clientRef)
+        }
+    }
+
+    suspend fun syncPendingSales(): Result<Int> {
+        var pushedCount = 0
+        for (sale in pendingSaleDao.getAll()) {
+            try {
+                val request = createSaleAdapter.fromJson(sale.saleJson) ?: continue
+                salesApi.createSale(request)
+                pendingSaleDao.deleteByClientRef(sale.clientRef)
+                pushedCount++
+            } catch (e: Exception) {
+                pendingSaleDao.markPushFailed(sale.clientRef, e.message ?: "unknown error")
+            }
+        }
+        return Result.success(pushedCount)
     }
 
     suspend fun listSales(page: Int = 1, limit: Int = 20): Result<List<SaleDto>> {
@@ -184,6 +225,11 @@ class PosRepository @Inject constructor(
             Result.failure(e)
         }
     }
+}
+
+sealed class SaleSubmitResult {
+    data class Pushed(val sale: SaleDto) : SaleSubmitResult()
+    data class Queued(val clientRef: String) : SaleSubmitResult()
 }
 
 /** Map a locally-cached catalog item back to the API DTO used by POS screens. */

@@ -297,6 +297,27 @@ interface PendingStockAdjustmentDao {
     suspend fun clear()
 }
 
+@Dao
+interface PendingSaleDao {
+    @Insert
+    suspend fun insert(sale: PendingSaleEntity): Long
+
+    @Query("SELECT * FROM pending_sales ORDER BY createdAt ASC")
+    suspend fun getAll(): List<PendingSaleEntity>
+
+    @Query("SELECT COUNT(*) FROM pending_sales")
+    suspend fun count(): Int
+
+    @Query("DELETE FROM pending_sales WHERE clientRef = :clientRef")
+    suspend fun deleteByClientRef(clientRef: String)
+
+    @Query("UPDATE pending_sales SET pushAttempts = pushAttempts + 1, lastError = :error WHERE clientRef = :clientRef")
+    suspend fun markPushFailed(clientRef: String, error: String)
+
+    @Query("DELETE FROM pending_sales")
+    suspend fun clear()
+}
+
 @androidx.room.Database(
     entities = [
         CachedItemEntity::class,
@@ -313,8 +334,9 @@ interface PendingStockAdjustmentDao {
         CachedChatMessageEntity::class,
         CachedPaymentMethodEntity::class,
         PendingStockAdjustmentEntity::class,
+        PendingSaleEntity::class,
     ],
-    version = 5,
+    version = 6,
     exportSchema = false,
 )
 abstract class OfflineDatabase : androidx.room.RoomDatabase() {
@@ -332,6 +354,7 @@ abstract class OfflineDatabase : androidx.room.RoomDatabase() {
     abstract fun cachedChatMessageDao(): CachedChatMessageDao
     abstract fun paymentMethodDao(): PaymentMethodDao
     abstract fun pendingStockAdjustmentDao(): PendingStockAdjustmentDao
+    abstract fun pendingSaleDao(): PendingSaleDao
 }
 
 /**
@@ -456,6 +479,21 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
         db.execSQL(
             "CREATE TABLE IF NOT EXISTS `pending_stock_adjustments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 "`clientRef` TEXT NOT NULL, `adjustmentJson` TEXT NOT NULL, " +
+                "`createdAt` INTEGER NOT NULL, `pushAttempts` INTEGER NOT NULL DEFAULT 0, " +
+                "`lastError` TEXT)",
+        )
+    }
+}
+
+/**
+ * v5 → v6: add pending_sales outbox table for offline POS sale queuing.
+ * Purely additive — existing tables are untouched.
+ */
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `pending_sales` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`clientRef` TEXT NOT NULL, `saleJson` TEXT NOT NULL, " +
                 "`createdAt` INTEGER NOT NULL, `pushAttempts` INTEGER NOT NULL DEFAULT 0, " +
                 "`lastError` TEXT)",
         )
