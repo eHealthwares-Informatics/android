@@ -5,7 +5,7 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class CreateItemRequest(
-    @Json(name = "code") val code: String,
+    @Json(name = "code") val code: String? = null,
     @Json(name = "name") val name: String,
     @Json(name = "categoryId") val categoryId: String,
     @Json(name = "barcode") val barcode: String? = null,

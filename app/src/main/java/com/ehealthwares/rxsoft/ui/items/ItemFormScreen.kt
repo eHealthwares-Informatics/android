@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -74,13 +75,66 @@ fun ItemFormScreen(
     }
 
     if (showCategoryDialog && state.categories.isNotEmpty()) {
-        AppAlertDialog(
-            title = "Select Category",
-            text = state.categories.joinToString("\n") { it.name ?: it.id ?: "" },
-            onDismiss = { showCategoryDialog = false },
-            onConfirm = { showCategoryDialog = false },
-            confirmLabel = "Cancel",
-            dismissLabel = "",
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showCategoryDialog = false },
+            title = { Text("Select Category") },
+            text = {
+                Column {
+                    state.categories.forEach { cat ->
+                        androidx.compose.material3.TextButton(
+                            onClick = {
+                                viewModel.updateCategoryId(cat.id ?: cat.name ?: "")
+                                showCategoryDialog = false
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(
+                                text = cat.name ?: cat.id ?: "",
+                                modifier = Modifier.fillMaxWidth(),
+                                style = MaterialTheme.typography.bodyLarge,
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { showCategoryDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+        )
+    }
+
+    if (showUomDialog && state.uoms.isNotEmpty()) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showUomDialog = false },
+            title = { Text("Select UOM") },
+            text = {
+                Column {
+                    state.uoms.forEach { uom ->
+                        androidx.compose.material3.TextButton(
+                            onClick = {
+                                viewModel.updateBaseUomId(uom.id)
+                                showUomDialog = false
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(
+                                text = uom.name,
+                                modifier = Modifier.fillMaxWidth(),
+                                style = MaterialTheme.typography.bodyLarge,
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { showUomDialog = false }) {
+                    Text("Cancel")
+                }
+            },
         )
     }
 
@@ -165,6 +219,8 @@ fun ItemFormScreen(
                     label = "Category",
                     readOnly = true,
                     enabled = state.categories.isNotEmpty(),
+                    trailingIcon = Icons.Default.ArrowDropDown,
+                    onTrailingIconClick = { showCategoryDialog = true },
                 )
 
                 val uomName = state.uoms.find { it.id == state.baseUomId }?.name ?: state.baseUomId
@@ -174,6 +230,8 @@ fun ItemFormScreen(
                     label = "UOM",
                     readOnly = true,
                     enabled = state.uoms.isNotEmpty(),
+                    trailingIcon = Icons.Default.ArrowDropDown,
+                    onTrailingIconClick = { showUomDialog = true },
                 )
 
                 AppTextField(

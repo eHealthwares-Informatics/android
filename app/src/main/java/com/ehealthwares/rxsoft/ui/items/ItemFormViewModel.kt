@@ -141,7 +141,7 @@ class ItemFormViewModel @Inject constructor(
 
             val existing = s.item
             if (existing != null) {
-                posRepository.updateItem(
+posRepository.updateItem(
                     existing.id,
                     PatchItemRequest(
                         code = s.code.ifBlank { null },
@@ -149,7 +149,10 @@ class ItemFormViewModel @Inject constructor(
                         categoryId = s.categoryId,
                         barcode = s.barcode.ifBlank { null },
                         isActive = s.isActive,
-                        imageUrl = s.imageUrl
+                        imageUrl = s.imageUrl,
+                        baseUomId = s.baseUomId.ifBlank { null },
+                        saleUomId = s.baseUomId.ifBlank { null },
+                        purchaseUomId = s.baseUomId.ifBlank { null },
                     )
                 ).onSuccess { _state.value = _state.value.copy(isSaving = false, saved = true) }
                  .onFailure { _state.value = _state.value.copy(isSaving = false, error = it.message) }
