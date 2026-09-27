@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="390dp"
+    android:height="844dp"
+    android:viewportWidth="390"
+    android:viewportHeight="844">
+
+    <!-- ===== CLOUDS ===== -->
+    <!-- Cloud 1 — top-left -->
+    <path
+        android:pathData="M35,95 A45,18 0 1 1 125,95 A45,18 0 1 1 35,95 Z"
+        android:fillColor="@color/art_cloud" />
+    <path
+        android:pathData="M35,90 A25,15 0 1 1 85,90 A25,15 0 1 1 35,90 Z"
+        android:fillColor="@color/art_cloud" />
+    <path
+        android:pathData="M78,88 A22,13 0 1 1 122,88 A22,13 0 1 1 78,88 Z"
+        android:fillColor="@color/art_cloud" />
+
+    <!-- Cloud 2 — mid-right -->
+    <path
+        android:pathData="M270,250 A40,16 0 1 1 350,250 A40,16 0 1 1 270,250 Z"
+        android:fillColor="@color/art_cloud" />
+    <path
+        android:pathData="M270,245 A22,13 0 1 1 314,245 A22,13 0 1 1 270,245 Z"
+        android:fillColor="@color/art_cloud" />
+    <path
+        android:pathData="M308,244 A20,12 0 1 1 348,244 A20,12 0 1 1 308,244 Z"
+        android:fillColor="@color/art_cloud" />
+
+    <!-- ===== LEAVES ===== -->
+    <!-- Leaf top-right cluster -->
+    <path
+        android:pathData="M308,168 C312,132 344,118 372,128 C388,134 392,152 384,172 C372,200 336,202 316,188 C308,182 306,176 308,168 Z"
+        android:fillColor="@color/art_leaf" />
+    <path
+        android:pathData="M352,132 C358,112 382,106 392,118 C400,128 394,146 380,152 C366,158 350,148 352,132 Z"
+        android:fillColor="@color/art_leaf2" />
+
+    <!-- Leaf mid-left -->
+    <path
+        android:pathData="M25,380 C35,355 62,348 78,362 C90,374 86,398 70,406 C54,414 28,400 25,380 Z"
+        android:fillColor="@color/art_leaf" />
+
+    <!-- Leaf bottom-left -->
+    <path
+        android:pathData="M40,720 C50,698 75,692 88,706 C98,718 92,738 78,745 C62,752 42,738 40,720 Z"
+        android:fillColor="@color/art_leaf2" />
+
+    <!-- Leaf bottom-right -->
+    <path
+        android:pathData="M320,650 C330,630 355,625 368,638 C378,648 374,668 360,675 C345,682 325,668 320,650 Z"
+        android:fillColor="@color/art_leaf" />
+
+    <!-- Leaf stems -->
+    <path
+        android:pathData="M318,176 C338,158 358,146 380,138"
+        android:strokeColor="@color/art_leaf"
+        android:strokeWidth="1.2"
+        android:fillColor="#00000000"
+        android:strokeAlpha="0.3" />
+    <path
+        android:pathData="M32,390 C50,375 65,365 78,362"
+        android:strokeColor="@color/art_leaf"
+        android:strokeWidth="1.2"
+        android:fillColor="#00000000"
+        android:strokeAlpha="0.3" />
+
+    <!-- ===== PLUS / CROSS SYMBOLS ===== -->
+    <!-- Main green plus top-right — glowing -->
+    <path
+        android:pathData="M368,104 L376,104 L376,116 L388,116 L388,124 L376,124 L376,136 L368,136 L368,124 L356,124 L356,116 L368,116 Z"
+        android:fillColor="@color/art_cross"
+        android:fillAlpha="0.8" />
+    <path
+        android:pathData="M372,124 m-22,0 a22,22 0 1,1 44,0 a22,22 0 1,1 -44,0"
+        android:fillColor="@color/art_cross_glow"
+        android:fillAlpha="0.12" />
+
+    <!-- Small plus left -->
+    <path
+        android:pathData="M28,200 L33,200 L33,207 L40,207 L40,212 L33,212 L33,219 L28,219 L28,212 L21,212 L21,207 L28,207 Z"
+        android:fillColor="@color/art_cross"
+        android:fillAlpha="0.3" />
+
+    <!-- Small plus bottom -->
+    <path
+        android:pathData="M365,735 L370,735 L370,742 L377,742 L377,747 L370,747 L370,754 L365,754 L365,747 L358,747 L358,742 L365,742 Z"
+        android:fillColor="@color/art_cross"
+        android:fillAlpha="0.3" />
+
+    <!-- Tiny plus -->
+    <path
+        android:pathData="M178,108 L181,108 L181,112 L185,112 L185,115 L181,115 L181,119 L178,119 L178,115 L174,115 L174,112 L178,112 Z"
+        android:fillColor="@color/art_cross"
+        android:fillAlpha="0.25" />
+
+    <!-- ===== CAPSULES ===== -->
+    <!-- Capsule 1 (green/red) — rotated -25deg at (52,285) -->
+    <group
+        android:translateX="52"
+        android:translateY="285"
+        android:rotation="-25"
+        android:pivotX="24"
+        android:pivotY="9">
+        <path
+            android:pathData="M9,0 L39,0 A9,9 0 0 1 48,9 A9,9 0 0 1 39,18 L9,18 A9,9 0 0 1 0,9 A9,9 0 0 1 9,0 Z"
+            android:fillColor="@color/art_capsule_green"
+            android:fillAlpha="0.5" />
+        <path
+            android:pathData="M24,1 L24,17"
+            android:strokeColor="@color/art_capsule_green"
+            android:strokeWidth="1"
+            android:strokeAlpha="0.4" />
+    </group>
+
+    <!-- Capsule 2 (blue/yellow) — rotated 30deg at (305,435) -->
+    <group
+        android:translateX="305"
+        android:translateY="435"
+        android:rotation="30"
+        android:pivotX="21"
+        android:pivotY="8">
+        <path
+            android:pathData="M8,0 L34,0 A8,8 0 0 1 42,8 A8,8 0 0 1 34,16 L8,16 A8,8 0 0 1 0,8 A8,8 0 0 1 8,0 Z"
+            android:fillColor="@color/art_capsule_blue"
+            android:fillAlpha="0.4" />
+        <path
+            android:pathData="M21,1 L21,15"
+            android:strokeColor="@color/art_capsule_blue"
+            android:strokeWidth="1"
+            android:strokeAlpha="0.4" />
+    </group>
+
+    <!-- Capsule 3 (tiny) — rotated -15deg at (185,355) -->
+    <group
+        android:translateX="185"
+        android:translateY="355"
+        android:rotation="-15"
+        android:pivotX="15"
+        android:pivotY="6">
+        <path
+            android:pathData="M6,0 L24,0 A6,6 0 0 1 30,6 A6,6 0 0 1 24,12 L6,12 A6,6 0 0 1 0,6 A6,6 0 0 1 6,0 Z"
+            android:fillColor="@color/art_capsule_green"
+            android:fillAlpha="0.3" />
+        <path
+            android:pathData="M15,1 L15,11"
+            android:strokeColor="@color/art_capsule_green"
+            android:strokeWidth="0.8"
+            android:strokeAlpha="0.3" />
+    </group>
+
+    <!-- ===== TABLETS ===== -->
+    <!-- Tablet 1 at (110,180) -->
+    <path
+        android:pathData="M100,180 m-10,0 a10,10 0 1,1 20,0 a10,10 0 1,1 -20,0"
+        android:fillColor="@color/art_tablet"
+        android:fillAlpha="0.3" />
+    <path
+        android:pathData="M102,180 L118,180"
+        android:strokeColor="@color/art_tablet_line"
+        android:strokeWidth="1.2"
+        android:strokeAlpha="0.5" />
+
+    <!-- Tablet 2 at (340,335) -->
+    <path
+        android:pathData="M340,335 m-8,0 a8,8 0 1,1 16,0 a8,8 0 1,1 -16,0"
+        android:fillColor="@color/art_tablet"
+        android:fillAlpha="0.3" />
+    <path
+        android:pathData="M333,335 L347,335"
+        android:strokeColor="@color/art_tablet_line"
+        android:strokeWidth="1"
+        android:strokeAlpha="0.5" />
+
+    <!-- ===== HEART WITH PULSE ===== -->
+    <group
+        android:translateX="155"
+        android:translateY="150">
+        <!-- Heart shape -->
+        <path
+            android:pathData="M25,42 C10,30 -5,18 2,6 C8,-4 20,-2 25,8 C30,-2 42,-4 48,6 C55,18 40,30 25,42 Z"
+            android:fillColor="@color/art_heart"
+            android:fillAlpha="0.3" />
+        <!-- Pulse line -->
+        <path
+            android:pathData="M5,22 L15,22 L20,10 L25,32 L30,14 L35,22 L45,22"
+            android:strokeColor="@color/art_heart_pulse"
+            android:strokeWidth="2"
+            android:fillColor="#00000000"
+            android:strokeAlpha="0.35"
+            android:strokeLineJoin="round"
+            android:strokeLineCap="round" />
+    </group>
+
+    <!-- ===== STETHOSCOPE (simplified) at (260,310) ===== -->
+    <group
+        android:translateX="260"
+        android:translateY="310"
+        android:scaleX="0.7"
+        android:scaleY="0.7">
+        <!-- Left ear tube -->
+        <path
+            android:pathData="M30,10 C30,30 15,35 15,55"
+            android:strokeColor="@color/art_stethoscope"
+            android:strokeWidth="3.5"
+            android:fillColor="#00000000"
+            android:strokeAlpha="0.3"
+            android:strokeLineCap="round" />
+        <!-- Right ear tube -->
+        <path
+            android:pathData="M55,10 C55,30 70,35 70,55"
+            android:strokeColor="@color/art_stethoscope"
+            android:strokeWidth="3.5"
+            android:fillColor="#00000000"
+            android:strokeAlpha="0.3"
+            android:strokeLineCap="round" />
+        <!-- Connecting tube to chest piece -->
+        <path
+            android:pathData="M15,55 C15,75 42,85 42,95 C42,105 55,110 55,120"
+            android:strokeColor="@color/art_stethoscope"
+            android:strokeWidth="3"
+            android:fillColor="#00000000"
+            android:strokeAlpha="0.3"
+            android:strokeLineCap="round" />
+        <!-- Chest piece ring -->
+        <path
+            android:pathData="M55,130 m-14,0 a14,14 0 1,1 28,0 a14,14 0 1,1 -28,0"
+            android:strokeColor="@color/art_stethoscope"
+            android:strokeWidth="3"
+            android:fillColor="#00000000"
+            android:strokeAlpha="0.3" />
+        <!-- Chest piece center -->
+        <path
+            android:pathData="M55,130 m-6,0 a6,6 0 1,1 12,0 a6,6 0 1,1 -12,0"
+            android:fillColor="@color/art_stethoscope"
+            android:fillAlpha="0.4" />
+        <!-- Ear tips -->
+        <path
+            android:pathData="M30,8 m-5,0 a5,5 0 1,1 10,0 a5,5 0 1,1 -10,0"
+            android:fillColor="@color/art_stethoscope"
+            android:fillAlpha="0.5" />
+        <path
+            android:pathData="M55,8 m-5,0 a5,5 0 1,1 10,0 a5,5 0 1,1 -10,0"
+            android:fillColor="@color/art_stethoscope"
+            android:fillAlpha="0.5" />
+    </group>
+
+    <!-- ===== WATER DROP at (170,280) ===== -->
+    <group
+        android:translateX="170"
+        android:translateY="280"
+        android:scaleX="0.5"
+        android:scaleY="0.5">
+        <path
+            android:pathData="M20,5 C20,5 5,25 5,35 C5,48 12,55 20,55 C28,55 35,48 35,35 C35,25 20,5 20,5 Z"
+            android:fillColor="@color/art_water"
+            android:fillAlpha="0.2" />
+        <path
+            android:pathData="M15,35 m-5,0 a5,8 0 1,1 10,0 a5,8 0 1,1 -10,0"
+            android:fillColor="@color/white"
+            android:fillAlpha="0.12" />
+    </group>
+
+    <!-- ===== THERMOMETER at (52,340) ===== -->
+    <group
+        android:translateX="52"
+        android:translateY="340"
+        android:scaleX="0.5"
+        android:scaleY="0.5">
+        <!-- Tube -->
+        <path
+            android:pathData="M14,11 A6,6 0 0 1 26,11 L26,65 A6,6 0 0 1 14,65 Z"
+            android:fillColor="@color/art_thermometer_tube"
+            android:fillAlpha="0.2" />
+        <path
+            android:pathData="M14,11 A6,6 0 0 1 26,11 L26,65 A6,6 0 0 1 14,65 Z"
+            android:strokeColor="@color/art_thermometer_tube"
+            android:strokeWidth="1"
+            android:strokeAlpha="0.2" />
+        <!-- Bulb -->
+        <path
+            android:pathData="M20,78 m-12,0 a12,12 0 1,1 24,0 a12,12 0 1,1 -24,0"
+            android:fillColor="@color/art_thermometer_mercury"
+            android:fillAlpha="0.2" />
+        <!-- Mercury -->
+        <path
+            android:pathData="M17,28 L23,28 L23,70 A3,3 0 0 1 17,70 Z"
+            android:fillColor="@color/art_thermometer_mercury"
+            android:fillAlpha="0.5" />
+        <!-- Scale marks -->
+        <path android:pathData="M12,15 L17,15" android:strokeColor="@color/art_thermometer_mark" android:strokeWidth="1" android:strokeAlpha="0.5" />
+        <path android:pathData="M12,25 L17,25" android:strokeColor="@color/art_thermometer_mark" android:strokeWidth="1" android:strokeAlpha="0.5" />
+        <path android:pathData="M12,35 L17,35" android:strokeColor="@color/art_thermometer_mark" android:strokeWidth="1" android:strokeAlpha="0.5" />
+        <path android:pathData="M12,45 L17,45" android:strokeColor="@color/art_thermometer_mark" android:strokeWidth="1" android:strokeAlpha="0.5" />
+        <path android:pathData="M12,55 L17,55" android:strokeColor="@color/art_thermometer_mark" android:strokeWidth="1" android:strokeAlpha="0.5" />
+    </group>
+
+    <!-- ===== FRUITS ===== -->
+    <!-- Apple at (315,180) -->
+    <group
+        android:translateX="315"
+        android:translateY="180"
+        android:scaleX="0.6"
+        android:scaleY="0.6">
+        <path
+            android:pathData="M25,30 m-22,0 a22,24 0 1,1 44,0 a22,24 0 1,1 -44,0"
+            android:fillColor="@color/art_apple"
+            android:fillAlpha="0.25" />
+        <path
+            android:pathData="M25,8 C25,4 28,0 30,-2"
+            android:strokeColor="@color/art_mortar"
+            android:strokeWidth="2.5"
+            android:fillColor="#00000000"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M28,6 C35,0 44,2 42,10 C40,16 30,14 28,6 Z"
+            android:fillColor="@color/art_apple_leaf"
+            android:fillAlpha="0.5" />
+    </group>
+
+    <!-- Orange at (28,505) -->
+    <group
+        android:translateX="28"
+        android:translateY="505"
+        android:scaleX="0.55"
+        android:scaleY="0.55">
+        <path
+            android:pathData="M25,28 m-23,0 a23,23 0 1,1 46,0 a23,23 0 1,1 -46,0"
+            android:fillColor="@color/art_orange"
+            android:fillAlpha="0.22" />
+        <path
+            android:pathData="M25,5 L25,10"
+            android:strokeColor="@color/art_mortar"
+            android:strokeWidth="2.5"
+            android:fillColor="#00000000"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M25,7 C32,2 40,4 38,11 C36,17 28,14 25,7 Z"
+            android:fillColor="@color/art_apple_leaf"
+            android:fillAlpha="0.5" />
+    </group>
+
+    <!-- Lemon at (350,600) -->
+    <group
+        android:translateX="350"
+        android:translateY="600"
+        android:scaleX="0.45"
+        android:scaleY="0.45">
+        <path
+            android:pathData="M22,18 m-22,0 a22,16 0 1,1 44,0 a22,16 0 1,1 -44,0"
+            android:fillColor="@color/art_lemon"
+            android:fillAlpha="0.2" />
+    </group>
+
+    <!-- ===== PILL BOTTLE at (290,700) ===== -->
+    <group
+        android:translateX="290"
+        android:translateY="700"
+        android:scaleX="0.5"
+        android:scaleY="0.5">
+        <!-- Bottle body -->
+        <path
+            android:pathData="M15,25 L40,25 A5,5 0 0 1 45,30 L45,75 A5,5 0 0 1 40,80 L15,80 A5,5 0 0 1 10,75 L10,30 A5,5 0 0 1 15,25 Z"
+            android:fillColor="@color/art_bottle"
+            android:fillAlpha="0.2" />
+        <!-- Cap -->
+        <path
+            android:pathData="M13,12 L42,12 A4,4 0 0 1 46,16 L46,26 L9,26 L9,16 A4,4 0 0 1 13,12 Z"
+            android:fillColor="@color/art_bottle_cap"
+            android:fillAlpha="0.2" />
+        <!-- Cross on label -->
+        <path android:pathData="M28,40 L28,52" android:strokeColor="@color/art_cross" android:strokeWidth="5" android:fillColor="#00000000" android:strokeAlpha="0.4" />
+        <path android:pathData="M22,46 L34,46" android:strokeColor="@color/art_cross" android:strokeWidth="5" android:fillColor="#00000000" android:strokeAlpha="0.4" />
+    </group>
+
+    <!-- ===== MORTAR & PESTLE at (30,405) ===== -->
+    <group
+        android:translateX="30"
+        android:translateY="405"
+        android:scaleX="0.45"
+        android:scaleY="0.45">
+        <!-- Bowl -->
+        <path
+            android:pathData="M10,45 C10,75 35,85 55,85 C75,85 100,75 100,45"
+            android:fillColor="@color/art_mortar"
+            android:fillAlpha="0.2" />
+        <!-- Bowl rim -->
+        <path
+            android:pathData="M10,45 m45,0 a45,12 0 1,1 -90,0 a45,12 0 1,1 90,0"
+            android:fillColor="@color/art_mortar_rim"
+            android:fillAlpha="0.2" />
+        <!-- Pestle -->
+        <path
+            android:pathData="M75,5 m-5,0 a5,5 0 1,1 10,0 a5,5 0 1,1 -10,0"
+            android:fillColor="@color/art_pestle"
+            android:fillAlpha="0.2" />
+        <path
+            android:pathData="M75,5 L80,55"
+            android:strokeColor="@color/art_pestle"
+            android:strokeWidth="10"
+            android:fillColor="#00000000"
+            android:strokeAlpha="0.2"
+            android:strokeLineCap="round" />
+    </group>
+
+    <!-- ===== FIRST AID BAG at (170,730) ===== -->
+    <group
+        android:translateX="170"
+        android:translateY="730"
+        android:scaleX="0.5"
+        android:scaleY="0.5">
+        <!-- Bag body -->
+        <path
+            android:pathData="M13,20 L75,20 A8,8 0 0 1 83,28 L83,70 A8,8 0 0 1 75,78 L13,78 A8,8 0 0 1 5,70 L5,28 A8,8 0 0 1 13,20 Z"
+            android:fillColor="@color/art_bag"
+            android:fillAlpha="0.18" />
+        <!-- Handle -->
+        <path
+            android:pathData="M25,20 C25,5 55,5 55,20"
+            android:strokeColor="@color/art_bag_handle"
+            android:strokeWidth="5"
+            android:fillColor="#00000000"
+            android:strokeAlpha="0.18"
+            android:strokeLineCap="round" />
+        <!-- Cross on bag -->
+        <path android:pathData="M40.5,35 L40.5,50" android:strokeColor="@color/art_bag_cross" android:strokeWidth="14" android:fillColor="#00000000" android:strokeAlpha="0.5" />
+        <path android:pathData="M33,42.5 L48,42.5" android:strokeColor="@color/art_bag_cross" android:strokeWidth="5" android:fillColor="#00000000" android:strokeAlpha="0.5" />
+    </group>
+
+    <!-- ===== SPARKLE DOTS ===== -->
+    <path android:pathData="M340,112 m-2.5,0 a2.5,2.5 0 1,1 5,0 a2.5,2.5 0 1,1 -5,0" android:fillColor="@color/art_sparkle" android:fillAlpha="0.6" />
+    <path android:pathData="M386,168 m-2,0 a2,2 0 1,1 4,0 a2,2 0 1,1 -4,0" android:fillColor="@color/art_sparkle" android:fillAlpha="0.5" />
+    <path android:pathData="M352,188 m-1.8,0 a1.8,1.8 0 1,1 3.6,0 a1.8,1.8 0 1,1 -3.6,0" android:fillColor="@color/art_sparkle" android:fillAlpha="0.5" />
+    <path android:pathData="M328,140 m-1.5,0 a1.5,1.5 0 1,1 3,0 a1.5,1.5 0 1,1 -3,0" android:fillColor="@color/art_sparkle" android:fillAlpha="0.5" />
+    <path android:pathData="M88,265 m-2,0 a2,2 0 1,1 4,0 a2,2 0 1,1 -4,0" android:fillColor="@color/art_sparkle" android:fillAlpha="0.4" />
+    <path android:pathData="M200,225 m-1.5,0 a1.5,1.5 0 1,1 3,0 a1.5,1.5 0 1,1 -3,0" android:fillColor="@color/art_sparkle" android:fillAlpha="0.35" />
+    <path android:pathData="M275,505 m-2,0 a2,2 0 1,1 4,0 a2,2 0 1,1 -4,0" android:fillColor="@color/art_sparkle" android:fillAlpha="0.35" />
+    <path android:pathData="M140,445 m-1.5,0 a1.5,1.5 0 1,1 3,0 a1.5,1.5 0 1,1 -3,0" android:fillColor="@color/art_sparkle" android:fillAlpha="0.35" />
+    <path android:pathData="M95,685 m-2,0 a2,2 0 1,1 4,0 a2,2 0 1,1 -4,0" android:fillColor="@color/art_sparkle" android:fillAlpha="0.35" />
+    <path android:pathData="M360,780 m-1.8,0 a1.8,1.8 0 1,1 3.6,0 a1.8,1.8 0 1,1 -3.6,0" android:fillColor="@color/art_sparkle" android:fillAlpha="0.35" />
+    <path android:pathData="M60,810 m-1.5,0 a1.5,1.5 0 1,1 3,0 a1.5,1.5 0 1,1 -3,0" android:fillColor="@color/art_sparkle" android:fillAlpha="0.3" />
+    <path android:pathData="M185,565 m-1.2,0 a1.2,1.2 0 1,1 2.4,0 a1.2,1.2 0 1,1 -2.4,0" android:fillColor="@color/art_sparkle" android:fillAlpha="0.3" />
+    <path android:pathData="M305,295 m-1.5,0 a1.5,1.5 0 1,1 3,0 a1.5,1.5 0 1,1 -3,0" android:fillColor="@color/art_sparkle" android:fillAlpha="0.3" />
+
+</vector>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Medical art backdrop (dark mode — brighter, vivid on dark bg) -->
+    <color name="art_bg">#0B1F18</color>
+    <color name="art_leaf">#5CE0AE</color>
+    <color name="art_leaf2">#347058</color>
+    <color name="art_heart">#FF6975</color>
+    <color name="art_heart_pulse">#F09090</color>
+    <color name="art_capsule_green">#3ECFA0</color>
+    <color name="art_capsule_red">#E88A8A</color>
+    <color name="art_capsule_blue">#5CB8E8</color>
+    <color name="art_capsule_yellow">#F0C860</color>
+    <color name="art_cloud">#5A8A9A</color>
+    <color name="art_stethoscope">#5EC9A8</color>
+    <color name="art_cross">#4FE0A8</color>
+    <color name="art_cross_glow">#4FE0A8</color>
+    <color name="art_apple">#D85858</color>
+    <color name="art_apple_leaf">#3F7A3F</color>
+    <color name="art_orange">#E0902C</color>
+    <color name="art_orange_leaf">#3F7A3F</color>
+    <color name="art_lemon">#D8C848</color>
+    <color name="art_water">#4A9CD0</color>
+    <color name="art_thermometer_tube">#2A3A3A</color>
+    <color name="art_thermometer_mercury">#E05050</color>
+    <color name="art_thermometer_mark">#6A7A7A</color>
+    <color name="art_bottle">#3FA284</color>
+    <color name="art_bottle_cap">#3FA284</color>
+    <color name="art_bottle_label">#0F1A1A</color>
+    <color name="art_bag">#C04848</color>
+    <color name="art_bag_handle">#A03838</color>
+    <color name="art_bag_cross">#0F1A1A</color>
+    <color name="art_sparkle">#5CE0AE</color>
+    <color name="art_tablet">#A888C8</color>
+    <color name="art_tablet_line">#000000</color>
+    <color name="art_mortar">#6A6050</color>
+    <color name="art_mortar_rim">#7A7060</color>
+    <color name="art_pestle">#5A5040</color>
+</resources>
