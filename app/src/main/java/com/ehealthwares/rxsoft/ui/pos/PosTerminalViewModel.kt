@@ -352,23 +352,17 @@ class PosTerminalViewModel @Inject constructor(
                     CreateSalePayment(paymentMethodId = paymentMethod.id, amount = total)
                 )
             )
-            posRepository.createSaleOrQueue(request)
-                .onSuccess { result ->
-                    when (result) {
-                        is SaleSubmitResult.Pushed -> {
-                            Log.d("PosTerminalVM", "Sale created: ${result.sale.saleNumber}")
-                            _checkoutState.value = UiState.Success(result.sale)
-                        }
-                        is SaleSubmitResult.Queued -> {
-                            Log.w("PosTerminalVM", "Sale queued offline: ${result.clientRef}")
-                            _checkoutState.value = UiState.Error("Sale queued for sync when online")
-                        }
-                    }
+            val result = posRepository.createSaleOrQueue(request)
+            when (result) {
+                is SaleSubmitResult.Pushed -> {
+                    Log.d("PosTerminalVM", "Sale created: ${result.sale.saleNumber}")
+                    _checkoutState.value = UiState.Success(result.sale)
                 }
-                .onFailure { e ->
-                    Log.e("PosTerminalVM", "Sale creation failed: ${e.message}", e)
-                    _checkoutState.value = UiState.Error(e.message ?: "Checkout failed")
+                is SaleSubmitResult.Queued -> {
+                    Log.w("PosTerminalVM", "Sale queued offline: ${result.clientRef}")
+                    _checkoutState.value = UiState.Error("Sale queued for sync when online")
                 }
+            }
         }
     }
 

@@ -623,6 +623,7 @@ ProfileScreen(
                     onAppearance = { navController.navigate(Screen.ThemeSettings.route) },
                     onMenuClick = onMenuClick,
                 )
+            }
 
             composable(Screen.UserDetail.route) {
                 authViewModel.recordActivity()
