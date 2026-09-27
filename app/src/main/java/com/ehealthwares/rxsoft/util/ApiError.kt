@@ -1,6 +1,6 @@
 package com.ehealthwares.rxsoft.util
 
-import com.ehealthwares.rxsoft.data.remote.dto.ApiErrorResponse
+import com.rxsoft.mobile.data.remote.dto.ApiErrorResponse
 import com.squareup.moshi.Moshi
 import retrofit2.HttpException
 import java.io.IOException

@@ -36,6 +36,7 @@ import java.util.Locale
 fun PosOrderDetailScreen(
     saleId: String,
     onBack: () -> Unit,
+    onMenuClick: (() -> Unit)? = null,
     viewModel: PosOrderDetailViewModel = androidx.hilt.navigation.compose.hiltViewModel(),
 ) {
     val state by viewModel.sale.collectAsState()
@@ -46,7 +47,7 @@ fun PosOrderDetailScreen(
 
     androidx.compose.material3.Scaffold(
         topBar = {
-            AppTopAppBar(title = "Order Detail", onBack = onBack)
+            AppTopAppBar(title = "Order Detail", onBack = onBack, onMenuClick = onMenuClick)
         },
     ) { innerPad ->
         when (state) {

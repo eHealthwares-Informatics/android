@@ -51,6 +51,7 @@ import java.math.BigDecimal
 @Composable
 fun StockAdjustmentScreen(
     onBack: () -> Unit,
+    onMenuClick: (() -> Unit)? = null,
     viewModel: StockAdjustmentViewModel = androidx.hilt.navigation.compose.hiltViewModel(),
 ) {
     val searchResults by viewModel.searchResults.collectAsState()
@@ -70,7 +71,7 @@ fun StockAdjustmentScreen(
 
     androidx.compose.material3.Scaffold(
         topBar = {
-            AppTopAppBar(title = "Stock Adjustment", onBack = onBack)
+            AppTopAppBar(title = "Stock Adjustment", onBack = onBack, onMenuClick = onMenuClick)
         },
     ) { padding ->
         Column(

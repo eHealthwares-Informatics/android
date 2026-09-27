@@ -10,6 +10,7 @@ import com.rxsoft.mobile.data.local.PriceListDao
 import com.rxsoft.mobile.data.local.StockBalanceDao
 import com.rxsoft.mobile.data.remote.dto.*
 import com.rxsoft.mobile.data.repository.InventoryRepository
+import com.rxsoft.mobile.data.repository.StockAdjustResult
 import com.rxsoft.mobile.data.repository.PosRepository
 import com.rxsoft.mobile.util.PosConfigManager
 import com.rxsoft.mobile.util.UiState

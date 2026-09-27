@@ -67,7 +67,7 @@ import com.rxsoft.mobile.ui.settings.SettingsViewModel
 import com.rxsoft.mobile.ui.shop.CheckoutScreen
 import com.rxsoft.mobile.ui.shop.MedicineCatalogScreen
 import com.rxsoft.mobile.ui.shop.ProductDetailScreen
-import com.rxsoft.mobile.ui.designsystem.components.MedicalArtBackdrop
+import com.ehealthwares.rxsoft.ui.designsystem.components.MedicalArtBackdrop
 import com.rxsoft.mobile.ui.designsystem.theme.ThemeSettingsScreen
 import com.rxsoft.mobile.ui.splash.SplashScreen
 import com.rxsoft.mobile.ui.sync.SyncLoadingScreen
@@ -233,7 +233,6 @@ private fun ShopperScaffold(authViewModel: AuthViewModel) {
         ),
     )
 
-    val showDrawer = currentRoute in shopperDrawerRoutes
     val onNavigate: (String) -> Unit = { route ->
         navController.navigate(route) {
             popUpTo(navController.graph.findStartDestination().id) { saveState = true }
@@ -298,6 +297,7 @@ private fun ShopperScaffold(authViewModel: AuthViewModel) {
                             navController.navigate(Screen.ChatThread.createRoute(conversationId, title))
                         },
                         onBack = { navController.popBackStack() },
+                        onMenuClick = openDrawer,
                     )
                 }
                 composable(
@@ -314,6 +314,7 @@ private fun ShopperScaffold(authViewModel: AuthViewModel) {
                         conversationId = conversationId,
                         title = title,
                         onBack = { navController.popBackStack() },
+                        onMenuClick = openDrawer,
                     )
                 }
                 composable(Screen.UserDetail.route) {
@@ -329,16 +330,12 @@ private fun ShopperScaffold(authViewModel: AuthViewModel) {
     }
     }
 
-    if (showDrawer) {
-        AppSideDrawer(
-            sections = sections,
-            currentRoute = currentRoute,
-            onNavigate = onNavigate,
-            drawerState = drawerState,
-        ) { content() }
-    } else {
-        content()
-    }
+    AppSideDrawer(
+        sections = sections,
+        currentRoute = currentRoute,
+        onNavigate = onNavigate,
+        drawerState = drawerState,
+    ) { content() }
 }
 
 @Composable
@@ -385,9 +382,6 @@ fun MainScaffold(authViewModel: AuthViewModel) {
         }
     }
 
-    // Only show drawer on top-level screens.
-    val showDrawer = currentRoute in drawerRoutes
-
     val onNavigate: (String) -> Unit = { route ->
         navController.navigate(route) {
             popUpTo(navController.graph.findStartDestination().id) { saveState = true }
@@ -401,27 +395,18 @@ fun MainScaffold(authViewModel: AuthViewModel) {
         coroutineScope.launch { drawerState.open() }
     }
 
-    // Wrapper that conditionally shows the drawer.
-    if (showDrawer) {
-        AppSideDrawer(
-            sections = sections,
-            currentRoute = currentRoute,
-            onNavigate = onNavigate,
-            drawerState = drawerState,
-        ) {
-            MainContent(
-                navController = navController,
-                authViewModel = authViewModel,
-                settingsViewModel = settingsViewModel,
-                onMenuClick = openDrawer,
-            )
-        }
-    } else {
+    // Wrapper that always shows the drawer on every screen.
+    AppSideDrawer(
+        sections = sections,
+        currentRoute = currentRoute,
+        onNavigate = onNavigate,
+        drawerState = drawerState,
+    ) {
         MainContent(
             navController = navController,
             authViewModel = authViewModel,
             settingsViewModel = settingsViewModel,
-            onMenuClick = null,
+            onMenuClick = openDrawer,
         )
     }
 }
@@ -475,6 +460,7 @@ private fun MainContent(
                 CreateOrderScreen(
                     onBack = { navController.popBackStack() },
                     onSaved = { navController.popBackStack() },
+                    onMenuClick = onMenuClick,
                 )
             }
             composable(Screen.OrderLines.route) {
@@ -512,7 +498,7 @@ private fun MainContent(
             ) { backStackEntry ->
                 val saleId = backStackEntry.arguments?.getString("saleId") ?: return@composable
                 authViewModel.recordActivity()
-                PosOrderDetailScreen(saleId = saleId, onBack = { navController.popBackStack() })
+                PosOrderDetailScreen(saleId = saleId, onBack = { navController.popBackStack() }, onMenuClick = onMenuClick)
             }
 
             composable(Screen.Customers.route) {
@@ -558,6 +544,7 @@ private fun MainContent(
                     itemId = if (itemId == "new") null else itemId,
                     onBack = { navController.popBackStack() },
                     onSaved = { navController.popBackStack() },
+                    onMenuClick = onMenuClick,
                 )
             }
 
@@ -570,7 +557,7 @@ private fun MainContent(
             }
             composable(Screen.StockAdjustment.route) {
                 authViewModel.recordActivity()
-                StockAdjustmentScreen(onBack = { navController.popBackStack() })
+                StockAdjustmentScreen(onBack = { navController.popBackStack() }, onMenuClick = onMenuClick)
             }
 
             composable(Screen.Analytics.route) {
@@ -632,10 +619,10 @@ private fun MainContent(
 
             composable(Screen.Profile.route) {
                 authViewModel.recordActivity()
-                ProfileScreen(
+ProfileScreen(
                     onAppearance = { navController.navigate(Screen.ThemeSettings.route) },
+                    onMenuClick = onMenuClick,
                 )
-            }
 
             composable(Screen.UserDetail.route) {
                 authViewModel.recordActivity()
@@ -649,7 +636,7 @@ private fun MainContent(
 
             composable(Screen.ThemeSettings.route) {
                 authViewModel.recordActivity()
-                ThemeSettingsScreen(onBack = { navController.popBackStack() })
+                ThemeSettingsScreen(onBack = { navController.popBackStack() }, onMenuClick = onMenuClick)
             }
 
             composable(Screen.Settings.route) {
@@ -668,6 +655,7 @@ private fun MainContent(
                         navController.navigate(Screen.ChatThread.createRoute(conversationId, title))
                     },
                     onBack = { navController.popBackStack() },
+                    onMenuClick = onMenuClick,
                 )
             }
             composable(
@@ -684,6 +672,7 @@ private fun MainContent(
                     conversationId = conversationId,
                     title = title,
                     onBack = { navController.popBackStack() },
+                    onMenuClick = onMenuClick,
                 )
             }
         }

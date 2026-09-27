@@ -53,6 +53,7 @@ internal data class DraftOrderLine(
 fun CreateOrderScreen(
     onBack: () -> Unit,
     onSaved: () -> Unit = {},
+    onMenuClick: (() -> Unit)? = null,
     viewModel: OrdersViewModel = hiltViewModel(),
 ) {
     val createState by viewModel.createState.collectAsState()
@@ -103,7 +104,7 @@ fun CreateOrderScreen(
         clearInputs()
     }
     Scaffold(
-        topBar = { AppTopAppBar(title = "New Order", onBack = onBack) },
+        topBar = { AppTopAppBar(title = "New Order", onBack = onBack, onMenuClick = onMenuClick) },
         bottomBar = {
             Surface {
                 Row(

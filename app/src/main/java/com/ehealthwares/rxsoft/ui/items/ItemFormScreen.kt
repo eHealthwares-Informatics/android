@@ -54,6 +54,7 @@ fun ItemFormScreen(
     itemId: String?,
     onBack: () -> Unit,
     onSaved: () -> Unit,
+    onMenuClick: (() -> Unit)? = null,
     viewModel: ItemFormViewModel = androidx.hilt.navigation.compose.hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
@@ -143,6 +144,7 @@ fun ItemFormScreen(
             AppTopAppBar(
                 title = if (itemId != null) "Edit Item" else "New Item",
                 onBack = onBack,
+                onMenuClick = onMenuClick,
             )
         },
     ) { padding ->

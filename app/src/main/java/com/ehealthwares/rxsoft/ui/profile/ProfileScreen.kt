@@ -51,13 +51,14 @@ fun ProfileScreen(
     onFamilyMembers: () -> Unit = {},
     onAccountCredit: () -> Unit = {},
     onAppearance: () -> Unit = {},
+    onMenuClick: (() -> Unit)? = null,
 ) {
     val colors = MaterialTheme.colorScheme
 
     Scaffold(
         containerColor = colors.background,
         topBar = {
-            AppTopAppBar(title = "Profile")
+            AppTopAppBar(title = "Profile", onMenuClick = onMenuClick)
         }
     ) { innerPadding ->
         Column(
