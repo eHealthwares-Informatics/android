@@ -8,6 +8,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -246,7 +247,9 @@ private fun ShopperScaffold(authViewModel: AuthViewModel) {
     val content: @Composable () -> Unit = {
         Box(modifier = Modifier.fillMaxSize()) {
             MedicalArtBackdrop()
-            Scaffold { innerPadding ->
+            Scaffold(
+                contentWindowInsets = WindowInsets(0, 0, 0, 0),
+            ) { innerPadding ->
                 NavHost(
                     navController = navController,
                     startDestination = Screen.Shop.route,
@@ -420,7 +423,9 @@ private fun MainContent(
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         MedicalArtBackdrop()
-        Scaffold { innerPadding ->
+        Scaffold(
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        ) { innerPadding ->
             NavHost(
                 navController = navController,
                 startDestination = Screen.Pos.route,

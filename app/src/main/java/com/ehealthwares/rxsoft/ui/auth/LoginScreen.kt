@@ -58,6 +58,7 @@ import com.ehealthwares.rxsoft.ui.designsystem.components.AppTextButton
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppTextField
 import com.ehealthwares.rxsoft.ui.designsystem.token.ShapeTokens
 import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.util.ServerUrlManager
 import com.ehealthwares.rxsoft.util.UiState
 import androidx.compose.foundation.layout.widthIn
 
@@ -74,11 +75,40 @@ fun LoginScreen(
     var urlChanged by remember { mutableStateOf(false) }
     var showUrlSaved by remember { mutableStateOf(false) }
     var showUrlField by remember { mutableStateOf(false) }
+    // Easter egg: typing a mode keyword into the Server URL field flips between
+    // PROD and DEV server modes with a little celebration.
+    var eggMessage by remember { mutableStateOf<String?>(null) }
+    var eggCelebration by remember { mutableStateOf(false) }
     val loginState by viewModel.loginState.collectAsState()
     val serverUrl by viewModel.serverUrl.collectAsState()
 
     LaunchedEffect(loginState) {
         if (loginState is UiState.Success) onLoginSuccess()
+    }
+
+    LaunchedEffect(eggCelebration) {
+        if (eggCelebration) {
+            kotlinx.coroutines.delay(2_500)
+            eggCelebration = false
+            eggMessage = null
+        }
+    }
+
+    // Easter egg handler: keyword in the Server URL input switches server mode.
+    val onServerUrlEgg: (String) -> Boolean = { typed ->
+        val keyword = typed.trim().lowercase()
+        val toProd = keyword == ServerUrlManager.EGG_PROD_KEYWORD
+        val toDev = keyword == ServerUrlManager.EGG_DEV_KEYWORD
+        if (!toProd && !toDev) {
+            false
+        } else {
+            val target = if (toProd) ServerUrlManager.PROD_URL else BuildConfig.API_BASE_URL
+            viewModel.updateServerUrl(target)
+            viewModel.saveServerUrl(target)
+            eggMessage = if (toProd) "🥚 Production mode unlocked!" else "🥚 Developer mode unlocked!"
+            eggCelebration = true
+            true
+        }
     }
 
     val configuration = LocalConfiguration.current
@@ -146,6 +176,8 @@ fun LoginScreen(
                     serverUrl = serverUrl,
                     showUrlField = showUrlField,
                     urlChanged = urlChanged,
+                    eggMessage = eggMessage,
+                    onServerUrlEgg = onServerUrlEgg,
                     onUsernameChange = { username = it },
                     onPasswordChange = { password = it },
                     onPasswordVisibleToggle = { passwordVisible = !passwordVisible },
@@ -241,6 +273,8 @@ fun LoginScreen(
                             serverUrl = serverUrl,
                             showUrlField = showUrlField,
                             urlChanged = urlChanged,
+                            eggMessage = eggMessage,
+                            onServerUrlEgg = onServerUrlEgg,
                             onUsernameChange = { username = it },
                             onPasswordChange = { password = it },
                             onPasswordVisibleToggle = { passwordVisible = !passwordVisible },
@@ -312,6 +346,8 @@ private fun LoginFormContent(
     serverUrl: String,
     showUrlField: Boolean,
     urlChanged: Boolean,
+    eggMessage: String?,
+    onServerUrlEgg: (String) -> Boolean,
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onPasswordVisibleToggle: () -> Unit,
@@ -486,7 +522,8 @@ private fun LoginFormContent(
         )
     }
 
-    // Debug server URL configuration
+    // Debug server URL configuration — doubles as an easter egg trigger:
+    // type "damorex" to switch to production, "rxsoft" for development.
     if (BuildConfig.DEBUG && !phoneMode) {
         Spacer(modifier = Modifier.height(SpacingTokens.lg))
         AppTextButton(
@@ -498,8 +535,14 @@ private fun LoginFormContent(
             Spacer(modifier = Modifier.height(SpacingTokens.md))
             AppTextField(
                 value = serverUrl,
-                onValueChange = onServerUrlChange,
-                label = "Server URL",
+                onValueChange = { input ->
+                    // Keyword typed verbatim? Flip mode + celebrate instead of
+                    // putting the keyword into the field.
+                    if (!onServerUrlEgg(input)) {
+                        onServerUrlChange(input)
+                    }
+                },
+                label = "Server URL (try a magic word)",
                 trailingIcon = Icons.Default.Refresh,
                 trailingIconDescription = "Restore default URL",
                 onTrailingIconClick = onServerUrlReset,
@@ -510,6 +553,27 @@ private fun LoginFormContent(
                     text = "Save URL",
                     onClick = onServerUrlSave,
                     description = "Save server URL",
+                )
+            }
+        }
+    }
+
+    eggMessage?.let { msg ->
+        Spacer(modifier = Modifier.height(SpacingTokens.md))
+        Surface(
+            color = colors.primaryContainer,
+            shape = ShapeTokens.lg,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Row(
+                modifier = Modifier.padding(SpacingTokens.md),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = msg,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = colors.onPrimaryContainer,
                 )
             }
         }

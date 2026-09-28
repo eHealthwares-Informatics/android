@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,6 +29,11 @@ class SettingsViewModel @Inject constructor(
 
     private val _serverUrl = MutableStateFlow(serverUrlManager.getUrl())
     val serverUrl: StateFlow<String> = _serverUrl.asStateFlow()
+
+    /** True when the active server is the production API. */
+    val isProdServer: StateFlow<Boolean> = _serverUrl
+        .map { serverUrlManager.isProdUrl(it) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), serverUrlManager.isProd())
 
     val activeModules: StateFlow<Set<AppModule>> = moduleConfig.activeModules
 
@@ -59,6 +65,11 @@ class SettingsViewModel @Inject constructor(
     fun saveServerUrl(url: String) {
         serverUrlManager.setUrl(url)
         _serverUrl.value = url
+    }
+
+    /** Toggle between the production API and the local dev API. */
+    fun setProdServer(prod: Boolean) {
+        saveServerUrl(if (prod) ServerUrlManager.PROD_URL else serverUrlManager.defaultUrl())
     }
 
     fun setSyncTimeoutSeconds(seconds: Int) {

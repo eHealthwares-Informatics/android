@@ -19,6 +19,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -61,6 +63,7 @@ class OfflineSyncManager @Inject constructor(
     private val callback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             Log.d(TAG, "Network available — refreshing cache and pushing pending orders")
+            resetBackoff()
             scope.launch { refreshAndSync() }
         }
     }
@@ -73,12 +76,22 @@ class OfflineSyncManager @Inject constructor(
 
     /** Refresh the offline catalog cache, then push pending orders. */
     suspend fun refreshAndSync() {
-        if (_isSyncing.value) return
+        runSyncAttempt()
+    }
+
+    /**
+     * Runs one full sync attempt (catalog cache + pending pushes).
+     * Returns true when every step succeeded, false when any failed.
+     */
+    private suspend fun runSyncAttempt(): Boolean {
+        if (_isSyncing.value) return false
         _isSyncing.value = true
+        var ok = true
         try {
             try {
                 syncRepository.ensureSynced()
             } catch (e: Exception) {
+                ok = false
                 Log.w(TAG, "Catalog sync failed: ${e.message}")
             }
 
@@ -86,33 +99,66 @@ class OfflineSyncManager @Inject constructor(
                 .onSuccess { count ->
                     if (count > 0) Log.d(TAG, "Pushed $count pending order(s)")
                 }
-                .onFailure { e -> Log.w(TAG, "Order push failed: ${e.message}") }
+                .onFailure { e ->
+                    ok = false
+                    Log.w(TAG, "Order push failed: ${e.message}")
+                }
 
             inventoryRepository.syncPendingStockAdjustments()
                 .onSuccess { count ->
                     if (count > 0) Log.d(TAG, "Pushed $count pending stock adjustment(s)")
                 }
-                .onFailure { e -> Log.w(TAG, "Stock adjustment push failed: ${e.message}") }
+                .onFailure { e ->
+                    ok = false
+                    Log.w(TAG, "Stock adjustment push failed: ${e.message}")
+                }
 
             posRepository.syncPendingSales()
                 .onSuccess { count ->
                     if (count > 0) Log.d(TAG, "Pushed $count pending sale(s)")
                 }
-                .onFailure { e -> Log.w(TAG, "Pending sale push failed: ${e.message}") }
+                .onFailure { e ->
+                    ok = false
+                    Log.w(TAG, "Pending sale push failed: ${e.message}")
+                }
         } finally {
             _isSyncing.value = false
         }
+        return ok
     }
 
+    private var backoffJob: Job? = null
+
+    @Volatile
+    private var backoffAttempt = 0
+
     /**
-     * Schedule a one-shot background retry after the given delay.
-     * Used by [AuthViewModel.continueOffline] so sync continues without
-     * requiring a network disconnect/reconnect cycle.
+     * Retry sync with exponential backoff (initial, 2x, 4x, ... capped at
+     * [maxDelayMs]) until an attempt fully succeeds. A manual retrigger via
+     * [AuthViewModel.retryStartupSync] calls [resetBackoff] then this method,
+     * which restarts the sequence from the initial delay.
      */
-    fun scheduleDelayedRetry(delayMs: Long) {
-        scope.launch {
-            kotlinx.coroutines.delay(delayMs)
-            refreshAndSync()
+    fun startExponentialBackoff(initialDelayMs: Long = 5_000L, maxDelayMs: Long = 5 * 60_000L) {
+        backoffJob?.cancel()
+        backoffAttempt = 0
+        backoffJob = scope.launch {
+            while (true) {
+                val shift = backoffAttempt.coerceAtMost(16)
+                val delayMs = (initialDelayMs shl shift).coerceAtMost(maxDelayMs)
+                Log.d(TAG, "Backoff retry #${backoffAttempt + 1} in ${delayMs}ms")
+                delay(delayMs)
+                val ok = runSyncAttempt()
+                if (ok) {
+                    Log.d(TAG, "Backoff sync succeeded — loop stopped")
+                    return@launch
+                }
+                backoffAttempt++
+            }
         }
+    }
+
+    /** Reset the backoff attempt counter (e.g. when the network returns). */
+    fun resetBackoff() {
+        backoffAttempt = 0
     }
 }

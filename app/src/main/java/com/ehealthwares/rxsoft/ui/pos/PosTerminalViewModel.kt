@@ -195,9 +195,20 @@ class PosTerminalViewModel @Inject constructor(
         }
         _cartItems.value = current
 
-        val priceListId = posConfig?.defaultPriceList?.id
+        // Use the price list the user selected in the chips (falling back to the
+        // POS-config default) — previously this always used the default list, so
+        // picking e.g. "Drugstock" had no effect on newly added items.
+        val priceListId = _selectedPriceListId.value ?: posConfig?.defaultPriceList?.id
         if (priceListId != null && (posConfig?.autoSelectPriceList != false) && unitPrice == null) {
             viewModelScope.launch {
+                // Instant price from the local cache so the line doesn't flash ₦0…
+                val cached = try {
+                    priceDao.unitPrice(priceListId, item.id)?.toBigDecimalOrNull()
+                } catch (e: Exception) {
+                    null
+                }
+                cached?.let { updateUnitPrice(item.id, it) }
+                // …then refresh from the API.
                 posRepository.getItemPrice(priceListId, item.id)
                     .onSuccess { fetchedPrice ->
                         fetchedPrice?.let { updateUnitPrice(item.id, it) }

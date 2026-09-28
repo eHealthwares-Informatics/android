@@ -39,10 +39,12 @@ fun AppTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     enabled: Boolean = true,
     readOnly: Boolean = false,
+    textStyle: androidx.compose.ui.text.TextStyle? = null,
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
+        textStyle = textStyle ?: androidx.compose.material3.MaterialTheme.typography.bodyLarge,
         modifier = modifier
             .fillMaxWidth()
             .semantics { contentDescription = label ?: placeholder ?: "Text field" },

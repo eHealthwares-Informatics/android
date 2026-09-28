@@ -17,7 +17,29 @@ class ServerUrlManager @Inject constructor(
     companion object {
         private const val KEY = "api_base_url"
         private const val CONVERSATION_KEY = "conversation_base_url"
+
+        /** Production API base URL. */
+        const val PROD_URL = "https://api.ehealthwares.com"
+
+        /**
+         * Easter egg keywords typed into the login "Server URL" field to flip
+         * between the two server modes without opening Settings:
+         *  - "damorex" → production
+         *  - "rxsoft"  → local development
+         */
+        const val EGG_PROD_KEYWORD = "damorex"
+        const val EGG_DEV_KEYWORD = "rxsoft"
     }
+
+    /** Build-time default (local emulator) URL. */
+    fun defaultUrl(): String = BuildConfig.API_BASE_URL
+
+    /** True when [url] points at the production API. */
+    fun isProdUrl(url: String): Boolean =
+        url.trimEnd('/').equals(PROD_URL.trimEnd('/'), ignoreCase = true)
+
+    /** True when the currently-saved URL points at the production API. */
+    fun isProd(): Boolean = isProdUrl(getUrl())
 
     /**
      * Base URL of the Conversation Engine (chat REST + socket). Defaults to

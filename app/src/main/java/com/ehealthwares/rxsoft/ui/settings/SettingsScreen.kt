@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ehealthwares.rxsoft.data.local.SyncStateEntity
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppOutlinedButton
@@ -56,6 +57,7 @@ fun SettingsScreen(
 ) {
     val resolvedVm = externalVm ?: hiltViewModel<SettingsViewModel>()
     val serverUrl by resolvedVm.serverUrl.collectAsState()
+    val isProdServer by resolvedVm.isProdServer.collectAsState()
     val activeModules by resolvedVm.activeModules.collectAsState()
     val posConfig by resolvedVm.posConfigManager.config.collectAsState()
     val syncTimeoutSeconds by resolvedVm.syncTimeoutSeconds.collectAsState()
@@ -226,6 +228,35 @@ fun SettingsScreen(
                 Column(modifier = Modifier.padding(SpacingTokens.xl)) {
                     Text("API Base URL", style = MaterialTheme.typography.titleSmall)
                     Spacer(Modifier.height(SpacingTokens.sm))
+
+                    // Server mode switch: Production <-> local development.
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (isProdServer) "Production" else "Development",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (isProdServer) MaterialTheme.colorScheme.primary
+                                        else MaterialTheme.colorScheme.tertiary,
+                            )
+                            Text(
+                                text = serverUrl,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                        Switch(
+                            checked = isProdServer,
+                            onCheckedChange = { prod -> resolvedVm.setProdServer(prod) },
+                        )
+                    }
+                    Spacer(Modifier.height(SpacingTokens.sm))
+
                     if (editingUrl) {
                         OutlinedTextField(
                             value = urlInput,

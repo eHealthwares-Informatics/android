@@ -333,15 +333,21 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun retryStartupSync() = beginStartupSync()
+    /** Manual retrigger: restart the sync and the backoff sequence from scratch. */
+    fun retryStartupSync() {
+        offlineSyncManager.resetBackoff()
+        offlineSyncManager.startExponentialBackoff()
+        beginStartupSync()
+    }
 
     fun continueOffline() {
         _screenState.value = AppScreen.Main(shopper = shopperSession)
         backoffJob = viewModelScope.launch {
-            // Kick off immediate background sync in case network is actually available
+            // Kick off immediate background sync in case network is actually available,
+            // then keep retrying with exponential backoff (30s, 60s, 120s ... capped 5m)
+            // until it succeeds or the network reconnect event resets the sequence.
             offlineSyncManager.refreshAndSync()
-            // Also schedule a delayed retry in case network comes back soon
-            offlineSyncManager.scheduleDelayedRetry(30_000L)
+            offlineSyncManager.startExponentialBackoff(initialDelayMs = 30_000L)
         }
     }
 }

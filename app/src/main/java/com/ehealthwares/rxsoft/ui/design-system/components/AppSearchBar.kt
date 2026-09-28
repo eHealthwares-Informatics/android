@@ -21,10 +21,12 @@ fun AppSearchBar(
     placeholder: String = "Search",
     searchDescription: String = "Search",
     clearDescription: String = "Clear search",
+    textStyle: androidx.compose.ui.text.TextStyle? = null,
 ) {
     AppTextField(
         value = query,
         onValueChange = onQueryChange,
+        textStyle = textStyle,
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = SpacingTokens.screenHorizontal)

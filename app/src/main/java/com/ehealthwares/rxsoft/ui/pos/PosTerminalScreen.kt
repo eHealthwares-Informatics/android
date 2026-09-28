@@ -19,6 +19,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -155,7 +158,8 @@ fun PosTerminalScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            // Brand-green top bar with the clear-cart action kept available
+            // Brand-green top bar — extends under the status bar (edge-to-edge);
+            // the row pads below the status-bar inset while the surface stays full-bleed
             Surface(
                 color = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -163,7 +167,8 @@ fun PosTerminalScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = SpacingTokens.md, bottom = SpacingTokens.sm)
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                        .padding(top = SpacingTokens.xs, bottom = SpacingTokens.sm)
                         .padding(horizontal = SpacingTokens.screenHorizontal),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -233,6 +238,7 @@ fun PosTerminalScreen(
                         placeholder = "Search products...",
                         searchDescription = "Search products",
                         clearDescription = "Clear search",
+                        textStyle = MaterialTheme.typography.bodyMedium,
                     )
                 }
 
@@ -705,18 +711,38 @@ private fun NoStockBalanceDialog(
 @Composable
 private fun ProductSearchItem(item: ItemDto, onClick: () -> Unit) {
     ListItem(
-        headlineContent = { Text(item.name) },
+        headlineContent = {
+            Text(
+                item.name,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
         supportingContent = buildList {
             item.code?.let { add(it) }
             item.saleUom?.name?.let { add("UOM: $it") }
-        }.joinToString(" · ").let { { Text(it) } },
+        }.joinToString(" · ").let {
+            {
+                Text(
+                    it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = AppThemeColors.current.muted,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        },
         trailingContent = {
             AppIconButton(
                 icon = Icons.Default.Add,
                 onClick = onClick,
                 description = "Add ${item.name}",
+                modifier = Modifier.size(28.dp),
             )
         },
+        modifier = Modifier.heightIn(max = 56.dp),
     )
 }
 
