@@ -92,6 +92,12 @@ class PosTerminalViewModel @Inject constructor(
     private val _selectedPriceListId = MutableStateFlow<String?>(null)
     val selectedPriceListId: StateFlow<String?> = _selectedPriceListId.asStateFlow()
 
+    /** Item ids priced automatically from the price list (manual edits excluded). */
+    private val autoPricedItemIds = mutableSetOf<String>()
+
+    /** Guards against duplicate in-flight price lookups per item. */
+    private val priceLookupInFlight = mutableSetOf<String>()
+
     val currentStockLocationName: String?
         get() = posConfigManager.config.value?.stockLocation?.name
 
@@ -107,7 +113,13 @@ class PosTerminalViewModel @Inject constructor(
         viewModelScope.launch {
             posConfigManager.config.collect { cfg ->
                 if (_selectedPriceListId.value == null) {
-                    cfg?.defaultPriceList?.id?.let { _selectedPriceListId.value = it }
+                    val listId = cfg?.defaultPriceList?.id
+                    val lists = _priceLists.value
+                    _selectedPriceListId.value = when {
+                        listId != null && (lists.isEmpty() || lists.any { it.id == listId }) -> listId
+                        lists.isNotEmpty() -> lists.firstOrNull { it.isDefault }?.id ?: lists.first().id
+                        else -> null
+                    }
                 }
             }
         }
@@ -121,7 +133,10 @@ class PosTerminalViewModel @Inject constructor(
                 emptyList()
             }
             _priceLists.value = lists
-            if (_selectedPriceListId.value == null) {
+            // Validate the current selection against the available lists so an
+            // invalid/stale id can't silently stick.
+            val current = _selectedPriceListId.value
+            if (current == null || lists.none { it.id == current }) {
                 _selectedPriceListId.value =
                     lists.firstOrNull { it.isDefault }?.id ?: lists.firstOrNull()?.id
             }
@@ -137,17 +152,43 @@ class PosTerminalViewModel @Inject constructor(
 
     private fun repriceCart() {
         val listId = _selectedPriceListId.value ?: return
+        val autoIds = autoPricedItemIds.toSet()
         viewModelScope.launch {
+            // 1. Re-price every automatic line from the local cache for the
+            //    newly-selected list; manually-edited lines keep their price.
+            val missingRemote = mutableListOf<String>()
             val updated = _cartItems.value.map { cart ->
-                val price = try {
-                    priceDao.unitPrice(listId, cart.item.id)
+                if (cart.item.id !in autoIds) return@map cart
+                val cached = try {
+                    priceDao.unitPrice(listId, cart.item.id)?.toBigDecimalOrNull()
                 } catch (e: Exception) {
                     null
                 }
-                val parsed = price?.toBigDecimalOrNull()
-                if (parsed != null) cart.copy(unitPrice = parsed) else cart
+                if (cached != null) {
+                    cart.copy(unitPrice = cached)
+                } else {
+                    missingRemote.add(cart.item.id)
+                    cart
+                }
             }
             _cartItems.value = updated
+
+            // 2. Any automatic line with no cached price for this list: fall back
+            //    to the price-list API so the selected list is always applied.
+            missingRemote.forEach { itemId ->
+                if (priceLookupInFlight.add(itemId)) {
+                    viewModelScope.launch {
+                        try {
+                            val fetched = posRepository.getItemPrice(listId, itemId).getOrNull()
+                            if (fetched != null && itemId in autoPricedItemIds) {
+                                updateUnitPrice(itemId, fetched)
+                            }
+                        } finally {
+                            priceLookupInFlight.remove(itemId)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -200,22 +241,29 @@ class PosTerminalViewModel @Inject constructor(
         // picking e.g. "Drugstock" had no effect on newly added items.
         val priceListId = _selectedPriceListId.value ?: posConfig?.defaultPriceList?.id
         if (priceListId != null && (posConfig?.autoSelectPriceList != false) && unitPrice == null) {
-            viewModelScope.launch {
-                // Instant price from the local cache so the line doesn't flash ₦0…
-                val cached = try {
-                    priceDao.unitPrice(priceListId, item.id)?.toBigDecimalOrNull()
-                } catch (e: Exception) {
-                    null
+            autoPricedItemIds.add(item.id)
+            if (priceLookupInFlight.add(item.id)) {
+                viewModelScope.launch {
+                    try {
+                        // Instant price from the local cache so the line doesn't flash ₦0…
+                        val cached = try {
+                            priceDao.unitPrice(priceListId, item.id)?.toBigDecimalOrNull()
+                        } catch (e: Exception) {
+                            null
+                        }
+                        cached?.let { updateUnitPrice(item.id, it) }
+                        // …then refresh from the API.
+                        posRepository.getItemPrice(priceListId, item.id)
+                            .onSuccess { fetchedPrice ->
+                                fetchedPrice?.let { updateUnitPrice(item.id, it) }
+                            }
+                            .onFailure {
+                                Log.w("PosTerminalVM", "Price lookup failed for ${item.id}: ${it.message}")
+                            }
+                    } finally {
+                        priceLookupInFlight.remove(item.id)
+                    }
                 }
-                cached?.let { updateUnitPrice(item.id, it) }
-                // …then refresh from the API.
-                posRepository.getItemPrice(priceListId, item.id)
-                    .onSuccess { fetchedPrice ->
-                        fetchedPrice?.let { updateUnitPrice(item.id, it) }
-                    }
-                    .onFailure {
-                        Log.w("PosTerminalVM", "Price lookup failed for ${item.id}: ${it.message}")
-                    }
             }
         }
     }
@@ -240,6 +288,11 @@ class PosTerminalViewModel @Inject constructor(
             current[idx] = current[idx].copy(unitPrice = unitPrice)
         }
         _cartItems.value = current
+    }
+
+    /** Manual price edit from the UI — the line is no longer auto-priced. */
+    fun onManualPriceEdited(itemId: String) {
+        autoPricedItemIds.remove(itemId)
     }
 
     fun removeFromCart(itemId: String) {

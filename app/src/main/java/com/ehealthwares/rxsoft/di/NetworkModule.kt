@@ -5,6 +5,7 @@ import com.ehealthwares.rxsoft.data.remote.dto.BigDecimalAdapter
 import com.ehealthwares.rxsoft.data.remote.dto.ListResponseAdapterFactory
 import com.ehealthwares.rxsoft.data.remote.interceptor.AuthInterceptor
 import com.ehealthwares.rxsoft.data.remote.interceptor.ServerUrlInterceptor
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import com.ehealthwares.rxsoft.data.remote.interceptor.TokenRefreshInterceptor
 import com.ehealthwares.rxsoft.data.remote.interceptor.TraceLoggingInterceptor
 import com.ehealthwares.rxsoft.util.ServerUrlManager
@@ -132,7 +133,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideServerUrlInterceptor(serverUrlManager: ServerUrlManager): ServerUrlInterceptor {
-        return ServerUrlInterceptor(serverUrlManager)
+        val startupBasePath = serverUrlManager.getUrl().toHttpUrlOrNull()?.encodedPath ?: "/"
+        return ServerUrlInterceptor(serverUrlManager, startupBasePath)
     }
 
     @Provides

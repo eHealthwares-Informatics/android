@@ -10,19 +10,32 @@ import okhttp3.Response
  * URL in the login screen takes effect immediately (the Retrofit base URL is
  * fixed at app startup and cannot be changed once the client is built).
  *
- * The originally-resolved path (e.g. `/api/auth/login`) and query are preserved
- * while scheme/host/port are taken from the saved URL.
+ * The endpoint-relative path is recovered by stripping the startup base path
+ * (e.g. `/api` from the URL Retrofit was built with) and re-resolved against
+ * the saved URL **including its own path** — so `https://host/api` and
+ * `https://host/preview/api` both work as expected.
  */
 class ServerUrlInterceptor(
-    private val serverUrlManager: ServerUrlManager
+    private val serverUrlManager: ServerUrlManager,
+    private val startupBasePath: String,
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
-        val baseUrl = serverUrlManager.getUrl().trimEnd('/').toHttpUrlOrNull()
+        val savedBase = serverUrlManager.getUrl().trimEnd('/').toHttpUrlOrNull()
             ?: return chain.proceed(original)
 
-        val newUrl = baseUrl.newBuilder()
-            .encodedPath(original.url.encodedPath)
+        val basePrefix = startupBasePath.trimEnd('/')
+        val fullPath = original.url.encodedPath
+        val relativePath = if (basePrefix.isNotEmpty() && fullPath.startsWith(basePrefix)) {
+            fullPath.substring(basePrefix.length)
+        } else {
+            fullPath
+        }
+        val newPath = (savedBase.encodedPath.trimEnd('/') + relativePath)
+            .ifEmpty { "/" }
+
+        val newUrl = savedBase.newBuilder()
+            .encodedPath(newPath)
             .apply { original.url.encodedQuery?.let { encodedQuery(it) } }
             .build()
 

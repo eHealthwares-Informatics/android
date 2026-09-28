@@ -77,6 +77,21 @@ class AuthViewModel @Inject constructor(
     private val _serverUrl = MutableStateFlow(serverUrlManager.getUrl())
     val serverUrl: StateFlow<String> = _serverUrl.asStateFlow()
 
+    private val _serverMode = MutableStateFlow(serverUrlManager.getMode())
+    val serverMode: StateFlow<ServerUrlManager.Mode> = _serverMode.asStateFlow()
+
+    fun useProductionServer() {
+        serverUrlManager.useProduction()
+        _serverMode.value = ServerUrlManager.Mode.PRODUCTION
+        _serverUrl.value = serverUrlManager.getUrl()
+    }
+
+    fun useCustomServer(url: String? = null) {
+        serverUrlManager.useCustom(url)
+        _serverMode.value = ServerUrlManager.Mode.CUSTOM
+        _serverUrl.value = serverUrlManager.getUrl()
+    }
+
     val syncProgress: StateFlow<SyncProgress> = syncRepository.progress
 
     private val _syncError = MutableStateFlow<String?>(null)

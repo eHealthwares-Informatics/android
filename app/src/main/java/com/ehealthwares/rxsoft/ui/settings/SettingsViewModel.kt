@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,10 +29,23 @@ class SettingsViewModel @Inject constructor(
     private val _serverUrl = MutableStateFlow(serverUrlManager.getUrl())
     val serverUrl: StateFlow<String> = _serverUrl.asStateFlow()
 
-    /** True when the active server is the production API. */
-    val isProdServer: StateFlow<Boolean> = _serverUrl
-        .map { serverUrlManager.isProdUrl(it) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), serverUrlManager.isProd())
+    private val _serverMode = MutableStateFlow(serverUrlManager.getMode())
+    val serverMode: StateFlow<ServerUrlManager.Mode> = _serverMode.asStateFlow()
+
+    /** The editable URL shown in CUSTOM mode. */
+    val customServerUrl: StateFlow<String> = _serverUrl
+
+    fun useProductionServer() {
+        serverUrlManager.useProduction()
+        _serverMode.value = ServerUrlManager.Mode.PRODUCTION
+        _serverUrl.value = serverUrlManager.getUrl()
+    }
+
+    fun useCustomServer(url: String? = null) {
+        serverUrlManager.useCustom(url)
+        _serverMode.value = ServerUrlManager.Mode.CUSTOM
+        _serverUrl.value = serverUrlManager.getUrl()
+    }
 
     val activeModules: StateFlow<Set<AppModule>> = moduleConfig.activeModules
 
@@ -63,14 +75,23 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun saveServerUrl(url: String) {
-        serverUrlManager.setUrl(url)
-        _serverUrl.value = url
+        serverUrlManager.useCustom(normalizeUserUrl(url))
+        _serverMode.value = ServerUrlManager.Mode.CUSTOM
+        _serverUrl.value = serverUrlManager.getUrl()
     }
 
-    /** Toggle between the production API and the local dev API. */
-    fun setProdServer(prod: Boolean) {
-        saveServerUrl(if (prod) ServerUrlManager.PROD_URL else serverUrlManager.defaultUrl())
+    private fun normalizeUserUrl(url: String): String {
+        val trimmed = url.trim().trimEnd('/')
+        if (trimmed.isEmpty() || !trimmed.contains("://")) return trimmed
+        val path = try {
+            java.net.URI(trimmed).path
+        } catch (_: Exception) {
+            null
+        }
+        return if (path.isNullOrBlank() || path == "/") "$trimmed/api" else trimmed
     }
+
+
 
     fun setSyncTimeoutSeconds(seconds: Int) {
         viewModelScope.launch { syncSettingsManager.setTimeoutSeconds(seconds) }

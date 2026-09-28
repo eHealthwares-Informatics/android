@@ -1,6 +1,7 @@
 package com.ehealthwares.rxsoft.ui.auth
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -74,41 +75,24 @@ fun LoginScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     var urlChanged by remember { mutableStateOf(false) }
     var showUrlSaved by remember { mutableStateOf(false) }
-    var showUrlField by remember { mutableStateOf(false) }
-    // Easter egg: typing a mode keyword into the Server URL field flips between
-    // PROD and DEV server modes with a little celebration.
-    var eggMessage by remember { mutableStateOf<String?>(null) }
-    var eggCelebration by remember { mutableStateOf(false) }
+    // Server config is hidden behind an easter egg: tap the logo 5x to reveal.
+    var showServerConfig by remember { mutableStateOf(false) }
+    var logoTapCount by remember { mutableStateOf(0) }
     val loginState by viewModel.loginState.collectAsState()
     val serverUrl by viewModel.serverUrl.collectAsState()
+    val serverMode by viewModel.serverMode.collectAsState()
+
+    // Easter egg: 5 taps on the logo reveal the server configuration.
+    val onLogoTap: () -> Unit = {
+        logoTapCount += 1
+        if (logoTapCount >= 5) {
+            showServerConfig = true
+            logoTapCount = 0
+        }
+    }
 
     LaunchedEffect(loginState) {
         if (loginState is UiState.Success) onLoginSuccess()
-    }
-
-    LaunchedEffect(eggCelebration) {
-        if (eggCelebration) {
-            kotlinx.coroutines.delay(2_500)
-            eggCelebration = false
-            eggMessage = null
-        }
-    }
-
-    // Easter egg handler: keyword in the Server URL input switches server mode.
-    val onServerUrlEgg: (String) -> Boolean = { typed ->
-        val keyword = typed.trim().lowercase()
-        val toProd = keyword == ServerUrlManager.EGG_PROD_KEYWORD
-        val toDev = keyword == ServerUrlManager.EGG_DEV_KEYWORD
-        if (!toProd && !toDev) {
-            false
-        } else {
-            val target = if (toProd) ServerUrlManager.PROD_URL else BuildConfig.API_BASE_URL
-            viewModel.updateServerUrl(target)
-            viewModel.saveServerUrl(target)
-            eggMessage = if (toProd) "🥚 Production mode unlocked!" else "🥚 Developer mode unlocked!"
-            eggCelebration = true
-            true
-        }
     }
 
     val configuration = LocalConfiguration.current
@@ -134,7 +118,9 @@ fun LoginScreen(
                     Image(
                         painter = painterResource(R.drawable.ehw_logo),
                         contentDescription = "eHealthWares Logo",
-                        modifier = Modifier.size(100.dp),
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clickable(onClick = onLogoTap, indication = null, interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }),
                         contentScale = ContentScale.Fit,
                     )
                     Spacer(modifier = Modifier.height(24.dp))
@@ -174,15 +160,16 @@ fun LoginScreen(
                     passwordVisible = passwordVisible,
                     loginState = loginState,
                     serverUrl = serverUrl,
-                    showUrlField = showUrlField,
                     urlChanged = urlChanged,
-                    eggMessage = eggMessage,
-                    onServerUrlEgg = onServerUrlEgg,
+                    showServerConfig = showServerConfig,
+                    serverMode = serverMode,
+                    onLogoTap = onLogoTap,
+                    onUseProductionServer = { viewModel.useProductionServer(); urlChanged = false },
+                    onUseCustomServer = { viewModel.useCustomServer(); urlChanged = false },
                     onUsernameChange = { username = it },
                     onPasswordChange = { password = it },
                     onPasswordVisibleToggle = { passwordVisible = !passwordVisible },
                     onLogin = { viewModel.login(username, password) },
-                    onShowUrlFieldToggle = { showUrlField = !showUrlField },
                     onServerUrlChange = { viewModel.updateServerUrl(it); urlChanged = true },
                     onServerUrlSave = {
                         viewModel.saveServerUrl(serverUrl)
@@ -218,7 +205,9 @@ fun LoginScreen(
                 Image(
                     painter = painterResource(R.drawable.ehw_logo),
                     contentDescription = "eHealthWares Logo",
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clickable( onClick = onLogoTap, indication = null, interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() } ),
                     contentScale = ContentScale.Fit,
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -271,15 +260,16 @@ fun LoginScreen(
                             passwordVisible = passwordVisible,
                             loginState = loginState,
                             serverUrl = serverUrl,
-                            showUrlField = showUrlField,
                             urlChanged = urlChanged,
-                            eggMessage = eggMessage,
-                            onServerUrlEgg = onServerUrlEgg,
+                            showServerConfig = showServerConfig,
+                            serverMode = serverMode,
+                            onLogoTap = onLogoTap,
+                            onUseProductionServer = { viewModel.useProductionServer(); urlChanged = false },
+                            onUseCustomServer = { viewModel.useCustomServer(); urlChanged = false },
                             onUsernameChange = { username = it },
                             onPasswordChange = { password = it },
                             onPasswordVisibleToggle = { passwordVisible = !passwordVisible },
                             onLogin = { viewModel.login(username, password) },
-                            onShowUrlFieldToggle = { showUrlField = !showUrlField },
                             onServerUrlChange = { viewModel.updateServerUrl(it); urlChanged = true },
                             onServerUrlSave = {
                                 viewModel.saveServerUrl(serverUrl)
@@ -344,15 +334,16 @@ private fun LoginFormContent(
     passwordVisible: Boolean,
     loginState: UiState<Unit>,
     serverUrl: String,
-    showUrlField: Boolean,
+    showServerConfig: Boolean,
+    serverMode: com.ehealthwares.rxsoft.util.ServerUrlManager.Mode,
+    onLogoTap: () -> Unit,
+    onUseProductionServer: () -> Unit,
+    onUseCustomServer: () -> Unit,
     urlChanged: Boolean,
-    eggMessage: String?,
-    onServerUrlEgg: (String) -> Boolean,
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onPasswordVisibleToggle: () -> Unit,
     onLogin: () -> Unit,
-    onShowUrlFieldToggle: () -> Unit,
     onServerUrlChange: (String) -> Unit,
     onServerUrlSave: () -> Unit,
     onServerUrlReset: () -> Unit,
@@ -522,27 +513,43 @@ private fun LoginFormContent(
         )
     }
 
-    // Debug server URL configuration — doubles as an easter egg trigger:
-    // type "damorex" to switch to production, "rxsoft" for development.
-    if (BuildConfig.DEBUG && !phoneMode) {
+    // Server configuration — hidden by default; revealed by tapping the
+    // app logo 5x (easter egg). Shows the two modes: Production / Custom.
+    if (showServerConfig && !phoneMode) {
         Spacer(modifier = Modifier.height(SpacingTokens.lg))
-        AppTextButton(
-            text = if (showUrlField) "Hide server URL" else "Configure server URL",
-            onClick = onShowUrlFieldToggle,
+        Text(
+            text = "Server Mode",
+            style = MaterialTheme.typography.labelLarge,
+            color = colors.onSurfaceVariant,
+        )
+        Spacer(modifier = Modifier.height(SpacingTokens.xs))
+        Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.sm)) {
+            AppFilterChip(
+                selected = serverMode == com.ehealthwares.rxsoft.util.ServerUrlManager.Mode.PRODUCTION,
+                onClick = onUseProductionServer,
+                label = "Production",
+            )
+            AppFilterChip(
+                selected = serverMode == com.ehealthwares.rxsoft.util.ServerUrlManager.Mode.CUSTOM,
+                onClick = onUseCustomServer,
+                label = "Custom / Dev",
+            )
+        }
+        Spacer(modifier = Modifier.height(SpacingTokens.sm))
+        Text(
+            text = serverUrl,
+            style = MaterialTheme.typography.bodySmall,
+            color = colors.onSurfaceVariant,
+            maxLines = 1,
+            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
         )
 
-        if (showUrlField) {
+        if (serverMode == com.ehealthwares.rxsoft.util.ServerUrlManager.Mode.CUSTOM) {
             Spacer(modifier = Modifier.height(SpacingTokens.md))
             AppTextField(
                 value = serverUrl,
-                onValueChange = { input ->
-                    // Keyword typed verbatim? Flip mode + celebrate instead of
-                    // putting the keyword into the field.
-                    if (!onServerUrlEgg(input)) {
-                        onServerUrlChange(input)
-                    }
-                },
-                label = "Server URL (try a magic word)",
+                onValueChange = onServerUrlChange,
+                label = "Custom server URL",
                 trailingIcon = Icons.Default.Refresh,
                 trailingIconDescription = "Restore default URL",
                 onTrailingIconClick = onServerUrlReset,
@@ -553,27 +560,6 @@ private fun LoginFormContent(
                     text = "Save URL",
                     onClick = onServerUrlSave,
                     description = "Save server URL",
-                )
-            }
-        }
-    }
-
-    eggMessage?.let { msg ->
-        Spacer(modifier = Modifier.height(SpacingTokens.md))
-        Surface(
-            color = colors.primaryContainer,
-            shape = ShapeTokens.lg,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Row(
-                modifier = Modifier.padding(SpacingTokens.md),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = msg,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = colors.onPrimaryContainer,
                 )
             }
         }

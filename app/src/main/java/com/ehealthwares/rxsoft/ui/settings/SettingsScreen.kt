@@ -24,6 +24,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -43,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ehealthwares.rxsoft.data.local.SyncStateEntity
+import com.ehealthwares.rxsoft.util.ServerUrlManager
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppOutlinedButton
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppTextButton
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppTopAppBar
@@ -57,14 +59,15 @@ fun SettingsScreen(
 ) {
     val resolvedVm = externalVm ?: hiltViewModel<SettingsViewModel>()
     val serverUrl by resolvedVm.serverUrl.collectAsState()
-    val isProdServer by resolvedVm.isProdServer.collectAsState()
+    val serverMode by resolvedVm.serverMode.collectAsState()
+    val customServerUrl by resolvedVm.customServerUrl.collectAsState()
     val activeModules by resolvedVm.activeModules.collectAsState()
     val posConfig by resolvedVm.posConfigManager.config.collectAsState()
     val syncTimeoutSeconds by resolvedVm.syncTimeoutSeconds.collectAsState()
     val syncStates by resolvedVm.syncStates.collectAsState()
     val syncProgress by resolvedVm.syncProgress.collectAsState()
     var editingUrl by remember { mutableStateOf(false) }
-    var urlInput by remember(serverUrl) { mutableStateOf(serverUrl) }
+    var urlInput by remember(customServerUrl) { mutableStateOf(customServerUrl) }
     var showSignOutDialog by remember { mutableStateOf(false) }
 
     if (showSignOutDialog) {
@@ -226,64 +229,64 @@ fun SettingsScreen(
                 shape = ShapeTokens.xl,
             ) {
                 Column(modifier = Modifier.padding(SpacingTokens.xl)) {
-                    Text("API Base URL", style = MaterialTheme.typography.titleSmall)
-                    Spacer(Modifier.height(SpacingTokens.sm))
-
-                    // Server mode switch: Production <-> local development.
+                    // Production server switch — custom URL only editable in Custom mode
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
+                            Text("Production server", fontWeight = FontWeight.SemiBold)
                             Text(
-                                text = if (isProdServer) "Production" else "Development",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                color = if (isProdServer) MaterialTheme.colorScheme.primary
-                                        else MaterialTheme.colorScheme.tertiary,
-                            )
-                            Text(
-                                text = serverUrl,
+                                ServerUrlManager.PRODUCTION_URL,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
                             )
                         }
                         Switch(
-                            checked = isProdServer,
-                            onCheckedChange = { prod -> resolvedVm.setProdServer(prod) },
+                            checked = serverMode == ServerUrlManager.Mode.PRODUCTION,
+                            onCheckedChange = { useProd ->
+                                if (useProd) resolvedVm.useProductionServer()
+                                else resolvedVm.useCustomServer()
+                            },
                         )
                     }
-                    Spacer(Modifier.height(SpacingTokens.sm))
 
-                    if (editingUrl) {
-                        OutlinedTextField(
-                            value = urlInput,
-                            onValueChange = { urlInput = it },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true,
-                            shape = ShapeTokens.md,
-                        )
+                    Spacer(Modifier.height(SpacingTokens.md))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    Spacer(Modifier.height(SpacingTokens.md))
+
+                    Text("API Base URL", style = MaterialTheme.typography.titleSmall)
+                    Spacer(Modifier.height(SpacingTokens.xxs))
+                    Text(
+                        text = serverUrl,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+
+                    if (serverMode == ServerUrlManager.Mode.CUSTOM) {
                         Spacer(Modifier.height(SpacingTokens.sm))
-                        Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.sm)) {
-                            AppOutlinedButton(
-                                text = "Cancel",
-                                onClick = { editingUrl = false; urlInput = serverUrl },
+                        if (editingUrl) {
+                            OutlinedTextField(
+                                value = urlInput,
+                                onValueChange = { urlInput = it },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true,
+                                shape = ShapeTokens.md,
                             )
-                            Button(onClick = {
-                                resolvedVm.saveServerUrl(urlInput)
-                                editingUrl = false
-                            }) { Text("Save") }
+                            Spacer(Modifier.height(SpacingTokens.sm))
+                            Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.sm)) {
+                                AppOutlinedButton(
+                                    text = "Cancel",
+                                    onClick = { editingUrl = false; urlInput = customServerUrl },
+                                )
+                                Button(onClick = {
+                                    resolvedVm.saveServerUrl(urlInput)
+                                    editingUrl = false
+                                }) { Text("Save") }
+                            }
+                        } else {
+                            AppTextButton(text = "Edit custom URL", onClick = { editingUrl = true })
                         }
-                    } else {
-                        Text(
-                            text = serverUrl,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Spacer(Modifier.height(SpacingTokens.sm))
-                        AppTextButton(text = "Edit", onClick = { editingUrl = true })
                     }
                 }
             }

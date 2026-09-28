@@ -41,6 +41,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
@@ -61,6 +63,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -425,6 +428,7 @@ fun PosTerminalScreen(
                                 onPriceChange = { price ->
                                     viewModel.updateUnitPrice(cartItem.item.id, price)
                                 },
+                                onManualPriceEdited = { id -> viewModel.onManualPriceEdited(id) },
                                 onRemove = { viewModel.removeFromCart(cartItem.item.id) }
                             )
                         }
@@ -710,40 +714,52 @@ private fun NoStockBalanceDialog(
 
 @Composable
 private fun ProductSearchItem(item: ItemDto, onClick: () -> Unit) {
-    ListItem(
-        headlineContent = {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = SpacingTokens.sm, vertical = SpacingTokens.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 item.name,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-        },
-        supportingContent = buildList {
-            item.code?.let { add(it) }
-            item.saleUom?.name?.let { add("UOM: $it") }
-        }.joinToString(" · ").let {
-            {
+            val subtitle = buildList {
+                item.code?.let { add(it) }
+                item.saleUom?.name?.let { add("UOM: $it") }
+            }.joinToString(" · ")
+            if (subtitle.isNotEmpty()) {
                 Text(
-                    it,
-                    style = MaterialTheme.typography.bodySmall,
+                    subtitle,
+                    style = MaterialTheme.typography.labelSmall,
                     color = AppThemeColors.current.muted,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-        },
-        trailingContent = {
-            AppIconButton(
-                icon = Icons.Default.Add,
-                onClick = onClick,
-                description = "Add ${item.name}",
-                modifier = Modifier.size(28.dp),
+        }
+        Spacer(modifier = Modifier.width(SpacingTokens.sm))
+        IconButton(
+            onClick = onClick,
+            modifier = Modifier
+                .size(28.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary),
+        ) {
+            Icon(
+                Icons.Default.Add,
+                contentDescription = "Add ${item.name}",
+                tint = Color.White,
+                modifier = Modifier.size(16.dp),
             )
-        },
-        modifier = Modifier.heightIn(max = 56.dp),
-    )
+        }
+    }
 }
 
 @Composable
@@ -751,6 +767,7 @@ private fun CartItemRow(
     item: CartItem,
     onQuantityChange: (BigDecimal) -> Unit,
     onPriceChange: (BigDecimal) -> Unit,
+    onManualPriceEdited: (String) -> Unit,
     onRemove: () -> Unit
 ) {
     val format = NumberFormat.getCurrencyInstance(Locale("en", "NG"))
@@ -821,7 +838,10 @@ private fun CartItemRow(
                 value = priceText,
                 onValueChange = { input ->
                     priceText = input
-                    input.toBigDecimalOrNull()?.let { onPriceChange(it) }
+                    input.toBigDecimalOrNull()?.let {
+                        onManualPriceEdited(item.item.id)
+                        onPriceChange(it)
+                    }
                 },
                 modifier = Modifier.width(140.dp),
                 singleLine = true,
