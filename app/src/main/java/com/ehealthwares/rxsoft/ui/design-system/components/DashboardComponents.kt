@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.designsystem.components
+package com.ehealthwares.rxsoft.ui.designsystem.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,8 +36,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.rxsoft.mobile.ui.designsystem.token.ShapeTokens
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.ShapeTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
 
 // ── Status Badge ──────────────────────────────────────────────
 

@@ -1,17 +1,17 @@
-package com.rxsoft.mobile.ui.purchases
+package com.ehealthwares.rxsoft.ui.purchases
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rxsoft.mobile.data.remote.dto.CreatePurchaseLine
-import com.rxsoft.mobile.data.remote.dto.ItemDto
-import com.rxsoft.mobile.data.remote.dto.PartyDto
-import com.rxsoft.mobile.data.remote.dto.PurchaseDto
-import com.rxsoft.mobile.data.remote.dto.ReceiveGoodsLine
-import com.rxsoft.mobile.data.remote.dto.StockLocationDto
-import com.rxsoft.mobile.data.remote.dto.UomDto
-import com.rxsoft.mobile.data.repository.PurchasesRepository
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.remote.dto.CreatePurchaseLine
+import com.ehealthwares.rxsoft.data.remote.dto.ItemDto
+import com.ehealthwares.rxsoft.data.remote.dto.PartyDto
+import com.ehealthwares.rxsoft.data.remote.dto.PurchaseDto
+import com.ehealthwares.rxsoft.data.remote.dto.ReceiveGoodsLine
+import com.ehealthwares.rxsoft.data.remote.dto.StockLocationDto
+import com.ehealthwares.rxsoft.data.remote.dto.UomDto
+import com.ehealthwares.rxsoft.data.repository.PurchasesRepository
+import com.ehealthwares.rxsoft.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

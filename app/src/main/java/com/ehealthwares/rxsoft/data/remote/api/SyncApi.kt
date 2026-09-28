@@ -1,14 +1,14 @@
-package com.rxsoft.mobile.data.remote.api
+package com.ehealthwares.rxsoft.data.remote.api
 
-import com.rxsoft.mobile.data.remote.dto.SyncCategoriesResponse
-import com.rxsoft.mobile.data.remote.dto.SyncCustomersResponse
-import com.rxsoft.mobile.data.remote.dto.SyncItemsResponse
-import com.rxsoft.mobile.data.remote.dto.SyncManifest
-import com.rxsoft.mobile.data.remote.dto.SyncPriceItemsResponse
-import com.rxsoft.mobile.data.remote.dto.SyncPriceListsResponse
-import com.rxsoft.mobile.data.remote.dto.SyncStockBalancesResponse
-import com.rxsoft.mobile.data.remote.dto.SyncStockLocationsResponse
-import com.rxsoft.mobile.data.remote.dto.SyncUomsResponse
+import com.ehealthwares.rxsoft.data.remote.dto.SyncCategoriesResponse
+import com.ehealthwares.rxsoft.data.remote.dto.SyncCustomersResponse
+import com.ehealthwares.rxsoft.data.remote.dto.SyncItemsResponse
+import com.ehealthwares.rxsoft.data.remote.dto.SyncManifest
+import com.ehealthwares.rxsoft.data.remote.dto.SyncPriceItemsResponse
+import com.ehealthwares.rxsoft.data.remote.dto.SyncPriceListsResponse
+import com.ehealthwares.rxsoft.data.remote.dto.SyncStockBalancesResponse
+import com.ehealthwares.rxsoft.data.remote.dto.SyncStockLocationsResponse
+import com.ehealthwares.rxsoft.data.remote.dto.SyncUomsResponse
 import retrofit2.http.GET
 import retrofit2.http.QueryMap
 

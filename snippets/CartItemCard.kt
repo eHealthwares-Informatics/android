@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.shop.components
+package com.ehealthwares.rxsoft.ui.shop.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.rxsoft.mobile.ui.shop.model.CartItem
+import com.ehealthwares.rxsoft.ui.shop.model.CartItem
 
 @Composable
 fun CartItemCard(

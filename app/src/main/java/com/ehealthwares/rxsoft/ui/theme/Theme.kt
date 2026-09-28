@@ -1,14 +1,14 @@
-package com.rxsoft.mobile.ui.theme
+package com.ehealthwares.rxsoft.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rxsoft.mobile.ui.designsystem.theme.AppearanceMode
-import com.rxsoft.mobile.ui.designsystem.theme.RxSoftTheme
-import com.rxsoft.mobile.ui.designsystem.theme.ThemeSettings
-import com.rxsoft.mobile.ui.designsystem.theme.ThemeViewModel
+import com.ehealthwares.rxsoft.ui.designsystem.theme.AppearanceMode
+import com.ehealthwares.rxsoft.ui.designsystem.theme.RxSoftTheme
+import com.ehealthwares.rxsoft.ui.designsystem.theme.ThemeSettings
+import com.ehealthwares.rxsoft.ui.designsystem.theme.ThemeViewModel
 
 @Composable
 fun RxSoftMobileTheme(

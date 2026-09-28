@@ -1,12 +1,12 @@
-package com.rxsoft.mobile.ui.orders
+package com.ehealthwares.rxsoft.ui.orders
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rxsoft.mobile.data.remote.dto.OrderDto
-import com.rxsoft.mobile.data.remote.dto.OrderItemDto
-import com.rxsoft.mobile.data.repository.OrdersRepository
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.remote.dto.OrderDto
+import com.ehealthwares.rxsoft.data.remote.dto.OrderItemDto
+import com.ehealthwares.rxsoft.data.repository.OrdersRepository
+import com.ehealthwares.rxsoft.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
 import javax.inject.Inject

@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.designsystem.components
+package com.ehealthwares.rxsoft.ui.designsystem.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
@@ -15,7 +15,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
-import com.rxsoft.mobile.ui.designsystem.token.ShapeTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.ShapeTokens
 
 @Composable
 fun AppTextField(

@@ -1,8 +1,8 @@
-package com.rxsoft.mobile.ui.chat
+package com.ehealthwares.rxsoft.ui.chat
 
 import android.content.Context
-import com.rxsoft.mobile.util.ServerUrlManager
-import com.rxsoft.mobile.util.TokenManager
+import com.ehealthwares.rxsoft.util.ServerUrlManager
+import com.ehealthwares.rxsoft.util.TokenManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.socket.client.IO
 import io.socket.client.Socket

@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.chat
+package com.ehealthwares.rxsoft.ui.chat
 
 /**
  * Parses bot option menus of the form:

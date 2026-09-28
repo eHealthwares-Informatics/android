@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.designsystem.theme
+package com.ehealthwares.rxsoft.ui.designsystem.theme
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background

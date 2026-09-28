@@ -1,5 +1,6 @@
-package com.rxsoft.mobile.ui.pos
+package com.ehealthwares.rxsoft.ui.pos
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -20,12 +21,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Remove
@@ -53,27 +57,33 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.rxsoft.mobile.data.remote.dto.ItemDto
-import com.rxsoft.mobile.data.remote.dto.PartyDto
-import com.rxsoft.mobile.data.remote.dto.PaymentMethodDto
-import com.rxsoft.mobile.ui.designsystem.components.AppFilterChip
-import com.rxsoft.mobile.ui.designsystem.components.AppIconButton
-import com.rxsoft.mobile.ui.designsystem.components.AppPrimaryButton
-import com.rxsoft.mobile.ui.designsystem.components.AppSearchBar
-import com.rxsoft.mobile.ui.designsystem.components.AppTextButton
-import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
-import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBarActions
-import com.rxsoft.mobile.ui.designsystem.token.ElevationTokens
-import com.rxsoft.mobile.ui.designsystem.token.ShapeTokens
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
-import com.rxsoft.mobile.util.ReceiptData
-import com.rxsoft.mobile.util.ReceiptLine
-import com.rxsoft.mobile.util.UiState
-import com.rxsoft.mobile.util.printReceipt
+import androidx.compose.foundation.Image
+import com.ehealthwares.rxsoft.R
+import com.ehealthwares.rxsoft.data.remote.dto.ItemDto
+import com.ehealthwares.rxsoft.data.remote.dto.PartyDto
+import com.ehealthwares.rxsoft.data.remote.dto.PaymentMethodDto
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppIconButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppPrimaryButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppSearchBar
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTextButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTopAppBarActions
+import com.ehealthwares.rxsoft.ui.designsystem.theme.AppThemeColors
+import com.ehealthwares.rxsoft.ui.designsystem.token.ElevationTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.ShapeTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.util.ReceiptData
+import com.ehealthwares.rxsoft.util.ReceiptLine
+import com.ehealthwares.rxsoft.util.UiState
+import com.ehealthwares.rxsoft.util.printReceipt
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.Locale
@@ -97,6 +107,7 @@ fun PosTerminalScreen(
     val selectedPaymentMethod by viewModel.selectedPaymentMethod.collectAsState()
     val priceLists by viewModel.priceLists.collectAsState()
     val selectedPriceListId by viewModel.selectedPriceListId.collectAsState()
+    val themeColors = AppThemeColors.current
     val context = LocalContext.current
 
     var showPaymentDialog by remember { mutableStateOf(false) }
@@ -121,7 +132,7 @@ fun PosTerminalScreen(
     LaunchedEffect(checkoutState) {
         if (checkoutState is UiState.Success) {
             val sale = (checkoutState as UiState.Success<*>).data
-            if (sale is com.rxsoft.mobile.data.remote.dto.SaleDto) {
+            if (sale is com.ehealthwares.rxsoft.data.remote.dto.SaleDto) {
                 printReceipt(
                     context,
                     ReceiptData(
@@ -142,11 +153,45 @@ fun PosTerminalScreen(
     }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            AppTopAppBar(
-                title = "New Sale",
-                onBack = onBack,
-                actions = {
+            // Brand-green top bar with the clear-cart action kept available
+            Surface(
+                color = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = SpacingTokens.md, bottom = SpacingTokens.sm)
+                        .padding(horizontal = SpacingTokens.screenHorizontal),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    AppTopAppBarActions(
+                        icon = Icons.Default.KeyboardArrowDown,
+                        onClick = onBack,
+                        description = "Back",
+                    )
+                    Spacer(modifier = Modifier.width(SpacingTokens.xs))
+                    Image(
+                        painter = painterResource(R.drawable.pharmacy_cross),
+                        contentDescription = null,
+                        modifier = Modifier.size(30.dp),
+                    )
+                    Spacer(modifier = Modifier.width(SpacingTokens.sm))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "New Sale",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                        )
+                        Text(
+                            text = "Find and add products to your sale",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
+                        )
+                    }
                     if (cartItems.isNotEmpty()) {
                         AppTopAppBarActions(
                             icon = Icons.Default.Delete,
@@ -154,182 +199,263 @@ fun PosTerminalScreen(
                             description = "Clear cart",
                         )
                     }
-                },
-            )
+                }
+            }
         }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            AppSearchBar(
-                query = searchQuery,
-                onQueryChange = {
-                    viewModel.updateSearchQuery(it)
-                    showSearchResults = it.length >= 2
-                },
-                modifier = Modifier.padding(vertical = SpacingTokens.sm),
-                placeholder = "Search products...",
-                searchDescription = "Search products",
-                clearDescription = "Clear search",
+            // Decorative leaf sprig behind the content, top-end
+            Image(
+                painter = painterResource(R.drawable.leaf_sprig),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = SpacingTokens.xs, end = SpacingTokens.sm)
+                    .size(110.dp)
+                    .alpha(0.45f),
             )
 
-            if (showSearchResults && searchQuery.length >= 2) {
-                when (val results = searchResults) {
-                    is UiState.Loading -> {
-                        Box(
-                            modifier = Modifier.fillMaxWidth().height(100.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(SpacingTokens.xxl))
-                        }
-                    }
-                    is UiState.Success -> {
-                        if (results.data.isNotEmpty()) {
-                            androidx.compose.material3.Surface(
-                                modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp),
-                                shadowElevation = ElevationTokens.sm,
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Box(modifier = Modifier.padding(horizontal = SpacingTokens.screenHorizontal)) {
+                    AppSearchBar(
+                        query = searchQuery,
+                        onQueryChange = {
+                            viewModel.updateSearchQuery(it)
+                            showSearchResults = it.length >= 2
+                        },
+                        modifier = Modifier.padding(vertical = SpacingTokens.sm),
+                        placeholder = "Search products...",
+                        searchDescription = "Search products",
+                        clearDescription = "Clear search",
+                    )
+                }
+
+                if (showSearchResults && searchQuery.length >= 2) {
+                    when (val results = searchResults) {
+                        is UiState.Loading -> {
+                            Box(
+                                modifier = Modifier.fillMaxWidth().height(100.dp),
+                                contentAlignment = Alignment.Center
                             ) {
-                                LazyColumn(
-                                    contentPadding = PaddingValues(SpacingTokens.sm),
-                                    verticalArrangement = Arrangement.spacedBy(SpacingTokens.xxs),
+                                androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(SpacingTokens.xxl))
+                            }
+                        }
+                        is UiState.Success -> {
+                            if (results.data.isNotEmpty()) {
+                                androidx.compose.material3.Surface(
+                                    modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp),
+                                    shadowElevation = ElevationTokens.sm,
                                 ) {
-                                    items(results.data, key = { it.id }) { item ->
-                                        ProductSearchItem(
-                                            item = item,
-                                            onClick = {
-                                                viewModel.addToCart(item)
-                                                showSearchResults = false
-                                                viewModel.updateSearchQuery("")
-                                            }
-                                        )
+                                    LazyColumn(
+                                        contentPadding = PaddingValues(SpacingTokens.sm),
+                                        verticalArrangement = Arrangement.spacedBy(SpacingTokens.xxs),
+                                    ) {
+                                        items(results.data, key = { it.id }) { item ->
+                                            ProductSearchItem(
+                                                item = item,
+                                                onClick = {
+                                                    viewModel.addToCart(item)
+                                                    showSearchResults = false
+                                                    viewModel.updateSearchQuery("")
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
+                        is UiState.Error -> {
+                            Text(
+                                results.message,
+                                modifier = Modifier.padding(horizontal = SpacingTokens.screenHorizontal),
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                        else -> {}
                     }
-                    is UiState.Error -> {
-                        Text(
-                            results.message,
-                            modifier = Modifier.padding(horizontal = SpacingTokens.screenHorizontal),
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                    }
-                    else -> {}
                 }
-            }
 
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = SpacingTokens.screenHorizontal),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(Icons.Default.Person, contentDescription = "Customer", modifier = Modifier.size(SpacingTokens.xl))
-                Spacer(modifier = Modifier.width(SpacingTokens.sm))
-                Text(
-                    text = selectedCustomer?.name ?: "Walk-in Customer",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                AppTextButton(
-                    text = if (selectedCustomer != null) "Change" else "Select",
-                    onClick = { showCustomerSearch = true },
-                )
-            }
-
-            viewModel.currentStockLocationName?.let { locName ->
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = SpacingTokens.screenHorizontal),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(Icons.Default.LocationOn, contentDescription = "Location", modifier = Modifier.size(SpacingTokens.xl))
-                    Spacer(modifier = Modifier.width(SpacingTokens.sm))
-                    Text(locName, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
-                }
-            }
-
-            if (priceLists.isNotEmpty()) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = SpacingTokens.screenHorizontal),
+                        .padding(horizontal = SpacingTokens.screenHorizontal, vertical = SpacingTokens.xs),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Price list:", style = MaterialTheme.typography.bodySmall)
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .background(themeColors.greenSoft, CircleShape),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            Icons.Default.Person,
+                            contentDescription = "Customer",
+                            modifier = Modifier.size(20.dp),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
                     Spacer(modifier = Modifier.width(SpacingTokens.sm))
-                    priceLists.forEach { pl ->
-                        AppFilterChip(
-                            selected = selectedPriceListId == pl.id,
-                            onClick = { viewModel.setPriceList(pl.id) },
-                            label = pl.name.ifBlank { pl.code },
+                    Text(
+                        text = selectedCustomer?.name ?: "Walk-in Customer",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = if (selectedCustomer != null) "Change" else "Select",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .clickable { showCustomerSearch = true }
+                            .padding(SpacingTokens.xs)
+                            .semantics { contentDescription = "Select customer" },
+                    )
+                }
+
+                viewModel.currentStockLocationName?.let { locName ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = SpacingTokens.screenHorizontal, vertical = SpacingTokens.xs),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .background(themeColors.greenSoft, CircleShape),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                Icons.Default.LocationOn,
+                                contentDescription = "Location",
+                                modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(SpacingTokens.sm))
+                        Text(
+                            locName,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Icon(
+                            Icons.Default.KeyboardArrowDown,
+                            contentDescription = null,
+                            tint = AppThemeColors.current.muted,
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
+                }
+
+                if (priceLists.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
+                            .padding(horizontal = SpacingTokens.screenHorizontal, vertical = SpacingTokens.xs),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Price list:",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = AppThemeColors.current.muted,
                         )
                         Spacer(modifier = Modifier.width(SpacingTokens.sm))
+                        priceLists.forEach { pl ->
+                            PriceListChip(
+                                label = pl.name.ifBlank { pl.code },
+                                selected = selectedPriceListId == pl.id,
+                                onClick = { viewModel.setPriceList(pl.id) },
+                            )
+                            Spacer(modifier = Modifier.width(SpacingTokens.sm))
+                        }
                     }
                 }
-            }
 
-            HorizontalDivider()
+                HorizontalDivider(color = themeColors.greenSoft)
 
-            if (cartItems.isEmpty()) {
-                Box(
-                    modifier = Modifier.weight(1f).fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        "Search and add products to start",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                if (cartItems.isEmpty()) {
+                    Box(
+                        modifier = Modifier.weight(1f).fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                Icons.Default.ShoppingCart,
+                                contentDescription = null,
+                                tint = themeColors.greenSoft,
+                                modifier = Modifier.size(56.dp),
+                            )
+                            Spacer(modifier = Modifier.height(SpacingTokens.sm))
+                            Text(
+                                "Search and add products to start",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = AppThemeColors.current.muted,
+                            )
+                        }
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.weight(1f).fillMaxWidth(),
+                        contentPadding = PaddingValues(SpacingTokens.sm),
+                        verticalArrangement = Arrangement.spacedBy(SpacingTokens.sm),
+                    ) {
+                        items(cartItems, key = { it.item.id }) { cartItem ->
+                            CartItemRow(
+                                item = cartItem,
+                                onQuantityChange = { qty ->
+                                    viewModel.updateQuantity(cartItem.item.id, qty)
+                                },
+                                onPriceChange = { price ->
+                                    viewModel.updateUnitPrice(cartItem.item.id, price)
+                                },
+                                onRemove = { viewModel.removeFromCart(cartItem.item.id) }
+                            )
+                        }
+                    }
                 }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.weight(1f).fillMaxWidth(),
-                    contentPadding = PaddingValues(SpacingTokens.sm),
-                    verticalArrangement = Arrangement.spacedBy(SpacingTokens.xs),
+
+                // Total + Pay section on a soft mint panel
+                Surface(
+                    color = themeColors.mint,
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    items(cartItems, key = { it.item.id }) { cartItem ->
-                        CartItemRow(
-                            item = cartItem,
-                            onQuantityChange = { qty ->
-                                viewModel.updateQuantity(cartItem.item.id, qty)
-                            },
-                            onPriceChange = { price ->
-                                viewModel.updateUnitPrice(cartItem.item.id, price)
-                            },
-                            onRemove = { viewModel.removeFromCart(cartItem.item.id) }
+                    Column(modifier = Modifier.padding(SpacingTokens.cardPadding)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                "Total",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Text(
+                                format.format(viewModel.subtotal),
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(SpacingTokens.sm))
+                        PayButton(
+                            enabled = cartItems.isNotEmpty(),
+                            payText = "Pay  ${format.format(viewModel.subtotal)}",
+                            onClick = { viewModel.prepareCheckout() },
                         )
                     }
                 }
-            }
-
-            HorizontalDivider()
-
-            Column(modifier = Modifier.padding(SpacingTokens.cardPadding)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text("Total", style = MaterialTheme.typography.titleMedium)
-                    Text(
-                        format.format(viewModel.subtotal),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                }
-                Spacer(modifier = Modifier.height(SpacingTokens.sm))
-                AppPrimaryButton(
-                    text = "Pay - ${format.format(viewModel.subtotal)}",
-                    onClick = {
-                        viewModel.prepareCheckout()
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = cartItems.isNotEmpty(),
-                    leadingIcon = Icons.Default.ShoppingCart,
-                    description = "Pay",
-                )
             }
         }
     }
@@ -442,6 +568,70 @@ fun PosTerminalScreen(
     }
 }
 
+/** Full-width brand-green pay button with the card icon. */
+@Composable
+private fun PayButton(
+    enabled: Boolean,
+    payText: String,
+    onClick: () -> Unit,
+) {
+    val primary = MaterialTheme.colorScheme.primary
+    val dark = AppThemeColors.current.greenDark
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .background(
+                brush = Brush.horizontalGradient(listOf(primary, dark)),
+                shape = ShapeTokens.button,
+                alpha = if (enabled) 1f else 0.45f,
+            )
+            .clickable(enabled = enabled, onClick = onClick)
+            .semantics { contentDescription = payText },
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_payment_card),
+            contentDescription = null,
+            tint = Color.White,
+            modifier = Modifier.size(22.dp),
+        )
+        Spacer(modifier = Modifier.width(SpacingTokens.sm))
+        Text(
+            text = payText,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+        )
+    }
+}
+
+/** Rounded price-list chip: solid green when selected, soft outline otherwise. */
+@Composable
+private fun PriceListChip(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    val themeColors = AppThemeColors.current
+    val bg = if (selected) MaterialTheme.colorScheme.primary else themeColors.greenSoft
+    val fg = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+    Text(
+        text = label,
+        style = MaterialTheme.typography.labelLarge,
+        fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+        color = fg,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .background(bg, ShapeTokens.chip)
+            .padding(horizontal = SpacingTokens.md, vertical = SpacingTokens.xs)
+            .semantics { contentDescription = if (selected) "$label selected" else label },
+    )
+}
+
 @Composable
 private fun NoStockBalanceDialog(
     items: List<CartItem>,
@@ -538,71 +728,105 @@ private fun CartItemRow(
     onRemove: () -> Unit
 ) {
     val format = NumberFormat.getCurrencyInstance(Locale("en", "NG"))
+    val themeColors = AppThemeColors.current
     var priceText by remember(item.unitPrice) { mutableStateOf(item.unitPrice.toPlainString()) }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = ShapeTokens.md,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = ElevationTokens.card),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(SpacingTokens.sm),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    item.item.name,
-                    fontWeight = FontWeight.Medium,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                item.uomName?.let {
+        Column(modifier = Modifier.fillMaxWidth().padding(SpacingTokens.sm)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        it,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
+                        item.item.name,
+                        fontWeight = FontWeight.SemiBold,
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    item.uomName?.let {
+                        Text(
+                            it,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = AppThemeColors.current.muted,
+                        )
+                    }
+                }
+                AppIconButton(
+                    icon = Icons.Default.Close,
+                    onClick = onRemove,
+                    description = "Remove ${item.item.name}",
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                // Quantity stepper: round green − / + buttons
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    QuantityButton(
+                        icon = Icons.Default.Remove,
+                        description = "Decrease quantity",
+                        onClick = { onQuantityChange(item.quantity.subtract(BigDecimal.ONE)) },
+                    )
+                    Text(
+                        item.quantity.toPlainString(),
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = SpacingTokens.sm),
+                    )
+                    QuantityButton(
+                        icon = Icons.Default.Add,
+                        description = "Increase quantity",
+                        onClick = { onQuantityChange(item.quantity.add(BigDecimal.ONE)) },
                     )
                 }
-                OutlinedTextField(
-                    value = priceText,
-                    onValueChange = { input ->
-                        priceText = input
-                        input.toBigDecimalOrNull()?.let { onPriceChange(it) }
-                    },
-                    modifier = Modifier.width(120.dp),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    label = { Text("Price", style = MaterialTheme.typography.bodySmall) },
-                )
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                AppIconButton(
-                    icon = Icons.Default.Remove,
-                    onClick = { onQuantityChange(item.quantity.subtract(BigDecimal.ONE)) },
-                    description = "Decrease quantity",
-                )
+                Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    item.quantity.toPlainString(),
+                    format.format(item.lineTotal),
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = SpacingTokens.xxs),
-                )
-                AppIconButton(
-                    icon = Icons.Default.Add,
-                    onClick = { onQuantityChange(item.quantity.add(BigDecimal.ONE)) },
-                    description = "Increase quantity",
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
-            Text(
-                format.format(item.lineTotal),
-                modifier = Modifier.padding(horizontal = SpacingTokens.sm),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-            )
-            AppIconButton(
-                icon = Icons.Default.Close,
-                onClick = onRemove,
-                description = "Remove ${item.item.name}",
+            OutlinedTextField(
+                value = priceText,
+                onValueChange = { input ->
+                    priceText = input
+                    input.toBigDecimalOrNull()?.let { onPriceChange(it) }
+                },
+                modifier = Modifier.width(140.dp),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                label = { Text("Price", style = MaterialTheme.typography.bodySmall) },
             )
         }
+    }
+}
+
+/** Round green quantity button (− / +). */
+@Composable
+private fun QuantityButton(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    description: String,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .size(30.dp)
+            .background(MaterialTheme.colorScheme.primary, CircleShape)
+            .clickable(onClick = onClick)
+            .semantics { contentDescription = description },
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.size(18.dp),
+        )
     }
 }
 

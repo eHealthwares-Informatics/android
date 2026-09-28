@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.util
+package com.ehealthwares.rxsoft.util
 
 object Constants {
     const val ACCESS_TOKEN_KEY = "rxsoft_android_access_token"

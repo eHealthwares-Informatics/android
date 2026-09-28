@@ -1,9 +1,9 @@
-package com.rxsoft.mobile.data.remote.api
+package com.ehealthwares.rxsoft.data.remote.api
 
-import com.rxsoft.mobile.data.remote.dto.ConversationInboxResponse
-import com.rxsoft.mobile.data.remote.dto.ExchangeMessagesResponse
-import com.rxsoft.mobile.data.remote.dto.SendWebhookDto
-import com.rxsoft.mobile.data.remote.dto.SendWebhookResponse
+import com.ehealthwares.rxsoft.data.remote.dto.ConversationInboxResponse
+import com.ehealthwares.rxsoft.data.remote.dto.ExchangeMessagesResponse
+import com.ehealthwares.rxsoft.data.remote.dto.SendWebhookDto
+import com.ehealthwares.rxsoft.data.remote.dto.SendWebhookResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET

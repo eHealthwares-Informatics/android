@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.profile
+package com.ehealthwares.rxsoft.ui.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -36,10 +36,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.rxsoft.mobile.R
-import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
-import com.rxsoft.mobile.ui.designsystem.token.ShapeTokens
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.R
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTopAppBar
+import com.ehealthwares.rxsoft.ui.designsystem.token.ShapeTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
 
 @Composable
 fun ProfileScreen(

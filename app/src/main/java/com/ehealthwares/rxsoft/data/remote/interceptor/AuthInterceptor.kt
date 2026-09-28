@@ -1,7 +1,7 @@
-package com.rxsoft.mobile.data.remote.interceptor
+package com.ehealthwares.rxsoft.data.remote.interceptor
 
 import android.util.Log
-import com.rxsoft.mobile.util.TokenManager
+import com.ehealthwares.rxsoft.util.TokenManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor

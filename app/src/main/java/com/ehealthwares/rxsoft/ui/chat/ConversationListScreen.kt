@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.chat
+package com.ehealthwares.rxsoft.ui.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -46,8 +46,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rxsoft.mobile.data.remote.dto.ConversationInboxItem
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.data.remote.dto.ConversationInboxItem
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

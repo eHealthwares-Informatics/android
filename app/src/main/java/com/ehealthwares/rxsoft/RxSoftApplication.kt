@@ -1,4 +1,4 @@
-package com.rxsoft.mobile
+package com.ehealthwares.rxsoft
 
 import android.app.Application
 import coil.ImageLoader

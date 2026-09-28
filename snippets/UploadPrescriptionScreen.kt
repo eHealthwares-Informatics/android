@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.prescription
+package com.ehealthwares.rxsoft.ui.prescription
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,7 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.rxsoft.mobile.R
+import com.ehealthwares.rxsoft.R
 
 private val PrimaryColor = Color(0xFF1EC6B5)
 private val BottomBarColor = Color(0xFF152222)

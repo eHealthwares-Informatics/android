@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.designsystem.components
+package com.ehealthwares.rxsoft.ui.designsystem.components
 
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
@@ -9,7 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.rxsoft.mobile.ui.designsystem.token.ShapeTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.ShapeTokens
 
 @Composable
 fun AppSnackbarHost(

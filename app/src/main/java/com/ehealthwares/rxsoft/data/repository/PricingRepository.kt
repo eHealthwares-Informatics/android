@@ -1,16 +1,17 @@
-package com.rxsoft.mobile.data.repository
+package com.ehealthwares.rxsoft.data.repository
 
-import com.rxsoft.mobile.data.local.CachedPriceEntity
-import com.rxsoft.mobile.data.local.CachedPriceListEntity
-import com.rxsoft.mobile.data.local.PriceDao
-import com.rxsoft.mobile.data.local.PriceListDao
-import com.rxsoft.mobile.data.remote.api.PricingApi
-import com.rxsoft.mobile.data.remote.dto.CreatePriceListRequest
-import com.rxsoft.mobile.data.remote.dto.CreatePriceListItemRequest
-import com.rxsoft.mobile.data.remote.dto.PriceListDto
-import com.rxsoft.mobile.data.remote.dto.PriceListItemDto
-import com.rxsoft.mobile.data.remote.dto.UpdatePriceListRequest
-import com.rxsoft.mobile.data.remote.dto.UpdatePriceListItemRequest
+import com.ehealthwares.rxsoft.data.local.CachedPriceEntity
+import com.ehealthwares.rxsoft.data.local.CachedPriceListEntity
+import com.ehealthwares.rxsoft.data.local.PriceDao
+import com.ehealthwares.rxsoft.data.local.PriceListDao
+import com.ehealthwares.rxsoft.data.remote.api.PricingApi
+import com.ehealthwares.rxsoft.data.remote.dto.AdjustItemPriceRequest
+import com.ehealthwares.rxsoft.data.remote.dto.CreatePriceListRequest
+import com.ehealthwares.rxsoft.data.remote.dto.CreatePriceListItemRequest
+import com.ehealthwares.rxsoft.data.remote.dto.PriceListDto
+import com.ehealthwares.rxsoft.data.remote.dto.PriceListItemDto
+import com.ehealthwares.rxsoft.data.remote.dto.UpdatePriceListRequest
+import com.ehealthwares.rxsoft.data.remote.dto.UpdatePriceListItemRequest
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -96,6 +97,26 @@ class PricingRepository @Inject constructor(
         )
         cacheItem(priceListId, itemId, created)
         Result.success(created)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
+    suspend fun adjustItemPrice(
+        itemId: String,
+        priceListId: String,
+        unitPrice: Double,
+        currencyCode: String?,
+    ): Result<PriceListItemDto> = try {
+        val adjusted = pricingApi.adjustItemPrice(
+            AdjustItemPriceRequest(
+                itemId = itemId,
+                priceListId = priceListId,
+                unitPrice = unitPrice,
+                currencyCode = currencyCode,
+            ),
+        )
+        cacheItem(priceListId, itemId, adjusted)
+        Result.success(adjusted)
     } catch (e: Exception) {
         Result.failure(e)
     }

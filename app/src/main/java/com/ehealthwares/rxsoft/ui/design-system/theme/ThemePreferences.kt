@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.designsystem.theme
+package com.ehealthwares.rxsoft.ui.designsystem.theme
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -31,10 +31,10 @@ class ThemePreferences(private val context: Context) {
             },
             colorTheme = try {
                 ColorTheme.valueOf(
-                    preferences[Keys.COLOR_THEME] ?: ColorTheme.RXSOFT.name
+                    preferences[Keys.COLOR_THEME] ?: ColorTheme.DAMOREX.name
                 )
             } catch (e: Exception) {
-                ColorTheme.RXSOFT
+                ColorTheme.DAMOREX
             },
             customPrimaryColor = preferences[Keys.CUSTOM_PRIMARY_COLOR] ?: 0xFF1565C0,
         )
@@ -62,7 +62,7 @@ class ThemePreferences(private val context: Context) {
     suspend fun resetToDefaults() {
         context.themeDataStore.edit { preferences ->
             preferences[Keys.APPEARANCE_MODE] = AppearanceMode.SYSTEM.name
-            preferences[Keys.COLOR_THEME] = ColorTheme.RXSOFT.name
+            preferences[Keys.COLOR_THEME] = ColorTheme.DAMOREX.name
             preferences[Keys.CUSTOM_PRIMARY_COLOR] = 0xFF1565C0
         }
     }

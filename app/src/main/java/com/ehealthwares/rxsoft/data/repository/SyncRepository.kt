@@ -1,27 +1,27 @@
-package com.rxsoft.mobile.data.repository
+package com.ehealthwares.rxsoft.data.repository
 
 import android.util.Log
-import com.rxsoft.mobile.data.local.CachedCategoryEntity
-import com.rxsoft.mobile.data.local.CachedCustomerEntity
-import com.rxsoft.mobile.data.local.CachedItemEntity
-import com.rxsoft.mobile.data.local.CachedPriceEntity
-import com.rxsoft.mobile.data.local.CachedPriceListEntity
-import com.rxsoft.mobile.data.local.CachedStockBalanceEntity
-import com.rxsoft.mobile.data.local.CachedStockLocationEntity
-import com.rxsoft.mobile.data.local.CachedUomEntity
-import com.rxsoft.mobile.data.local.CategoryDao
-import com.rxsoft.mobile.data.local.CustomerDao
-import com.rxsoft.mobile.data.local.OfflineItemDao
-import com.rxsoft.mobile.data.local.PriceDao
-import com.rxsoft.mobile.data.local.PriceListDao
-import com.rxsoft.mobile.data.local.StockBalanceDao
-import com.rxsoft.mobile.data.local.StockLocationDao
-import com.rxsoft.mobile.data.local.SyncStateDao
-import com.rxsoft.mobile.data.local.SyncStateEntity
-import com.rxsoft.mobile.data.local.UomDao
-import com.rxsoft.mobile.data.remote.api.SyncApi
-import com.rxsoft.mobile.data.remote.dto.SyncDeletedRef
-import com.rxsoft.mobile.data.remote.dto.SyncMeta
+import com.ehealthwares.rxsoft.data.local.CachedCategoryEntity
+import com.ehealthwares.rxsoft.data.local.CachedCustomerEntity
+import com.ehealthwares.rxsoft.data.local.CachedItemEntity
+import com.ehealthwares.rxsoft.data.local.CachedPriceEntity
+import com.ehealthwares.rxsoft.data.local.CachedPriceListEntity
+import com.ehealthwares.rxsoft.data.local.CachedStockBalanceEntity
+import com.ehealthwares.rxsoft.data.local.CachedStockLocationEntity
+import com.ehealthwares.rxsoft.data.local.CachedUomEntity
+import com.ehealthwares.rxsoft.data.local.CategoryDao
+import com.ehealthwares.rxsoft.data.local.CustomerDao
+import com.ehealthwares.rxsoft.data.local.OfflineItemDao
+import com.ehealthwares.rxsoft.data.local.PriceDao
+import com.ehealthwares.rxsoft.data.local.PriceListDao
+import com.ehealthwares.rxsoft.data.local.StockBalanceDao
+import com.ehealthwares.rxsoft.data.local.StockLocationDao
+import com.ehealthwares.rxsoft.data.local.SyncStateDao
+import com.ehealthwares.rxsoft.data.local.SyncStateEntity
+import com.ehealthwares.rxsoft.data.local.UomDao
+import com.ehealthwares.rxsoft.data.remote.api.SyncApi
+import com.ehealthwares.rxsoft.data.remote.dto.SyncDeletedRef
+import com.ehealthwares.rxsoft.data.remote.dto.SyncMeta
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -367,7 +367,7 @@ class SyncRepository @Inject constructor(
         syncStateDao.put(SyncStateEntity(entity, cursor, System.currentTimeMillis()))
     }
 
-    private fun itemSearchText(dto: com.rxsoft.mobile.data.remote.dto.SyncItemDto): String {
+    private fun itemSearchText(dto: com.ehealthwares.rxsoft.data.remote.dto.SyncItemDto): String {
         return listOfNotNull(
             dto.name,
             dto.displayName,
@@ -382,7 +382,7 @@ class SyncRepository @Inject constructor(
         return listOfNotNull(name, code, phone, email).joinToString(" ").lowercase()
     }
 
-    private fun com.rxsoft.mobile.data.remote.dto.SyncItemDto.toEntity(): CachedItemEntity = CachedItemEntity(
+    private fun com.ehealthwares.rxsoft.data.remote.dto.SyncItemDto.toEntity(): CachedItemEntity = CachedItemEntity(
         itemId = itemId,
         orgItemId = orgItemId,
         name = name,

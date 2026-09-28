@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.shop.components
+package com.ehealthwares.rxsoft.ui.shop.components
 
 import androidx.compose.foundation.Image as FoundationImage
 import androidx.compose.foundation.layout.Box
@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import com.rxsoft.mobile.ui.designsystem.token.ElevationTokens
-import com.rxsoft.mobile.ui.designsystem.token.ShapeTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.ElevationTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.ShapeTokens
 
 @Composable
 fun ProductImage(

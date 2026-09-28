@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.reports
+package com.ehealthwares.rxsoft.ui.reports
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,16 +29,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import com.rxsoft.mobile.data.remote.dto.DailySalesRow
-import com.rxsoft.mobile.data.remote.dto.TopSellingItem
-import com.rxsoft.mobile.ui.designsystem.components.AppCard
-import com.rxsoft.mobile.ui.designsystem.components.AppEmptyState
-import com.rxsoft.mobile.ui.designsystem.components.AppErrorState
-import com.rxsoft.mobile.ui.designsystem.components.AppLoadingState
-import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
-import com.rxsoft.mobile.ui.designsystem.components.DateRangeFilterRow
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.remote.dto.DailySalesRow
+import com.ehealthwares.rxsoft.data.remote.dto.TopSellingItem
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppCard
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppEmptyState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppErrorState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppLoadingState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTopAppBar
+import com.ehealthwares.rxsoft.ui.designsystem.components.DateRangeFilterRow
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.util.UiState
 import java.text.NumberFormat
 import java.time.Instant
 import java.time.LocalDate

@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.designsystem.token
+package com.ehealthwares.rxsoft.ui.designsystem.token
 
 object MotionTokens {
     val instant = 0

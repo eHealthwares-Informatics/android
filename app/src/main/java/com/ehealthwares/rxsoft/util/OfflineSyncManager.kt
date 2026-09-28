@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.util
+package com.ehealthwares.rxsoft.util
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -6,10 +6,10 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.util.Log
-import com.rxsoft.mobile.data.repository.InventoryRepository
-import com.rxsoft.mobile.data.repository.OrdersRepository
-import com.rxsoft.mobile.data.repository.PosRepository
-import com.rxsoft.mobile.data.repository.SyncRepository
+import com.ehealthwares.rxsoft.data.repository.InventoryRepository
+import com.ehealthwares.rxsoft.data.repository.OrdersRepository
+import com.ehealthwares.rxsoft.data.repository.PosRepository
+import com.ehealthwares.rxsoft.data.repository.SyncRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton

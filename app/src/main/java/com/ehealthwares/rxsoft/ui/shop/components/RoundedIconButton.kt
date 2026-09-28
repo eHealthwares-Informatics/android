@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.shop.components
+package com.ehealthwares.rxsoft.ui.shop.components
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -13,8 +13,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.Alignment
-import com.rxsoft.mobile.ui.designsystem.token.ElevationTokens
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.ElevationTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
 
 @Composable
 fun RoundedIconButton(

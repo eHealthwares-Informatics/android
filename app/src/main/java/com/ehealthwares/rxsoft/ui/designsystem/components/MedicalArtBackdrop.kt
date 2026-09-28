@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import com.rxsoft.mobile.R
+import com.ehealthwares.rxsoft.R
 
 /**
  * Decorative medical-themed backdrop rendered as a VectorDrawable.

@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.designsystem.token
+package com.ehealthwares.rxsoft.ui.designsystem.token
 
 import androidx.compose.ui.graphics.Color
 
@@ -40,6 +40,21 @@ object BrandColors {
     val neutral900 = Color(0xFF212121)
     val neutral950 = Color(0xFF121212)
     val neutralDarkSurface = Color(0xFF1E1E1E)
+}
+
+/**
+ * Damorex green pharmacy palette — the DAMOREX [com.ehealthwares.rxsoft.ui.designsystem.theme.ColorTheme]
+ * maps these into [com.ehealthwares.rxsoft.ui.designsystem.theme.ThemeColors] (see getLightColors/getDarkColors).
+ */
+object DamorexColors {
+    val green = Color(0xFF18A957)
+    val greenDark = Color(0xFF087A3D)
+    val greenSoft = Color(0xFFDDF8E7)
+    val mint = Color(0xFFECFFF3)
+    val mint2 = Color(0xFFC8F4D5)
+    val ink = Color(0xFF0B1B35)
+    val muted = Color(0xFF61758F)
+    val border = Color(0xFFC9E7D4)
 }
 
 object ColorTokens {

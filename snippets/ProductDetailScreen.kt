@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.shop
+package com.ehealthwares.rxsoft.ui.shop
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -10,8 +10,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.rxsoft.mobile.ui.shop.components.*
-import com.rxsoft.mobile.ui.shop.model.Product
+import com.ehealthwares.rxsoft.ui.shop.components.*
+import com.ehealthwares.rxsoft.ui.shop.model.Product
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

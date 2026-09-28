@@ -1,9 +1,9 @@
-package com.rxsoft.mobile.ui.chat
+package com.ehealthwares.rxsoft.ui.chat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rxsoft.mobile.data.remote.dto.ConversationInboxItem
-import com.rxsoft.mobile.data.remote.dto.ExchangeMessage
+import com.ehealthwares.rxsoft.data.remote.dto.ConversationInboxItem
+import com.ehealthwares.rxsoft.data.remote.dto.ExchangeMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted

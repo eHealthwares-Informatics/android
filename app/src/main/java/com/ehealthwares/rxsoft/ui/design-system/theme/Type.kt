@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.designsystem.theme
+package com.ehealthwares.rxsoft.ui.designsystem.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

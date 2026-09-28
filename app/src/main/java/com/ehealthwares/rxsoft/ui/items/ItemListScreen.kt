@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.items
+package com.ehealthwares.rxsoft.ui.items
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,10 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.lazy.items
-import com.rxsoft.mobile.data.remote.dto.ItemDto
-import com.rxsoft.mobile.ui.designsystem.components.AppCard
-import com.rxsoft.mobile.ui.designsystem.templates.ListScreenTemplate
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.remote.dto.ItemDto
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppCard
+import com.ehealthwares.rxsoft.ui.designsystem.templates.ListScreenTemplate
+import com.ehealthwares.rxsoft.util.UiState
 
 @Composable
 fun ItemListScreen(
@@ -62,7 +62,7 @@ fun ItemListScreen(
 private fun ItemCard(item: ItemDto, onClick: () -> Unit) {
     AppCard(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
         Text(item.name, style = MaterialTheme.typography.titleMedium)
-        Row(horizontalArrangement = Arrangement.spacedBy(com.rxsoft.mobile.ui.designsystem.token.SpacingTokens.lg)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens.lg)) {
             Text("Code: ${item.code ?: "-"}", style = MaterialTheme.typography.bodySmall)
             item.barcode?.let { Text("Barcode: $it", style = MaterialTheme.typography.bodySmall) }
         }

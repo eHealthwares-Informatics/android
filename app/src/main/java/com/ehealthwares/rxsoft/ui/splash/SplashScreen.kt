@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.splash
+package com.ehealthwares.rxsoft.ui.splash
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -28,7 +28,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.rxsoft.mobile.R
+import com.ehealthwares.rxsoft.R
 import kotlinx.coroutines.delay
 
 @Composable

@@ -1,10 +1,10 @@
-package com.rxsoft.mobile.data.repository
+package com.ehealthwares.rxsoft.data.repository
 
-import com.rxsoft.mobile.data.remote.api.PaymentsApi
-import com.rxsoft.mobile.data.remote.dto.AvailablePaymentProviderDto
-import com.rxsoft.mobile.data.remote.dto.InitializePaymentRequest
-import com.rxsoft.mobile.data.remote.dto.InitializePaymentResponse
-import com.rxsoft.mobile.data.remote.dto.VerifyPaymentResponse
+import com.ehealthwares.rxsoft.data.remote.api.PaymentsApi
+import com.ehealthwares.rxsoft.data.remote.dto.AvailablePaymentProviderDto
+import com.ehealthwares.rxsoft.data.remote.dto.InitializePaymentRequest
+import com.ehealthwares.rxsoft.data.remote.dto.InitializePaymentResponse
+import com.ehealthwares.rxsoft.data.remote.dto.VerifyPaymentResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 

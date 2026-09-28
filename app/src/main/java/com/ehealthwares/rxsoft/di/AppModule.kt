@@ -1,8 +1,8 @@
-package com.rxsoft.mobile.di
+package com.ehealthwares.rxsoft.di
 
 import android.content.Context
-import com.rxsoft.mobile.data.local.ChatStateStore
-import com.rxsoft.mobile.util.TokenManager
+import com.ehealthwares.rxsoft.data.local.ChatStateStore
+import com.ehealthwares.rxsoft.util.TokenManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

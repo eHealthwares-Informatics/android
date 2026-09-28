@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.shop
+package com.ehealthwares.rxsoft.ui.shop
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,16 +27,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rxsoft.mobile.ui.designsystem.components.AppTextButton
-import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
-import com.rxsoft.mobile.ui.designsystem.token.ElevationTokens
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
-import com.rxsoft.mobile.ui.shop.components.PrimaryButton
-import com.rxsoft.mobile.ui.shop.components.ProductImage
-import com.rxsoft.mobile.ui.shop.components.QuantitySelector
-import com.rxsoft.mobile.ui.shop.components.RoundedIconButton
-import com.rxsoft.mobile.ui.shop.model.Product
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTextButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTopAppBar
+import com.ehealthwares.rxsoft.ui.designsystem.token.ElevationTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.ui.shop.components.PrimaryButton
+import com.ehealthwares.rxsoft.ui.shop.components.ProductImage
+import com.ehealthwares.rxsoft.ui.shop.components.QuantitySelector
+import com.ehealthwares.rxsoft.ui.shop.components.RoundedIconButton
+import com.ehealthwares.rxsoft.ui.shop.model.Product
+import com.ehealthwares.rxsoft.util.UiState
 
 @Composable
 fun ProductDetailScreen(

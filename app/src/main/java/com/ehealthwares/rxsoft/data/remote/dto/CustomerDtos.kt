@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.data.remote.dto
+package com.ehealthwares.rxsoft.data.remote.dto
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

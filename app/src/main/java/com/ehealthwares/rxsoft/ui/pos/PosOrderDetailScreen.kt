@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.pos
+package com.ehealthwares.rxsoft.ui.pos
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,12 +22,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import com.rxsoft.mobile.ui.designsystem.components.AppCard
-import com.rxsoft.mobile.ui.designsystem.components.AppErrorState
-import com.rxsoft.mobile.ui.designsystem.components.AppLoadingState
-import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppCard
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppErrorState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppLoadingState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTopAppBar
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.util.UiState
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -62,7 +62,7 @@ fun PosOrderDetailScreen(
                 )
             }
             is UiState.Success -> {
-                val sale = (state as UiState.Success<*>).data as com.rxsoft.mobile.data.remote.dto.SaleDto
+                val sale = (state as UiState.Success<*>).data as com.ehealthwares.rxsoft.data.remote.dto.SaleDto
                 val format = remember { NumberFormat.getCurrencyInstance(Locale("en", "NG")) }
 
                 LazyColumn(

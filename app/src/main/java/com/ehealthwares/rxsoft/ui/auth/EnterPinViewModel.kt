@@ -1,10 +1,10 @@
-package com.rxsoft.mobile.ui.auth
+package com.ehealthwares.rxsoft.ui.auth
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rxsoft.mobile.data.repository.AuthRepository
-import com.rxsoft.mobile.util.PinManager
+import com.ehealthwares.rxsoft.data.repository.AuthRepository
+import com.ehealthwares.rxsoft.util.PinManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

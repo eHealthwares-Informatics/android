@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.items
+package com.ehealthwares.rxsoft.ui.items
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -39,14 +39,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.rxsoft.mobile.ui.designsystem.components.AppAlertDialog
-import com.rxsoft.mobile.ui.designsystem.components.AppIconButton
-import com.rxsoft.mobile.ui.designsystem.components.AppLoadingState
-import com.rxsoft.mobile.ui.designsystem.components.AppOutlinedCard
-import com.rxsoft.mobile.ui.designsystem.components.AppPrimaryButton
-import com.rxsoft.mobile.ui.designsystem.components.AppTextField
-import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppAlertDialog
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppIconButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppLoadingState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppOutlinedCard
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppPrimaryButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTextField
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTopAppBar
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -217,10 +217,8 @@ fun ItemFormScreen(
                 val catName = state.categories.find { it.id == state.categoryId }?.name ?: state.categoryId
                 AppTextField(
                     value = if (state.categoryId.isNotEmpty()) catName else "",
-                    onValueChange = {},
+                    onValueChange = { viewModel.updateCategoryId(it) },
                     label = "Category",
-                    readOnly = true,
-                    enabled = state.categories.isNotEmpty(),
                     trailingIcon = Icons.Default.ArrowDropDown,
                     onTrailingIconClick = { showCategoryDialog = true },
                 )
@@ -228,12 +226,28 @@ fun ItemFormScreen(
                 val uomName = state.uoms.find { it.id == state.baseUomId }?.name ?: state.baseUomId
                 AppTextField(
                     value = if (state.baseUomId.isNotEmpty()) uomName else "",
-                    onValueChange = {},
-                    label = "UOM",
-                    readOnly = true,
-                    enabled = state.uoms.isNotEmpty(),
+                    onValueChange = { viewModel.updateBaseUomId(it) },
+                    label = "UOM (sets base, purchase & sale)",
                     trailingIcon = Icons.Default.ArrowDropDown,
                     onTrailingIconClick = { showUomDialog = true },
+                )
+
+                AppTextField(
+                    value = state.alias,
+                    onValueChange = viewModel::updateAlias,
+                    label = "Alias (optional)",
+                )
+
+                AppTextField(
+                    value = state.genericProductCode,
+                    onValueChange = viewModel::updateGenericProductCode,
+                    label = "Generic Product Code (optional)",
+                )
+
+                AppTextField(
+                    value = state.genericDrugCode,
+                    onValueChange = viewModel::updateGenericDrugCode,
+                    label = "Generic Drug Code (optional)",
                 )
 
                 AppTextField(
@@ -241,7 +255,15 @@ fun ItemFormScreen(
                     onValueChange = viewModel::updateBarcode,
                     label = "Barcode (optional)",
                     keyboardType = KeyboardType.Ascii,
-                    imeAction = ImeAction.Done,
+                    imeAction = ImeAction.Next,
+                )
+
+                AppTextField(
+                    value = state.shelfLifeDays,
+                    onValueChange = viewModel::updateShelfLifeDays,
+                    label = "Shelf Life Days (optional)",
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next,
                 )
 
                 Row(
@@ -251,6 +273,24 @@ fun ItemFormScreen(
                 ) {
                     Text("Active", style = MaterialTheme.typography.bodyLarge)
                     Switch(checked = state.isActive, onCheckedChange = viewModel::updateIsActive)
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text("Track Lot", style = MaterialTheme.typography.bodyLarge)
+                    Switch(checked = state.trackLot, onCheckedChange = viewModel::updateTrackLot)
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text("Track Expiry", style = MaterialTheme.typography.bodyLarge)
+                    Switch(checked = state.trackExpiry, onCheckedChange = viewModel::updateTrackExpiry)
                 }
 
                 state.error?.let {

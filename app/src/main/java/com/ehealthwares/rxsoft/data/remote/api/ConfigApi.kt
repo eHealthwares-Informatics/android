@@ -1,7 +1,7 @@
-package com.rxsoft.mobile.data.remote.api
+package com.ehealthwares.rxsoft.data.remote.api
 
-import com.rxsoft.mobile.data.remote.dto.OrganisationConfig
-import com.rxsoft.mobile.data.remote.dto.UserPosConfig
+import com.ehealthwares.rxsoft.data.remote.dto.OrganisationConfig
+import com.ehealthwares.rxsoft.data.remote.dto.UserPosConfig
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.Body

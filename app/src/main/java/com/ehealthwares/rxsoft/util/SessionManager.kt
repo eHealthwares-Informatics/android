@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.util
+package com.ehealthwares.rxsoft.util
 
 import android.util.Log
 import kotlinx.coroutines.delay

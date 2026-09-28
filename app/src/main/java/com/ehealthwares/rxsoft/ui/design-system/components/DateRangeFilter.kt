@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.designsystem.components
+package com.ehealthwares.rxsoft.ui.designsystem.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
 import java.time.DayOfWeek
 import java.time.LocalDate
 

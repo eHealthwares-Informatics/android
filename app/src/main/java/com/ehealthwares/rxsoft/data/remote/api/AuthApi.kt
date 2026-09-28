@@ -1,12 +1,12 @@
-package com.rxsoft.mobile.data.remote.api
+package com.ehealthwares.rxsoft.data.remote.api
 
-import com.rxsoft.mobile.data.remote.dto.AuthResponse
-import com.rxsoft.mobile.data.remote.dto.CurrentUserResponse
-import com.rxsoft.mobile.data.remote.dto.LoginRequest
-import com.rxsoft.mobile.data.remote.dto.RefreshRequest
-import com.rxsoft.mobile.data.remote.dto.ShopperOtpResponse
-import com.rxsoft.mobile.data.remote.dto.ShopperRequestOtpRequest
-import com.rxsoft.mobile.data.remote.dto.ShopperVerifyOtpRequest
+import com.ehealthwares.rxsoft.data.remote.dto.AuthResponse
+import com.ehealthwares.rxsoft.data.remote.dto.CurrentUserResponse
+import com.ehealthwares.rxsoft.data.remote.dto.LoginRequest
+import com.ehealthwares.rxsoft.data.remote.dto.RefreshRequest
+import com.ehealthwares.rxsoft.data.remote.dto.ShopperOtpResponse
+import com.ehealthwares.rxsoft.data.remote.dto.ShopperRequestOtpRequest
+import com.ehealthwares.rxsoft.data.remote.dto.ShopperVerifyOtpRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST

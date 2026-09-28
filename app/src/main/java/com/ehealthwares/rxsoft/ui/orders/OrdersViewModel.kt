@@ -1,17 +1,17 @@
-package com.rxsoft.mobile.ui.orders
+package com.ehealthwares.rxsoft.ui.orders
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rxsoft.mobile.data.remote.dto.CreateOrderItem
-import com.rxsoft.mobile.data.remote.dto.GenericProductDto
-import com.rxsoft.mobile.data.remote.dto.OrderDto
-import com.rxsoft.mobile.data.local.CachedItemEntity
-import com.rxsoft.mobile.data.repository.OrderSubmitResult
-import com.rxsoft.mobile.data.repository.OrdersRepository
-import com.rxsoft.mobile.data.repository.PosRepository
-import com.rxsoft.mobile.util.OfflineSyncManager
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.remote.dto.CreateOrderItem
+import com.ehealthwares.rxsoft.data.remote.dto.GenericProductDto
+import com.ehealthwares.rxsoft.data.remote.dto.OrderDto
+import com.ehealthwares.rxsoft.data.local.CachedItemEntity
+import com.ehealthwares.rxsoft.data.repository.OrderSubmitResult
+import com.ehealthwares.rxsoft.data.repository.OrdersRepository
+import com.ehealthwares.rxsoft.data.repository.PosRepository
+import com.ehealthwares.rxsoft.util.OfflineSyncManager
+import com.ehealthwares.rxsoft.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

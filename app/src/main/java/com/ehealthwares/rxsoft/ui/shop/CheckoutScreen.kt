@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.shop
+package com.ehealthwares.rxsoft.ui.shop
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -35,16 +35,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rxsoft.mobile.ui.designsystem.components.AppFilterChip
-import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
-import com.rxsoft.mobile.ui.designsystem.token.ElevationTokens
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
-import com.rxsoft.mobile.ui.shop.components.CartItemCard
-import com.rxsoft.mobile.ui.shop.components.PaymentSummary
-import com.rxsoft.mobile.ui.shop.components.PrimaryButton
-import com.rxsoft.mobile.ui.shop.components.VoucherCard
-import com.rxsoft.mobile.util.UiState
-import com.rxsoft.mobile.util.payment.PaymentProviderType
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppFilterChip
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTopAppBar
+import com.ehealthwares.rxsoft.ui.designsystem.token.ElevationTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.ui.shop.components.CartItemCard
+import com.ehealthwares.rxsoft.ui.shop.components.PaymentSummary
+import com.ehealthwares.rxsoft.ui.shop.components.PrimaryButton
+import com.ehealthwares.rxsoft.ui.shop.components.VoucherCard
+import com.ehealthwares.rxsoft.util.UiState
+import com.ehealthwares.rxsoft.util.payment.PaymentProviderType
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -91,7 +91,7 @@ fun CheckoutScreen(
     LaunchedEffect(checkoutState) {
         if (checkoutState is UiState.Success) {
             val sale = (checkoutState as UiState.Success<*>).data
-            if (sale is com.rxsoft.mobile.data.remote.dto.SaleDto) {
+            if (sale is com.ehealthwares.rxsoft.data.remote.dto.SaleDto) {
                 onOrderCreated(sale.id)
             }
         }
@@ -250,7 +250,7 @@ private fun EmptyCartCard(onAddProduct: () -> Unit) {
                 style = MaterialTheme.typography.bodyMedium,
             )
             Spacer(Modifier.height(SpacingTokens.xxl))
-            com.rxsoft.mobile.ui.designsystem.components.AppPrimaryButton(
+            com.ehealthwares.rxsoft.ui.designsystem.components.AppPrimaryButton(
                 text = "Add Product",
                 onClick = onAddProduct,
             )

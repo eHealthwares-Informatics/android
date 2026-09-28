@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.designsystem.theme
+package com.ehealthwares.rxsoft.ui.designsystem.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -19,10 +19,10 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 val LocalThemeSettings = staticCompositionLocalOf { ThemeSettings() }
 
 val LocalThemeColors = staticCompositionLocalOf { ThemeColors(
-    primary = ComposeColor(0xFF1565C0),
+    primary = ComposeColor(0xFF18A957),
     onPrimary = ComposeColor.White,
-    primaryContainer = ComposeColor(0xFFDBEAFE),
-    onPrimaryContainer = ComposeColor(0xFF1E3A5F),
+    primaryContainer = ComposeColor(0xFFDDF8E7),
+    onPrimaryContainer = ComposeColor(0xFF087A3D),
     secondary = ComposeColor(0xFF475569),
     onSecondary = ComposeColor.White,
     secondaryContainer = ComposeColor(0xFFF1F5F9),
@@ -84,6 +84,10 @@ val LocalThemeColors = staticCompositionLocalOf { ThemeColors(
     shopAccent = ComposeColor(0xFF1EC6B5),
     shopBackground = ComposeColor(0xFFF6F8F8),
     shopSurfaceVariant = ComposeColor(0xFFF3F5F6),
+    muted = ComposeColor(0xFF61758F),
+    greenSoft = ComposeColor(0xFFDDF8E7),
+    greenDark = ComposeColor(0xFF087A3D),
+    mint = ComposeColor(0xFFECFFF3),
 ) }
 
 @Immutable

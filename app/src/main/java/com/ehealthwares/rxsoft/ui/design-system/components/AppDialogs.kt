@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.designsystem.components
+package com.ehealthwares.rxsoft.ui.designsystem.components
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import com.rxsoft.mobile.ui.designsystem.token.ShapeTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.ShapeTokens
 
 @Composable
 fun AppAlertDialog(

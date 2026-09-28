@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.data.remote.dto
+package com.ehealthwares.rxsoft.data.remote.dto
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -35,4 +35,12 @@ data class UpdatePriceListItemRequest(
     @Json(name = "unitPrice") val unitPrice: Double? = null,
     @Json(name = "startsAt") val startsAt: String? = null,
     @Json(name = "endsAt") val endsAt: String? = null,
+)
+
+@JsonClass(generateAdapter = true)
+data class AdjustItemPriceRequest(
+    @Json(name = "itemId") val itemId: String,
+    @Json(name = "priceListId") val priceListId: String,
+    @Json(name = "unitPrice") val unitPrice: Double,
+    @Json(name = "currencyCode") val currencyCode: String? = null,
 )

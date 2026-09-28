@@ -1,10 +1,10 @@
-package com.rxsoft.mobile.ui.pricing
+package com.ehealthwares.rxsoft.ui.pricing
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rxsoft.mobile.data.remote.dto.PriceListItemDto
-import com.rxsoft.mobile.data.repository.PricingRepository
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.remote.dto.PriceListItemDto
+import com.ehealthwares.rxsoft.data.repository.PricingRepository
+import com.ehealthwares.rxsoft.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,7 +1,7 @@
-package com.rxsoft.mobile.data.remote.api
+package com.ehealthwares.rxsoft.data.remote.api
 
-import com.rxsoft.mobile.data.remote.dto.CreateOrderRequest
-import com.rxsoft.mobile.data.remote.dto.OrderDto
+import com.ehealthwares.rxsoft.data.remote.dto.CreateOrderRequest
+import com.ehealthwares.rxsoft.data.remote.dto.OrderDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST

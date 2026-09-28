@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.settings
+package com.ehealthwares.rxsoft.ui.settings
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,12 +41,12 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rxsoft.mobile.data.local.SyncStateEntity
-import com.rxsoft.mobile.ui.designsystem.components.AppOutlinedButton
-import com.rxsoft.mobile.ui.designsystem.components.AppTextButton
-import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
-import com.rxsoft.mobile.ui.designsystem.token.ShapeTokens
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.data.local.SyncStateEntity
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppOutlinedButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTextButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTopAppBar
+import com.ehealthwares.rxsoft.ui.designsystem.token.ShapeTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
 
 @Composable
 fun SettingsScreen(

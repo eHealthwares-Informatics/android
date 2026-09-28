@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.shop
+package com.ehealthwares.rxsoft.ui.shop
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
@@ -64,15 +64,15 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
-import com.rxsoft.mobile.ui.designsystem.components.AppSearchBar
-import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
-import com.rxsoft.mobile.ui.designsystem.theme.AppearanceMode
-import com.rxsoft.mobile.ui.designsystem.theme.ThemeViewModel
-import com.rxsoft.mobile.ui.designsystem.token.ElevationTokens
-import com.rxsoft.mobile.ui.designsystem.token.ShapeTokens
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
-import com.rxsoft.mobile.ui.shop.model.Product
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppSearchBar
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTopAppBar
+import com.ehealthwares.rxsoft.ui.designsystem.theme.AppearanceMode
+import com.ehealthwares.rxsoft.ui.designsystem.theme.ThemeViewModel
+import com.ehealthwares.rxsoft.ui.designsystem.token.ElevationTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.ShapeTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.ui.shop.model.Product
+import com.ehealthwares.rxsoft.util.UiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

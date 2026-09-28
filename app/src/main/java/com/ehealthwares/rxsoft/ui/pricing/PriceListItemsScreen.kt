@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.pricing
+package com.ehealthwares.rxsoft.ui.pricing
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,19 +34,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rxsoft.mobile.data.remote.dto.PriceListItemDto
-import com.rxsoft.mobile.ui.designsystem.components.AppCard
-import com.rxsoft.mobile.ui.designsystem.components.AppEmptyState
-import com.rxsoft.mobile.ui.designsystem.components.AppErrorState
-import com.rxsoft.mobile.ui.designsystem.components.AppIconButton
-import com.rxsoft.mobile.ui.designsystem.components.AppLoadingState
-import com.rxsoft.mobile.ui.designsystem.components.AppPrimaryButton
-import com.rxsoft.mobile.ui.designsystem.components.AppSearchBar
-import com.rxsoft.mobile.ui.designsystem.components.AppTextButton
-import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
-import com.rxsoft.mobile.ui.designsystem.token.ShapeTokens
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.remote.dto.PriceListItemDto
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppCard
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppEmptyState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppErrorState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppIconButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppLoadingState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppPrimaryButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppSearchBar
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTextButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTopAppBar
+import com.ehealthwares.rxsoft.ui.designsystem.token.ShapeTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.util.UiState
 import java.text.NumberFormat
 import java.util.Locale
 

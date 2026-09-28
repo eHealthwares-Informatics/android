@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.settings
+package com.ehealthwares.rxsoft.ui.settings
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

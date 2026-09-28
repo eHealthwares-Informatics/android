@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.designsystem.theme
+package com.ehealthwares.rxsoft.ui.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 
@@ -16,6 +16,7 @@ enum class AppearanceMode(val displayName: String) {
  */
 enum class ColorTheme(val displayName: String, val description: String) {
     RXSOFT("RxSoft", "Default blue branding"),
+    DAMOREX("Damorex", "Green pharmacy branding"),
     EMERALD("Emerald", "Fresh green"),
     TEAL("Teal", "Calming teal"),
     INDIGO("Indigo", "Professional indigo"),
@@ -94,11 +95,16 @@ data class ThemeColors(
     val shopAccent: Color,
     val shopBackground: Color,
     val shopSurfaceVariant: Color,
+    val muted: Color,
+    val greenSoft: Color,
+    val greenDark: Color,
+    val mint: Color,
 )
 
 fun themePrimaryColor(theme: ColorTheme, customPrimary: Color? = null): Color =
     customPrimary ?: when (theme) {
         ColorTheme.RXSOFT -> Color(0xFF1565C0)
+        ColorTheme.DAMOREX -> Color(0xFF18A957)
         ColorTheme.EMERALD -> Color(0xFF059669)
         ColorTheme.TEAL -> Color(0xFF0D9488)
         ColorTheme.INDIGO -> Color(0xFF4F46E5)
@@ -111,6 +117,7 @@ fun themePrimaryColor(theme: ColorTheme, customPrimary: Color? = null): Color =
 fun themePrimaryColorDark(theme: ColorTheme, customPrimary: Color? = null): Color =
     customPrimary ?: when (theme) {
         ColorTheme.RXSOFT -> Color(0xFF64B5F6)
+        ColorTheme.DAMOREX -> Color(0xFF34D399)
         ColorTheme.EMERALD -> Color(0xFF34D399)
         ColorTheme.TEAL -> Color(0xFF2DD4BF)
         ColorTheme.INDIGO -> Color(0xFF818CF8)
@@ -188,6 +195,10 @@ fun getLightColors(theme: ColorTheme, customPrimary: Color? = null): ThemeColors
         shopAccent = Color(0xFF1EC6B5),
         shopBackground = Color(0xFFF6F8F8),
         shopSurfaceVariant = Color(0xFFF3F5F6),
+        muted = if (theme == ColorTheme.DAMOREX) Color(0xFF61758F) else Color(0xFF64748B),
+        greenSoft = if (theme == ColorTheme.DAMOREX) Color(0xFFDDF8E7) else Color(0xFFDCFCE7),
+        greenDark = if (theme == ColorTheme.DAMOREX) Color(0xFF087A3D) else Color(0xFF15803D),
+        mint = if (theme == ColorTheme.DAMOREX) Color(0xFFECFFF3) else Color(0xFFF0FDF4),
     )
 }
 
@@ -259,12 +270,16 @@ fun getDarkColors(theme: ColorTheme, customPrimary: Color? = null): ThemeColors 
         shopAccent = Color(0xFF1EC6B5),
         shopBackground = Color(0xFF0F1720),
         shopSurfaceVariant = Color(0xFF1C2940),
+        muted = Color(0xFF8899AD),
+        greenSoft = primary.copy(alpha = 0.18f),
+        greenDark = Color(0xFF34D399),
+        mint = Color(0xFF0D2418),
     )
 }
 
 data class ThemeSettings(
     val appearanceMode: AppearanceMode = AppearanceMode.SYSTEM,
-    val colorTheme: ColorTheme = ColorTheme.RXSOFT,
+    val colorTheme: ColorTheme = ColorTheme.DAMOREX,
     val customPrimaryColor: Long = 0xFF1565C0,
 ) {
     fun getLightColors(): ThemeColors = getLightColors(

@@ -1,8 +1,8 @@
-package com.rxsoft.mobile.util
+package com.ehealthwares.rxsoft.util
 
 import android.util.Log
-import com.rxsoft.mobile.data.remote.dto.UserPosConfig
-import com.rxsoft.mobile.data.repository.PosRepository
+import com.ehealthwares.rxsoft.data.remote.dto.UserPosConfig
+import com.ehealthwares.rxsoft.data.repository.PosRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

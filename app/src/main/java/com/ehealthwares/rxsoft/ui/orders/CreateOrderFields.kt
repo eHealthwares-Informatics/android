@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.orders
+package com.ehealthwares.rxsoft.ui.orders
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,8 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import com.rxsoft.mobile.ui.designsystem.components.AppSecondaryButton
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppSecondaryButton
+import com.ehealthwares.rxsoft.util.UiState
 
 @Composable
 internal fun CreateOrderCascadeFields(
@@ -75,7 +75,7 @@ internal fun CreateOrderCascadeFields(
         label = { Text("3 - Free text (item name)") },
         singleLine = true,
     )
-    Row(horizontalArrangement = Arrangement.spacedBy(com.rxsoft.mobile.ui.designsystem.token.SpacingTokens.sm)) {
+    Row(horizontalArrangement = Arrangement.spacedBy(com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens.sm)) {
         OutlinedTextField(
             value = qtyText, onValueChange = onQtyChange, modifier = Modifier.weight(1f),
             label = { Text("Quantity") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true,
@@ -95,7 +95,7 @@ internal fun CreateOrderCascadeFields(
     if (lines.isEmpty()) {
         Text("Pick an item (auto-fills generic + free text), or enter generic / free text.", style = MaterialTheme.typography.bodySmall)
     } else {
-        Column(verticalArrangement = Arrangement.spacedBy(com.rxsoft.mobile.ui.designsystem.token.SpacingTokens.xs)) {
+        Column(verticalArrangement = Arrangement.spacedBy(com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens.xs)) {
             lines.forEach { line ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),

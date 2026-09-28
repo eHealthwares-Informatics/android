@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.shop.model
+package com.ehealthwares.rxsoft.ui.shop.model
 
 data class Product(
     val id: String = "",

@@ -1,21 +1,21 @@
-package com.rxsoft.mobile.data.repository
+package com.ehealthwares.rxsoft.data.repository
 
-import com.rxsoft.mobile.data.local.OfflineItemDao
-import com.rxsoft.mobile.data.remote.api.PurchasesApi
-import com.rxsoft.mobile.data.remote.api.InventoryApi
-import com.rxsoft.mobile.data.remote.api.ItemsApi
-import com.rxsoft.mobile.data.remote.api.CustomersApi
-import com.rxsoft.mobile.data.remote.dto.CreatePurchaseLine
-import com.rxsoft.mobile.data.remote.dto.CreatePurchaseRequest
-import com.rxsoft.mobile.data.remote.dto.ItemDto
-import com.rxsoft.mobile.data.remote.dto.PartyDto
-import com.rxsoft.mobile.data.remote.dto.PurchaseDto
-import com.rxsoft.mobile.data.remote.dto.ReceiveGoodsLine
-import com.rxsoft.mobile.data.remote.dto.ReceiveGoodsRequest
-import com.rxsoft.mobile.data.remote.dto.ReferenceDto
-import com.rxsoft.mobile.data.remote.dto.StockLocationDto
-import com.rxsoft.mobile.data.remote.dto.UomDto
-import com.rxsoft.mobile.data.remote.dto.toItemDto
+import com.ehealthwares.rxsoft.data.local.OfflineItemDao
+import com.ehealthwares.rxsoft.data.remote.api.PurchasesApi
+import com.ehealthwares.rxsoft.data.remote.api.InventoryApi
+import com.ehealthwares.rxsoft.data.remote.api.ItemsApi
+import com.ehealthwares.rxsoft.data.remote.api.CustomersApi
+import com.ehealthwares.rxsoft.data.remote.dto.CreatePurchaseLine
+import com.ehealthwares.rxsoft.data.remote.dto.CreatePurchaseRequest
+import com.ehealthwares.rxsoft.data.remote.dto.ItemDto
+import com.ehealthwares.rxsoft.data.remote.dto.PartyDto
+import com.ehealthwares.rxsoft.data.remote.dto.PurchaseDto
+import com.ehealthwares.rxsoft.data.remote.dto.ReceiveGoodsLine
+import com.ehealthwares.rxsoft.data.remote.dto.ReceiveGoodsRequest
+import com.ehealthwares.rxsoft.data.remote.dto.ReferenceDto
+import com.ehealthwares.rxsoft.data.remote.dto.StockLocationDto
+import com.ehealthwares.rxsoft.data.remote.dto.UomDto
+import com.ehealthwares.rxsoft.data.remote.dto.toItemDto
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -70,7 +70,7 @@ class PurchasesRepository @Inject constructor(
     /** Approve a draft purchase order (status update). */
     suspend fun approvePurchase(id: String): Result<PurchaseDto> {
         return try {
-            Result.success(purchasesApi.updatePurchase(id, com.rxsoft.mobile.data.remote.api.UpdatePurchaseStatusRequest(status = "approved")))
+            Result.success(purchasesApi.updatePurchase(id, com.ehealthwares.rxsoft.data.remote.api.UpdatePurchaseStatusRequest(status = "approved")))
         } catch (e: Exception) {
             Result.failure(e)
         }

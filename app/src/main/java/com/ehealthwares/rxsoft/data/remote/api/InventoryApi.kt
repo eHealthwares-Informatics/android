@@ -1,9 +1,9 @@
-package com.rxsoft.mobile.data.remote.api
+package com.ehealthwares.rxsoft.data.remote.api
 
-import com.rxsoft.mobile.data.remote.dto.AdjustStockRequest
-import com.rxsoft.mobile.data.remote.dto.ListResponse
-import com.rxsoft.mobile.data.remote.dto.StockBalanceDto
-import com.rxsoft.mobile.data.remote.dto.StockLocationDto
+import com.ehealthwares.rxsoft.data.remote.dto.AdjustStockRequest
+import com.ehealthwares.rxsoft.data.remote.dto.ListResponse
+import com.ehealthwares.rxsoft.data.remote.dto.StockBalanceDto
+import com.ehealthwares.rxsoft.data.remote.dto.StockLocationDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST

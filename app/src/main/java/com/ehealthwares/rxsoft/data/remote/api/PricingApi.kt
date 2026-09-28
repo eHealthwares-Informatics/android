@@ -1,12 +1,13 @@
-package com.rxsoft.mobile.data.remote.api
+package com.ehealthwares.rxsoft.data.remote.api
 
-import com.rxsoft.mobile.data.remote.dto.CreatePriceListRequest
-import com.rxsoft.mobile.data.remote.dto.CreatePriceListItemRequest
-import com.rxsoft.mobile.data.remote.dto.ListResponse
-import com.rxsoft.mobile.data.remote.dto.PriceListDto
-import com.rxsoft.mobile.data.remote.dto.PriceListItemDto
-import com.rxsoft.mobile.data.remote.dto.UpdatePriceListRequest
-import com.rxsoft.mobile.data.remote.dto.UpdatePriceListItemRequest
+import com.ehealthwares.rxsoft.data.remote.dto.CreatePriceListRequest
+import com.ehealthwares.rxsoft.data.remote.dto.CreatePriceListItemRequest
+import com.ehealthwares.rxsoft.data.remote.dto.ListResponse
+import com.ehealthwares.rxsoft.data.remote.dto.PriceListDto
+import com.ehealthwares.rxsoft.data.remote.dto.PriceListItemDto
+import com.ehealthwares.rxsoft.data.remote.dto.UpdatePriceListRequest
+import com.ehealthwares.rxsoft.data.remote.dto.AdjustItemPriceRequest
+import com.ehealthwares.rxsoft.data.remote.dto.UpdatePriceListItemRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PATCH
@@ -41,5 +42,10 @@ interface PricingApi {
         @Path("priceListId") priceListId: String,
         @Path("priceListItemId") priceListItemId: String,
         @Body request: UpdatePriceListItemRequest
+    ): PriceListItemDto
+
+    @POST("price-lists/adjust-price")
+    suspend fun adjustItemPrice(
+        @Body request: AdjustItemPriceRequest
     ): PriceListItemDto
 }

@@ -1,7 +1,7 @@
-package com.rxsoft.mobile.data.remote.api
+package com.ehealthwares.rxsoft.data.remote.api
 
-import com.rxsoft.mobile.data.remote.dto.ListResponse
-import com.rxsoft.mobile.data.remote.dto.PaymentMethodDto
+import com.ehealthwares.rxsoft.data.remote.dto.ListResponse
+import com.ehealthwares.rxsoft.data.remote.dto.PaymentMethodDto
 import retrofit2.http.GET
 
 interface PaymentMethodsApi {

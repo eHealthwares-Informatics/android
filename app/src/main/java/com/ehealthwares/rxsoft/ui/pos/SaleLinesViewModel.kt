@@ -1,12 +1,12 @@
-package com.rxsoft.mobile.ui.pos
+package com.ehealthwares.rxsoft.ui.pos
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rxsoft.mobile.data.remote.dto.SaleDto
-import com.rxsoft.mobile.data.remote.dto.SaleLineDto
-import com.rxsoft.mobile.data.repository.PosRepository
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.remote.dto.SaleDto
+import com.ehealthwares.rxsoft.data.remote.dto.SaleLineDto
+import com.ehealthwares.rxsoft.data.repository.PosRepository
+import com.ehealthwares.rxsoft.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
 import javax.inject.Inject

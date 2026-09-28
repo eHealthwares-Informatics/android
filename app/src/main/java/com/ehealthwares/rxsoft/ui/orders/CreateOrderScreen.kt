@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.orders
+package com.ehealthwares.rxsoft.ui.orders
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,12 +32,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rxsoft.mobile.data.repository.OrderSubmitResult
-import com.rxsoft.mobile.ui.designsystem.components.AppPrimaryButton
-import com.rxsoft.mobile.ui.designsystem.components.AppSecondaryButton
-import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.repository.OrderSubmitResult
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppPrimaryButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppSecondaryButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTopAppBar
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.util.UiState
 import java.math.BigDecimal
 
 internal data class DraftOrderLine(

@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.rxsoft.mobile"
+    namespace = "com.ehealthwares.rxsoft"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.rxsoft.mobile"
+        applicationId = "com.ehealthwares.rxsoft"
         minSdk = 26
         targetSdk = 35
         versionCode = 14

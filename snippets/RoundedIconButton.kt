@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.shop.components
+package com.ehealthwares.rxsoft.ui.shop.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

@@ -1,11 +1,11 @@
-package com.rxsoft.mobile.ui.items
+package com.ehealthwares.rxsoft.ui.items
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rxsoft.mobile.data.remote.dto.ItemDto
-import com.rxsoft.mobile.data.repository.PosRepository
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.remote.dto.ItemDto
+import com.ehealthwares.rxsoft.data.repository.PosRepository
+import com.ehealthwares.rxsoft.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

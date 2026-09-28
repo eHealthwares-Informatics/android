@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.sync
+package com.ehealthwares.rxsoft.ui.sync
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.rxsoft.mobile.data.repository.SyncProgress
+import com.ehealthwares.rxsoft.data.repository.SyncProgress
 
 private fun entityLabel(entity: String?): String = when (entity) {
     "items" -> "Catalog items"

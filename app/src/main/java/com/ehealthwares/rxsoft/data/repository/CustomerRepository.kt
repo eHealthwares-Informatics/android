@@ -1,8 +1,8 @@
-package com.rxsoft.mobile.data.repository
+package com.ehealthwares.rxsoft.data.repository
 
-import com.rxsoft.mobile.data.remote.api.CustomersApi
-import com.rxsoft.mobile.data.remote.dto.CreateCustomerRequest
-import com.rxsoft.mobile.data.remote.dto.CustomerDto
+import com.ehealthwares.rxsoft.data.remote.api.CustomersApi
+import com.ehealthwares.rxsoft.data.remote.dto.CreateCustomerRequest
+import com.ehealthwares.rxsoft.data.remote.dto.CustomerDto
 import javax.inject.Inject
 
 class CustomerRepository @Inject constructor(

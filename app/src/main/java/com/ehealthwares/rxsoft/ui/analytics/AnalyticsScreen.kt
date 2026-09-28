@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.analytics
+package com.ehealthwares.rxsoft.ui.analytics
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,18 +52,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rxsoft.mobile.data.remote.dto.PurchasesAnalytics
-import com.rxsoft.mobile.data.remote.dto.SalesAnalytics
-import com.rxsoft.mobile.ui.designsystem.components.AppCard
-import com.rxsoft.mobile.ui.designsystem.components.AppEmptyState
-import com.rxsoft.mobile.ui.designsystem.components.AppErrorState
-import com.rxsoft.mobile.ui.designsystem.components.AppLoadingState
-import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
-import com.rxsoft.mobile.ui.designsystem.components.BarChartData
-import com.rxsoft.mobile.ui.designsystem.components.DateRangeFilterRow
-import com.rxsoft.mobile.ui.designsystem.components.SimpleBarChart
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.remote.dto.PurchasesAnalytics
+import com.ehealthwares.rxsoft.data.remote.dto.SalesAnalytics
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppCard
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppEmptyState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppErrorState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppLoadingState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTopAppBar
+import com.ehealthwares.rxsoft.ui.designsystem.components.BarChartData
+import com.ehealthwares.rxsoft.ui.designsystem.components.DateRangeFilterRow
+import com.ehealthwares.rxsoft.ui.designsystem.components.SimpleBarChart
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.util.UiState
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.NumberFormat

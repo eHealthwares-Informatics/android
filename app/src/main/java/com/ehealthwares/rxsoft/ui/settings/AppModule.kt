@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.settings
+package com.ehealthwares.rxsoft.ui.settings
 
 enum class AppModule(
     val title: String,

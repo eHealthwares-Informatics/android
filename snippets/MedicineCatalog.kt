@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.medicine
+package com.ehealthwares.rxsoft.ui.medicine
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,7 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.rxsoft.mobile.R
+import com.ehealthwares.rxsoft.R
 
 private val Primary = Color(0xFF1EC6B5)
 private val Background = Color(0xFFF6F8F8)

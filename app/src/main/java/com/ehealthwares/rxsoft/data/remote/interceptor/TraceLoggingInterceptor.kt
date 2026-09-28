@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.data.remote.interceptor
+package com.ehealthwares.rxsoft.data.remote.interceptor
 
 import android.util.Log
 import okhttp3.Interceptor

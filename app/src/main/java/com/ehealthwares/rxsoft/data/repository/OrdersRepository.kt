@@ -1,15 +1,15 @@
-package com.rxsoft.mobile.data.repository
+package com.ehealthwares.rxsoft.data.repository
 
-import com.rxsoft.mobile.data.local.CachedItemEntity
-import com.rxsoft.mobile.data.local.OfflineItemDao
-import com.rxsoft.mobile.data.local.PendingOrderDao
-import com.rxsoft.mobile.data.local.PendingOrderEntity
-import com.rxsoft.mobile.data.remote.api.ItemsApi
-import com.rxsoft.mobile.data.remote.api.WebsiteApi
-import com.rxsoft.mobile.data.remote.api.GenericProductsApi
-import com.rxsoft.mobile.data.remote.dto.CreateOrderItem
-import com.rxsoft.mobile.data.remote.dto.GenericProductDto
-import com.rxsoft.mobile.data.remote.dto.OrderDto
+import com.ehealthwares.rxsoft.data.local.CachedItemEntity
+import com.ehealthwares.rxsoft.data.local.OfflineItemDao
+import com.ehealthwares.rxsoft.data.local.PendingOrderDao
+import com.ehealthwares.rxsoft.data.local.PendingOrderEntity
+import com.ehealthwares.rxsoft.data.remote.api.ItemsApi
+import com.ehealthwares.rxsoft.data.remote.api.WebsiteApi
+import com.ehealthwares.rxsoft.data.remote.api.GenericProductsApi
+import com.ehealthwares.rxsoft.data.remote.dto.CreateOrderItem
+import com.ehealthwares.rxsoft.data.remote.dto.GenericProductDto
+import com.ehealthwares.rxsoft.data.remote.dto.OrderDto
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import java.util.UUID
@@ -122,7 +122,7 @@ class OrdersRepository @Inject constructor(
         // Try to push immediately.
         val pushed = try {
             websiteApi.createOrder(
-                com.rxsoft.mobile.data.remote.dto.CreateOrderRequest(
+                com.ehealthwares.rxsoft.data.remote.dto.CreateOrderRequest(
                     paymentMethod = paymentMethod,
                     origin = "mobile",
                     items = items,
@@ -165,7 +165,7 @@ class OrdersRepository @Inject constructor(
             try {
                 val items = itemsAdapter.fromJson(order.itemsJson) ?: emptyList()
                 websiteApi.createOrder(
-                    com.rxsoft.mobile.data.remote.dto.CreateOrderRequest(
+                    com.ehealthwares.rxsoft.data.remote.dto.CreateOrderRequest(
                         paymentMethod = order.paymentMethod,
                         origin = "mobile",
                         items = items,

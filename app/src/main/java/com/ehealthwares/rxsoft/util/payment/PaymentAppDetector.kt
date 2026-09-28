@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.util.payment
+package com.ehealthwares.rxsoft.util.payment
 
 import android.content.Context
 import android.content.Intent

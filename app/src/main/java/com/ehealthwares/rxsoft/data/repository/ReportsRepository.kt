@@ -1,10 +1,10 @@
-package com.rxsoft.mobile.data.repository
+package com.ehealthwares.rxsoft.data.repository
 
-import com.rxsoft.mobile.data.remote.api.ReportsApi
-import com.rxsoft.mobile.data.remote.dto.DailySalesRow
-import com.rxsoft.mobile.data.remote.dto.PurchasesAnalytics
-import com.rxsoft.mobile.data.remote.dto.SalesAnalytics
-import com.rxsoft.mobile.data.remote.dto.TopSellingItem
+import com.ehealthwares.rxsoft.data.remote.api.ReportsApi
+import com.ehealthwares.rxsoft.data.remote.dto.DailySalesRow
+import com.ehealthwares.rxsoft.data.remote.dto.PurchasesAnalytics
+import com.ehealthwares.rxsoft.data.remote.dto.SalesAnalytics
+import com.ehealthwares.rxsoft.data.remote.dto.TopSellingItem
 import okhttp3.ResponseBody
 import javax.inject.Inject
 

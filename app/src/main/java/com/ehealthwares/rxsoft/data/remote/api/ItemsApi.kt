@@ -1,6 +1,6 @@
-package com.rxsoft.mobile.data.remote.api
+package com.ehealthwares.rxsoft.data.remote.api
 
-import com.rxsoft.mobile.data.remote.dto.*
+import com.ehealthwares.rxsoft.data.remote.dto.*
 import retrofit2.http.*
 
 interface ItemsApi {

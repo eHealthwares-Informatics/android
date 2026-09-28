@@ -1,13 +1,13 @@
-package com.rxsoft.mobile.ui.settings
+package com.ehealthwares.rxsoft.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rxsoft.mobile.data.local.SyncStateEntity
-import com.rxsoft.mobile.data.repository.SyncProgress
-import com.rxsoft.mobile.data.repository.SyncRepository
-import com.rxsoft.mobile.util.PosConfigManager
-import com.rxsoft.mobile.util.ServerUrlManager
-import com.rxsoft.mobile.util.SyncSettingsManager
+import com.ehealthwares.rxsoft.data.local.SyncStateEntity
+import com.ehealthwares.rxsoft.data.repository.SyncProgress
+import com.ehealthwares.rxsoft.data.repository.SyncRepository
+import com.ehealthwares.rxsoft.util.PosConfigManager
+import com.ehealthwares.rxsoft.util.ServerUrlManager
+import com.ehealthwares.rxsoft.util.SyncSettingsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

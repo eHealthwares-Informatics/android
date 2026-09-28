@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.auth
+package com.ehealthwares.rxsoft.ui.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -49,16 +49,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.rxsoft.mobile.R
-import com.rxsoft.mobile.BuildConfig
-import com.rxsoft.mobile.ui.designsystem.components.AppFilterChip
-import com.rxsoft.mobile.ui.designsystem.components.AppLoadingState
-import com.rxsoft.mobile.ui.designsystem.components.AppPrimaryButton
-import com.rxsoft.mobile.ui.designsystem.components.AppTextButton
-import com.rxsoft.mobile.ui.designsystem.components.AppTextField
-import com.rxsoft.mobile.ui.designsystem.token.ShapeTokens
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.R
+import com.ehealthwares.rxsoft.BuildConfig
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppFilterChip
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppLoadingState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppPrimaryButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTextButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTextField
+import com.ehealthwares.rxsoft.ui.designsystem.token.ShapeTokens
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.util.UiState
 import androidx.compose.foundation.layout.widthIn
 
 @Composable

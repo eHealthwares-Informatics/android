@@ -1,11 +1,11 @@
-package com.rxsoft.mobile
+package com.ehealthwares.rxsoft
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.rxsoft.mobile.ui.navigation.AppNavigation
-import com.rxsoft.mobile.ui.theme.RxSoftMobileTheme
+import com.ehealthwares.rxsoft.ui.navigation.AppNavigation
+import com.ehealthwares.rxsoft.ui.theme.RxSoftMobileTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

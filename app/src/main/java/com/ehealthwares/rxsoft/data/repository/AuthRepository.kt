@@ -1,13 +1,13 @@
-package com.rxsoft.mobile.data.repository
+package com.ehealthwares.rxsoft.data.repository
 
 import android.util.Log
-import com.rxsoft.mobile.data.remote.api.AuthApi
-import com.rxsoft.mobile.data.remote.dto.LoginRequest
-import com.rxsoft.mobile.data.remote.dto.CurrentUserResponse
-import com.rxsoft.mobile.data.remote.dto.ShopperOtpResponse
-import com.rxsoft.mobile.data.remote.dto.ShopperRequestOtpRequest
-import com.rxsoft.mobile.data.remote.dto.ShopperVerifyOtpRequest
-import com.rxsoft.mobile.util.TokenManager
+import com.ehealthwares.rxsoft.data.remote.api.AuthApi
+import com.ehealthwares.rxsoft.data.remote.dto.LoginRequest
+import com.ehealthwares.rxsoft.data.remote.dto.CurrentUserResponse
+import com.ehealthwares.rxsoft.data.remote.dto.ShopperOtpResponse
+import com.ehealthwares.rxsoft.data.remote.dto.ShopperRequestOtpRequest
+import com.ehealthwares.rxsoft.data.remote.dto.ShopperVerifyOtpRequest
+import com.ehealthwares.rxsoft.util.TokenManager
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 

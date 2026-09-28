@@ -1,6 +1,6 @@
-package com.rxsoft.mobile.data.remote.interceptor
+package com.ehealthwares.rxsoft.data.remote.interceptor
 
-import com.rxsoft.mobile.util.ServerUrlManager
+import com.ehealthwares.rxsoft.util.ServerUrlManager
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
 import okhttp3.Response

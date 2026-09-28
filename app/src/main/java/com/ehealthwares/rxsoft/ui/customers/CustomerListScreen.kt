@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.customers
+package com.ehealthwares.rxsoft.ui.customers
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,10 +9,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.lazy.items
-import com.rxsoft.mobile.data.remote.dto.CustomerDto
-import com.rxsoft.mobile.ui.designsystem.components.AppCard
-import com.rxsoft.mobile.ui.designsystem.templates.ListScreenTemplate
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.remote.dto.CustomerDto
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppCard
+import com.ehealthwares.rxsoft.ui.designsystem.templates.ListScreenTemplate
+import com.ehealthwares.rxsoft.util.UiState
 
 @Composable
 fun CustomerListScreen(

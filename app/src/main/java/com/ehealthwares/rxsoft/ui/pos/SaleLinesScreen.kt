@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.pos
+package com.ehealthwares.rxsoft.ui.pos
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,8 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rxsoft.mobile.ui.designsystem.components.AppCard
-import com.rxsoft.mobile.ui.designsystem.templates.ListScreenTemplate
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppCard
+import com.ehealthwares.rxsoft.ui.designsystem.templates.ListScreenTemplate
 import java.text.NumberFormat
 import java.util.Locale
 

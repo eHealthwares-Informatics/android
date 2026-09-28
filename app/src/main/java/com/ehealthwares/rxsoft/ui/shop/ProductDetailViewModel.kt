@@ -1,15 +1,15 @@
-package com.rxsoft.mobile.ui.shop
+package com.ehealthwares.rxsoft.ui.shop
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rxsoft.mobile.data.local.CachedItemEntity
-import com.rxsoft.mobile.data.local.OfflineItemDao
-import com.rxsoft.mobile.data.local.PriceDao
-import com.rxsoft.mobile.data.local.PriceListDao
-import com.rxsoft.mobile.data.repository.PosRepository
-import com.rxsoft.mobile.ui.shop.model.Product
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.local.CachedItemEntity
+import com.ehealthwares.rxsoft.data.local.OfflineItemDao
+import com.ehealthwares.rxsoft.data.local.PriceDao
+import com.ehealthwares.rxsoft.data.local.PriceListDao
+import com.ehealthwares.rxsoft.data.repository.PosRepository
+import com.ehealthwares.rxsoft.ui.shop.model.Product
+import com.ehealthwares.rxsoft.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

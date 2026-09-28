@@ -1,6 +1,6 @@
 // Kotlin 1.9.24
 // Kotlin/Composable // Last updated: 2026-09-09 updated by med
-package com.rxsoft.mobile.ui.orders
+package com.ehealthwares.rxsoft.ui.orders
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,11 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rxsoft.mobile.data.remote.dto.OrderDto
-import com.rxsoft.mobile.data.remote.dto.OrderItemDto
-import com.rxsoft.mobile.ui.designsystem.components.AppCard
-import com.rxsoft.mobile.ui.designsystem.templates.ListScreenTemplate
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.data.remote.dto.OrderDto
+import com.ehealthwares.rxsoft.data.remote.dto.OrderItemDto
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppCard
+import com.ehealthwares.rxsoft.ui.designsystem.templates.ListScreenTemplate
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
 import java.text.NumberFormat
 import java.util.Locale
 

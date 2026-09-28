@@ -3,12 +3,12 @@ package com.ehealthwares.rxsoft.ui.inventory
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rxsoft.mobile.data.local.CachedItemEntity
-import com.rxsoft.mobile.data.local.OfflineItemDao
-import com.rxsoft.mobile.data.local.PriceDao
-import com.rxsoft.mobile.data.remote.dto.PriceListDto
-import com.rxsoft.mobile.data.repository.PricingRepository
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.local.CachedItemEntity
+import com.ehealthwares.rxsoft.data.local.OfflineItemDao
+import com.ehealthwares.rxsoft.data.local.PriceDao
+import com.ehealthwares.rxsoft.data.remote.dto.PriceListDto
+import com.ehealthwares.rxsoft.data.repository.PricingRepository
+import com.ehealthwares.rxsoft.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -160,15 +160,12 @@ class PriceAdjustmentViewModel @Inject constructor(
 
         viewModelScope.launch {
             _submitState.value = UiState.Loading
-            // Find the price-list row for this item to obtain its row id.
-            val row = findPriceRow(listId, item)
-            if (row == null) {
-                _submitState.value = UiState.Error(
-                    "This item has no price entry in the selected list. Add it from Price Lists first.",
-                )
-                return@launch
-            }
-            pricingRepository.updateItemPrice(listId, row.first, item.itemId, newPrice, row.second)
+            pricingRepository.adjustItemPrice(
+                itemId = item.itemId,
+                priceListId = listId,
+                unitPrice = newPrice,
+                currencyCode = null,
+            )
                 .onSuccess {
                     Log.d("PriceAdjustVM", "Price adjusted for ${item.itemId}: $newPrice")
                     _currentPrice.value = BigDecimal.valueOf(newPrice)
@@ -179,17 +176,6 @@ class PriceAdjustmentViewModel @Inject constructor(
                     _submitState.value = UiState.Error(e.message ?: "Adjustment failed")
                 }
         }
-    }
-
-    private suspend fun findPriceRow(
-        listId: String,
-        item: CachedItemEntity,
-    ): Pair<String, String?>? {
-        val needle = item.code ?: item.displayName ?: item.name
-        val rows = pricingRepository.listItems(listId, search = needle, page = 1, limit = 50)
-            .getOrElse { return null }
-        val exact = rows.firstOrNull { it.item?.id == item.itemId }
-        return exact?.id?.let { it to exact.currencyCode }
     }
 
     fun resetSubmitState() {

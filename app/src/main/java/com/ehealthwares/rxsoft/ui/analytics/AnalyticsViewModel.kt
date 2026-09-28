@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.analytics
+package com.ehealthwares.rxsoft.ui.analytics
 
 import android.content.ContentValues
 import android.content.Context
@@ -12,12 +12,12 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rxsoft.mobile.data.remote.dto.OrderDto
-import com.rxsoft.mobile.data.remote.dto.PurchasesAnalytics
-import com.rxsoft.mobile.data.remote.dto.SalesAnalytics
-import com.rxsoft.mobile.data.repository.OrdersRepository
-import com.rxsoft.mobile.data.repository.ReportsRepository
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.remote.dto.OrderDto
+import com.ehealthwares.rxsoft.data.remote.dto.PurchasesAnalytics
+import com.ehealthwares.rxsoft.data.remote.dto.SalesAnalytics
+import com.ehealthwares.rxsoft.data.repository.OrdersRepository
+import com.ehealthwares.rxsoft.data.repository.ReportsRepository
+import com.ehealthwares.rxsoft.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.pos
+package com.ehealthwares.rxsoft.ui.pos
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -28,14 +28,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.items
 import kotlinx.coroutines.launch
-import com.rxsoft.mobile.data.remote.dto.SaleDto
-import com.rxsoft.mobile.ui.designsystem.components.AppCard
-import com.rxsoft.mobile.ui.designsystem.templates.ListScreenTemplate
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
-import com.rxsoft.mobile.ui.designsystem.theme.AppearanceMode
-import com.rxsoft.mobile.ui.designsystem.theme.ThemeViewModel
-import com.rxsoft.mobile.util.PosConfigManager
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.remote.dto.SaleDto
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppCard
+import com.ehealthwares.rxsoft.ui.designsystem.templates.ListScreenTemplate
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.ui.designsystem.theme.AppearanceMode
+import com.ehealthwares.rxsoft.ui.designsystem.theme.ThemeViewModel
+import com.ehealthwares.rxsoft.util.PosConfigManager
+import com.ehealthwares.rxsoft.util.UiState
 import java.text.NumberFormat
 import java.util.Locale
 

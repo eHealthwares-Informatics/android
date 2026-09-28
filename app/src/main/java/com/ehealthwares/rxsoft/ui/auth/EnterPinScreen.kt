@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.auth
+package com.ehealthwares.rxsoft.ui.auth
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween

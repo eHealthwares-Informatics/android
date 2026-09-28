@@ -1,7 +1,7 @@
-package com.rxsoft.mobile.ui.shop
+package com.ehealthwares.rxsoft.ui.shop
 
-import com.rxsoft.mobile.ui.shop.model.CartItem
-import com.rxsoft.mobile.ui.shop.model.Product
+import com.ehealthwares.rxsoft.ui.shop.model.CartItem
+import com.ehealthwares.rxsoft.ui.shop.model.Product
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

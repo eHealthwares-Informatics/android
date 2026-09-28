@@ -1,6 +1,6 @@
-package com.rxsoft.mobile.di
+package com.ehealthwares.rxsoft.di
 
-import com.rxsoft.mobile.data.repository.*
+import com.ehealthwares.rxsoft.data.repository.*
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent

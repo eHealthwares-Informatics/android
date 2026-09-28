@@ -1,10 +1,10 @@
-package com.rxsoft.mobile.data.repository
+package com.ehealthwares.rxsoft.data.repository
 
-import com.rxsoft.mobile.data.local.PendingStockAdjustmentDao
-import com.rxsoft.mobile.data.local.PendingStockAdjustmentEntity
-import com.rxsoft.mobile.data.remote.api.InventoryApi
-import com.rxsoft.mobile.data.remote.dto.AdjustStockRequest
-import com.rxsoft.mobile.data.remote.dto.StockBalanceDto
+import com.ehealthwares.rxsoft.data.local.PendingStockAdjustmentDao
+import com.ehealthwares.rxsoft.data.local.PendingStockAdjustmentEntity
+import com.ehealthwares.rxsoft.data.remote.api.InventoryApi
+import com.ehealthwares.rxsoft.data.remote.dto.AdjustStockRequest
+import com.ehealthwares.rxsoft.data.remote.dto.StockBalanceDto
 import com.squareup.moshi.Moshi
 import java.util.UUID
 import javax.inject.Inject

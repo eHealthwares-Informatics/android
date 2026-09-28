@@ -1,9 +1,9 @@
-package com.rxsoft.mobile.data.remote.api
+package com.ehealthwares.rxsoft.data.remote.api
 
-import com.rxsoft.mobile.data.remote.dto.AvailablePaymentProviderDto
-import com.rxsoft.mobile.data.remote.dto.InitializePaymentRequest
-import com.rxsoft.mobile.data.remote.dto.InitializePaymentResponse
-import com.rxsoft.mobile.data.remote.dto.VerifyPaymentResponse
+import com.ehealthwares.rxsoft.data.remote.dto.AvailablePaymentProviderDto
+import com.ehealthwares.rxsoft.data.remote.dto.InitializePaymentRequest
+import com.ehealthwares.rxsoft.data.remote.dto.InitializePaymentResponse
+import com.ehealthwares.rxsoft.data.remote.dto.VerifyPaymentResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST

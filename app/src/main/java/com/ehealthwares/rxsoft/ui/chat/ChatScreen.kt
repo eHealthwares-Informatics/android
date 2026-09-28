@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.chat
+package com.ehealthwares.rxsoft.ui.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -46,8 +46,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rxsoft.mobile.data.remote.dto.ExchangeMessage
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.data.remote.dto.ExchangeMessage
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
 
 /**
  * One-to-one chat thread against the Conversation Engine. When the engine ends

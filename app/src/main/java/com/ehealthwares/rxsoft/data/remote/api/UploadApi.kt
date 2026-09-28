@@ -1,6 +1,6 @@
-package com.rxsoft.mobile.data.remote.api
+package com.ehealthwares.rxsoft.data.remote.api
 
-import com.rxsoft.mobile.data.remote.dto.UploadImageResponse
+import com.ehealthwares.rxsoft.data.remote.dto.UploadImageResponse
 import okhttp3.MultipartBody
 import retrofit2.http.Multipart
 import retrofit2.http.POST

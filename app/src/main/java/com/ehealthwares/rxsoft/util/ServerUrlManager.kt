@@ -1,8 +1,8 @@
-package com.rxsoft.mobile.util
+package com.ehealthwares.rxsoft.util
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.rxsoft.mobile.BuildConfig
+import com.ehealthwares.rxsoft.BuildConfig
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton

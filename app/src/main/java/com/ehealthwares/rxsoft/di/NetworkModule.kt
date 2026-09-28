@@ -1,14 +1,14 @@
-package com.rxsoft.mobile.di
+package com.ehealthwares.rxsoft.di
 
-import com.rxsoft.mobile.data.remote.api.*
-import com.rxsoft.mobile.data.remote.dto.BigDecimalAdapter
-import com.rxsoft.mobile.data.remote.dto.ListResponseAdapterFactory
-import com.rxsoft.mobile.data.remote.interceptor.AuthInterceptor
-import com.rxsoft.mobile.data.remote.interceptor.ServerUrlInterceptor
-import com.rxsoft.mobile.data.remote.interceptor.TokenRefreshInterceptor
-import com.rxsoft.mobile.data.remote.interceptor.TraceLoggingInterceptor
-import com.rxsoft.mobile.util.ServerUrlManager
-import com.rxsoft.mobile.util.TokenManager
+import com.ehealthwares.rxsoft.data.remote.api.*
+import com.ehealthwares.rxsoft.data.remote.dto.BigDecimalAdapter
+import com.ehealthwares.rxsoft.data.remote.dto.ListResponseAdapterFactory
+import com.ehealthwares.rxsoft.data.remote.interceptor.AuthInterceptor
+import com.ehealthwares.rxsoft.data.remote.interceptor.ServerUrlInterceptor
+import com.ehealthwares.rxsoft.data.remote.interceptor.TokenRefreshInterceptor
+import com.ehealthwares.rxsoft.data.remote.interceptor.TraceLoggingInterceptor
+import com.ehealthwares.rxsoft.util.ServerUrlManager
+import com.ehealthwares.rxsoft.util.TokenManager
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module

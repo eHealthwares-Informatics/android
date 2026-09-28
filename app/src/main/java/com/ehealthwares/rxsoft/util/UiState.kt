@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.util
+package com.ehealthwares.rxsoft.util
 
 sealed interface UiState<out T> {
     data object Idle : UiState<Nothing>

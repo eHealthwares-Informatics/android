@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.data.local
+package com.ehealthwares.rxsoft.data.local
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey

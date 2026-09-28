@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.shop
+package com.ehealthwares.rxsoft.ui.shop
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,12 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.rxsoft.mobile.ui.shop.components.CartItemCard
-import com.rxsoft.mobile.ui.shop.components.PaymentSummary
-import com.rxsoft.mobile.ui.shop.components.PrimaryButton
-import com.rxsoft.mobile.ui.shop.components.RoundedIconButton
-import com.rxsoft.mobile.ui.shop.components.VoucherCard
-import com.rxsoft.mobile.ui.shop.model.CartItem
+import com.ehealthwares.rxsoft.ui.shop.components.CartItemCard
+import com.ehealthwares.rxsoft.ui.shop.components.PaymentSummary
+import com.ehealthwares.rxsoft.ui.shop.components.PrimaryButton
+import com.ehealthwares.rxsoft.ui.shop.components.RoundedIconButton
+import com.ehealthwares.rxsoft.ui.shop.components.VoucherCard
+import com.ehealthwares.rxsoft.ui.shop.model.CartItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

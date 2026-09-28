@@ -1,14 +1,14 @@
-package com.rxsoft.mobile.data.repository
+package com.ehealthwares.rxsoft.data.repository
 
-import com.rxsoft.mobile.data.local.CachedItemEntity
-import com.rxsoft.mobile.data.local.CachedPaymentMethodEntity
-import com.rxsoft.mobile.data.local.OfflineItemDao
-import com.rxsoft.mobile.data.local.PaymentMethodDao
-import com.rxsoft.mobile.data.local.PendingSaleDao
-import com.rxsoft.mobile.data.local.PendingSaleEntity
-import com.rxsoft.mobile.data.local.PriceDao
-import com.rxsoft.mobile.data.remote.api.*
-import com.rxsoft.mobile.data.remote.dto.*
+import com.ehealthwares.rxsoft.data.local.CachedItemEntity
+import com.ehealthwares.rxsoft.data.local.CachedPaymentMethodEntity
+import com.ehealthwares.rxsoft.data.local.OfflineItemDao
+import com.ehealthwares.rxsoft.data.local.PaymentMethodDao
+import com.ehealthwares.rxsoft.data.local.PendingSaleDao
+import com.ehealthwares.rxsoft.data.local.PendingSaleEntity
+import com.ehealthwares.rxsoft.data.local.PriceDao
+import com.ehealthwares.rxsoft.data.remote.api.*
+import com.ehealthwares.rxsoft.data.remote.dto.*
 import com.squareup.moshi.Moshi
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody

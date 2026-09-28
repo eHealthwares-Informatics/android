@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.designsystem.templates
+package com.ehealthwares.rxsoft.ui.designsystem.templates
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,13 +26,13 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import com.rxsoft.mobile.ui.designsystem.components.AppEmptyState
-import com.rxsoft.mobile.ui.designsystem.components.AppErrorState
-import com.rxsoft.mobile.ui.designsystem.components.AppLoadingState
-import com.rxsoft.mobile.ui.designsystem.components.AppPageLoading
-import com.rxsoft.mobile.ui.designsystem.components.AppTopAppBar
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppEmptyState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppErrorState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppLoadingState
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppPageLoading
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTopAppBar
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.util.UiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

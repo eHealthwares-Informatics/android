@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.data.remote.dto
+package com.ehealthwares.rxsoft.data.remote.dto
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -11,7 +11,15 @@ data class CreateItemRequest(
     @Json(name = "barcode") val barcode: String? = null,
     @Json(name = "isActive") val isActive: Boolean = true,
     @Json(name = "baseUomId") val baseUomId: String? = null,
-    @Json(name = "imageUrl") val imageUrl: String? = null
+    @Json(name = "purchaseUomId") val purchaseUomId: String? = null,
+    @Json(name = "saleUomId") val saleUomId: String? = null,
+    @Json(name = "imageUrl") val imageUrl: String? = null,
+    @Json(name = "alias") val alias: String? = null,
+    @Json(name = "genericProductCode") val genericProductCode: String? = null,
+    @Json(name = "genericDrugCode") val genericDrugCode: String? = null,
+    @Json(name = "trackLot") val trackLot: Boolean = true,
+    @Json(name = "trackExpiry") val trackExpiry: Boolean = true,
+    @Json(name = "shelfLifeDays") val shelfLifeDays: Int? = null
 )
 
 @JsonClass(generateAdapter = true)

@@ -1,12 +1,12 @@
-package com.rxsoft.mobile.ui.profile
+package com.ehealthwares.rxsoft.ui.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rxsoft.mobile.data.remote.dto.CurrentUserResponse
-import com.rxsoft.mobile.data.remote.dto.UserPosConfig
-import com.rxsoft.mobile.data.repository.AuthRepository
-import com.rxsoft.mobile.util.PosConfigManager
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.remote.dto.CurrentUserResponse
+import com.ehealthwares.rxsoft.data.remote.dto.UserPosConfig
+import com.ehealthwares.rxsoft.data.repository.AuthRepository
+import com.ehealthwares.rxsoft.util.PosConfigManager
+import com.ehealthwares.rxsoft.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

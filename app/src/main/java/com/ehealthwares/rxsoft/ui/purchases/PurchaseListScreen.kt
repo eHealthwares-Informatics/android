@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.ui.purchases
+package com.ehealthwares.rxsoft.ui.purchases
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,15 +29,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rxsoft.mobile.data.remote.dto.PartyDto
-import com.rxsoft.mobile.data.remote.dto.PurchaseDto
-import com.rxsoft.mobile.data.remote.dto.StockLocationDto
-import com.rxsoft.mobile.ui.designsystem.components.AppCard
-import com.rxsoft.mobile.ui.designsystem.components.AppPrimaryButton
-import com.rxsoft.mobile.ui.designsystem.components.AppSecondaryButton
-import com.rxsoft.mobile.ui.designsystem.templates.ListScreenTemplate
-import com.rxsoft.mobile.ui.designsystem.token.SpacingTokens
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.remote.dto.PartyDto
+import com.ehealthwares.rxsoft.data.remote.dto.PurchaseDto
+import com.ehealthwares.rxsoft.data.remote.dto.StockLocationDto
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppCard
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppPrimaryButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppSecondaryButton
+import com.ehealthwares.rxsoft.ui.designsystem.templates.ListScreenTemplate
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.util.UiState
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.Locale
@@ -134,7 +134,7 @@ private fun PurchaseCard(purchase: PurchaseDto, onClick: () -> Unit) {
 private fun CreatePurchaseDialog(
     createState: UiState<PurchaseDto>,
     viewModel: PurchasesViewModel,
-    onSubmit: (supplierId: String, warehouseId: String, lines: List<com.rxsoft.mobile.data.remote.dto.CreatePurchaseLine>, note: String?, invoiceNumber: String?) -> Unit,
+    onSubmit: (supplierId: String, warehouseId: String, lines: List<com.ehealthwares.rxsoft.data.remote.dto.CreatePurchaseLine>, note: String?, invoiceNumber: String?) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val suppliers by viewModel.suppliers.collectAsState()

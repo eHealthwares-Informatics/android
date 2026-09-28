@@ -1,11 +1,11 @@
-package com.rxsoft.mobile.ui.inventory
+package com.ehealthwares.rxsoft.ui.inventory
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rxsoft.mobile.data.remote.dto.StockBalanceDto
-import com.rxsoft.mobile.data.repository.InventoryRepository
-import com.rxsoft.mobile.util.UiState
+import com.ehealthwares.rxsoft.data.remote.dto.StockBalanceDto
+import com.ehealthwares.rxsoft.data.repository.InventoryRepository
+import com.ehealthwares.rxsoft.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

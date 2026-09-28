@@ -1,4 +1,4 @@
-package com.rxsoft.mobile.util.payment
+package com.ehealthwares.rxsoft.util.payment
 
 /**
  * Payment options offered at checkout. `providerCode` matches the backend
