@@ -1,0 +1,812 @@
+{
+  "app/build.gradle.kts": {
+    "mtime": 1783498248.1714292,
+    "ast_hash": "f1f14f6d4788584f54b84ece5c2df15f",
+    "semantic_hash": "f1f14f6d4788584f54b84ece5c2df15f"
+  },
+  "app/src/main/java/com/rxsoft/mobile/MainActivity.kt": {
+    "mtime": 1782304490.5885453,
+    "ast_hash": "14cb5a5b7729b9a636a0b182ebc19e0f",
+    "semantic_hash": "14cb5a5b7729b9a636a0b182ebc19e0f"
+  },
+  "app/src/main/java/com/rxsoft/mobile/RxSoftApplication.kt": {
+    "mtime": 1782304380.1308718,
+    "ast_hash": "45c475902b186290a179501cf3b009e8",
+    "semantic_hash": "45c475902b186290a179501cf3b009e8"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/api/AuthApi.kt": {
+    "mtime": 1782304406.671397,
+    "ast_hash": "b394ebed58fda1d6b86061be879949b3",
+    "semantic_hash": "b394ebed58fda1d6b86061be879949b3"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/api/ConfigApi.kt": {
+    "mtime": 1782304414.6427143,
+    "ast_hash": "5cfd43fb27a85f5ca7f271ac0cd053f2",
+    "semantic_hash": "5cfd43fb27a85f5ca7f271ac0cd053f2"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/api/CustomersApi.kt": {
+    "mtime": 1782304410.4921117,
+    "ast_hash": "c00f5e4354bcdc742a7eb8504baf44f4",
+    "semantic_hash": "c00f5e4354bcdc742a7eb8504baf44f4"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/api/InventoryApi.kt": {
+    "mtime": 1782323398.8833277,
+    "ast_hash": "c5e2f43cad578a2f14c4a2e4764f7301",
+    "semantic_hash": "c5e2f43cad578a2f14c4a2e4764f7301"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/api/ItemsApi.kt": {
+    "mtime": 1787172438.4309356,
+    "ast_hash": "f2c5e7b5342e829098016f4ead600a12",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/api/PaymentMethodsApi.kt": {
+    "mtime": 1782304413.6972725,
+    "ast_hash": "ec1267df91a097b9488dcdb4472c57c8",
+    "semantic_hash": "ec1267df91a097b9488dcdb4472c57c8"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/api/PricingApi.kt": {
+    "mtime": 1782320424.05719,
+    "ast_hash": "e7707787dbd9ae13964a5b06b53bb42e",
+    "semantic_hash": "e7707787dbd9ae13964a5b06b53bb42e"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/api/ReportsApi.kt": {
+    "mtime": 1782304412.9029756,
+    "ast_hash": "35e601e78677a45823744eca9785efc2",
+    "semantic_hash": "35e601e78677a45823744eca9785efc2"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/api/SalesApi.kt": {
+    "mtime": 1782304408.2238245,
+    "ast_hash": "c42fb5ad8a069d25c1fc33fc8bc7f54e",
+    "semantic_hash": "c42fb5ad8a069d25c1fc33fc8bc7f54e"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/api/UploadApi.kt": {
+    "mtime": 1782396614.193049,
+    "ast_hash": "ecab6d0810187366e6034b3f3937a4ab",
+    "semantic_hash": "ecab6d0810187366e6034b3f3937a4ab"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/dto/AuthDtos.kt": {
+    "mtime": 1782315179.8883743,
+    "ast_hash": "e47e6328ab78e43597ade62148949c46",
+    "semantic_hash": "e47e6328ab78e43597ade62148949c46"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/dto/BigDecimalAdapter.kt": {
+    "mtime": 1782391597.384906,
+    "ast_hash": "4082167ab2a4105749a82d13209fea13",
+    "semantic_hash": "4082167ab2a4105749a82d13209fea13"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/dto/CommonDtos.kt": {
+    "mtime": 1782389927.510456,
+    "ast_hash": "f820540e82d8dbf58ac4c6cd1e5e4a81",
+    "semantic_hash": "f820540e82d8dbf58ac4c6cd1e5e4a81"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/dto/ConfigDtos.kt": {
+    "mtime": 1782396601.8211846,
+    "ast_hash": "f1a83e455b8944f07db62e7003be05e4",
+    "semantic_hash": "f1a83e455b8944f07db62e7003be05e4"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/dto/CustomerDtos.kt": {
+    "mtime": 1782304396.9164033,
+    "ast_hash": "b4843842cf5200d24bfe4f9b0f5e8248",
+    "semantic_hash": "b4843842cf5200d24bfe4f9b0f5e8248"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/dto/InventoryDtos.kt": {
+    "mtime": 1782323394.6790729,
+    "ast_hash": "be34b283cf7b2150e2e2128ee4adc0e8",
+    "semantic_hash": "be34b283cf7b2150e2e2128ee4adc0e8"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/dto/ItemDtos.kt": {
+    "mtime": 1787172434.7511134,
+    "ast_hash": "8699611122cb0696a3b177e236de79d4",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/dto/ReportDtos.kt": {
+    "mtime": 1782304399.977832,
+    "ast_hash": "9755f2056bec15dd6427955f03958c6c",
+    "semantic_hash": "9755f2056bec15dd6427955f03958c6c"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/dto/SaleDtos.kt": {
+    "mtime": 1783506577.951327,
+    "ast_hash": "bc6d446b404163b7ccd06e51f45f1669",
+    "semantic_hash": "bc6d446b404163b7ccd06e51f45f1669"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/interceptor/AuthInterceptor.kt": {
+    "mtime": 1783500060.9294264,
+    "ast_hash": "7457d8c322769a95e30226785522f28e",
+    "semantic_hash": "7457d8c322769a95e30226785522f28e"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/interceptor/TokenRefreshInterceptor.kt": {
+    "mtime": 1782315199.3749669,
+    "ast_hash": "5261cd22efce6b98e5e58047a69cb7b9",
+    "semantic_hash": "5261cd22efce6b98e5e58047a69cb7b9"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/interceptor/TraceLoggingInterceptor.kt": {
+    "mtime": 1783506526.6681087,
+    "ast_hash": "d0783dcbad094d172a85394198a3542c",
+    "semantic_hash": "d0783dcbad094d172a85394198a3542c"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/repository/AuthRepository.kt": {
+    "mtime": 1782315183.2214987,
+    "ast_hash": "369c1916a89c4a4cdf0e9305422e4bf9",
+    "semantic_hash": "369c1916a89c4a4cdf0e9305422e4bf9"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/repository/CustomerRepository.kt": {
+    "mtime": 1782304428.828686,
+    "ast_hash": "e67881186e974de2299e07b302c9a9c1",
+    "semantic_hash": "e67881186e974de2299e07b302c9a9c1"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/repository/InventoryRepository.kt": {
+    "mtime": 1782323403.4410746,
+    "ast_hash": "1bd733469047d49cee8996ec20d070b1",
+    "semantic_hash": "1bd733469047d49cee8996ec20d070b1"
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/repository/PosRepository.kt": {
+    "mtime": 1787172442.9030511,
+    "ast_hash": "6b3108e9b1f72641958059fccf839bb0",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/repository/ReportsRepository.kt": {
+    "mtime": 1782304431.5560467,
+    "ast_hash": "5e39fdd42dd4daed13ba69ab3329456e",
+    "semantic_hash": "5e39fdd42dd4daed13ba69ab3329456e"
+  },
+  "app/src/main/java/com/rxsoft/mobile/di/AppModule.kt": {
+    "mtime": 1782305538.506614,
+    "ast_hash": "0f94dd104399fb6a6346ddc083cc38fb",
+    "semantic_hash": "0f94dd104399fb6a6346ddc083cc38fb"
+  },
+  "app/src/main/java/com/rxsoft/mobile/di/NetworkModule.kt": {
+    "mtime": 1787174688.250439,
+    "ast_hash": "8c0fd6b952f8103252fdd6c787259ead",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/rxsoft/mobile/di/RepositoryModule.kt": {
+    "mtime": 1782304439.3006144,
+    "ast_hash": "79c2f6f94c28cbf508524534e4de4b56",
+    "semantic_hash": "79c2f6f94c28cbf508524534e4de4b56"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/auth/AuthViewModel.kt": {
+    "mtime": 1787155051.963569,
+    "ast_hash": "073f452d5e149417c2322a9a533b0fc0",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/auth/EnterPinScreen.kt": {
+    "mtime": 1783499148.6685271,
+    "ast_hash": "24d6ee6fd805c0d56eb692565a5c37af",
+    "semantic_hash": "24d6ee6fd805c0d56eb692565a5c37af"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/auth/EnterPinViewModel.kt": {
+    "mtime": 1783498283.657868,
+    "ast_hash": "0a288c57f41945a09238ec7a0587c041",
+    "semantic_hash": "0a288c57f41945a09238ec7a0587c041"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/auth/LoginScreen.kt": {
+    "mtime": 1787172354.053124,
+    "ast_hash": "f71b2707e18cbe496ae95ffddc0ed27b",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/customers/CustomerListScreen.kt": {
+    "mtime": 1783436192.0049844,
+    "ast_hash": "a147625b3134c48f6a1800dc7f17dce2",
+    "semantic_hash": "a147625b3134c48f6a1800dc7f17dce2"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/customers/CustomerListViewModel.kt": {
+    "mtime": 1783444270.327463,
+    "ast_hash": "14f4c7f801099b8296b503009f881f5d",
+    "semantic_hash": "14f4c7f801099b8296b503009f881f5d"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/components/AppBadge.kt": {
+    "mtime": 1783431219.708558,
+    "ast_hash": "19ccf4db7a0e49f5514eda6738650d0f",
+    "semantic_hash": "19ccf4db7a0e49f5514eda6738650d0f"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/components/AppBottomNav.kt": {
+    "mtime": 1783431217.5581877,
+    "ast_hash": "2ed9dd2f78c532e17cfd6742e8d3c011",
+    "semantic_hash": "2ed9dd2f78c532e17cfd6742e8d3c011"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/components/AppButton.kt": {
+    "mtime": 1783431445.3790631,
+    "ast_hash": "45b56964e9dfd31f481aee4b68181738",
+    "semantic_hash": "45b56964e9dfd31f481aee4b68181738"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/components/AppCard.kt": {
+    "mtime": 1783431214.7480092,
+    "ast_hash": "32d399891948ee75a7123d68d573b384",
+    "semantic_hash": "32d399891948ee75a7123d68d573b384"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/components/AppChip.kt": {
+    "mtime": 1783431178.1466734,
+    "ast_hash": "d89133cfc5623b5596d02d0fc79ef890",
+    "semantic_hash": "d89133cfc5623b5596d02d0fc79ef890"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/components/AppDialogs.kt": {
+    "mtime": 1783431180.640432,
+    "ast_hash": "f2a654a24430afecef3fee24cec7edab",
+    "semantic_hash": "f2a654a24430afecef3fee24cec7edab"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/components/AppEmptyState.kt": {
+    "mtime": 1783431363.1826737,
+    "ast_hash": "877904cb898b11f7c02e077d2981820a",
+    "semantic_hash": "877904cb898b11f7c02e077d2981820a"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/components/AppErrorState.kt": {
+    "mtime": 1783431366.297547,
+    "ast_hash": "e0a248c5fcf56faf6b799dad0add1516",
+    "semantic_hash": "e0a248c5fcf56faf6b799dad0add1516"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/components/AppLoading.kt": {
+    "mtime": 1783431371.6986067,
+    "ast_hash": "80951127fbf4bdf97c6c4ab660703423",
+    "semantic_hash": "80951127fbf4bdf97c6c4ab660703423"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/components/AppSearchBar.kt": {
+    "mtime": 1783431172.481676,
+    "ast_hash": "408135256d1d27b2ccdf4832ced274ee",
+    "semantic_hash": "408135256d1d27b2ccdf4832ced274ee"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/components/AppSnackbar.kt": {
+    "mtime": 1783431182.946213,
+    "ast_hash": "4b769b1ded162c74314a9cd89c2271b8",
+    "semantic_hash": "4b769b1ded162c74314a9cd89c2271b8"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/components/AppTextField.kt": {
+    "mtime": 1783431375.930628,
+    "ast_hash": "e25f276f61a48607a6d2e47f4a9346b6",
+    "semantic_hash": "e25f276f61a48607a6d2e47f4a9346b6"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/components/AppTopAppBar.kt": {
+    "mtime": 1783431446.1500907,
+    "ast_hash": "88f24785ec7e41b6d8be450a26178d27",
+    "semantic_hash": "88f24785ec7e41b6d8be450a26178d27"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/templates/ListScreenTemplate.kt": {
+    "mtime": 1783444064.1753232,
+    "ast_hash": "670ef83b21c2579a4d9cc7e1184e5309",
+    "semantic_hash": "670ef83b21c2579a4d9cc7e1184e5309"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/theme/Theme.kt": {
+    "mtime": 1783431136.6593826,
+    "ast_hash": "c15a3820677c03ff25de8652f1181948",
+    "semantic_hash": "c15a3820677c03ff25de8652f1181948"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/theme/Type.kt": {
+    "mtime": 1783431131.9103124,
+    "ast_hash": "81fd96a39dab57ec304884f08b3b407e",
+    "semantic_hash": "81fd96a39dab57ec304884f08b3b407e"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/token/ColorTokens.kt": {
+    "mtime": 1783431128.3268151,
+    "ast_hash": "6da53fa7c2695d23630fa79e358f7ea1",
+    "semantic_hash": "6da53fa7c2695d23630fa79e358f7ea1"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/token/ElevationTokens.kt": {
+    "mtime": 1783431119.6940937,
+    "ast_hash": "b8845af125af329f44be518ed24ae551",
+    "semantic_hash": "b8845af125af329f44be518ed24ae551"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/token/MotionTokens.kt": {
+    "mtime": 1783431120.6627245,
+    "ast_hash": "3bcd442997134657795c897e3ba0443e",
+    "semantic_hash": "3bcd442997134657795c897e3ba0443e"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/token/ShapeTokens.kt": {
+    "mtime": 1783431118.370196,
+    "ast_hash": "67fb95c37b491284e437c2fe7b9f8d04",
+    "semantic_hash": "67fb95c37b491284e437c2fe7b9f8d04"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/design-system/token/SpacingTokens.kt": {
+    "mtime": 1783431116.7515228,
+    "ast_hash": "cf7fa93bc65dc90f60d275beaafc5db7",
+    "semantic_hash": "cf7fa93bc65dc90f60d275beaafc5db7"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/inventory/StockAdjustmentScreen.kt": {
+    "mtime": 1783436412.277219,
+    "ast_hash": "8cce3444d8a4a870a9545b7f441eb6e7",
+    "semantic_hash": "8cce3444d8a4a870a9545b7f441eb6e7"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/inventory/StockAdjustmentViewModel.kt": {
+    "mtime": 1787172480.9937346,
+    "ast_hash": "8a0d4162a129582345bdba55697215ff",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/inventory/StockBalanceScreen.kt": {
+    "mtime": 1783439318.9601867,
+    "ast_hash": "ecb559b22426e07b82cb5d95a7d823cd",
+    "semantic_hash": "ecb559b22426e07b82cb5d95a7d823cd"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/inventory/StockBalanceViewModel.kt": {
+    "mtime": 1783444266.0694284,
+    "ast_hash": "ef3fb511c181dfdaed71a1107ccf7f17",
+    "semantic_hash": "ef3fb511c181dfdaed71a1107ccf7f17"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/items/ItemFormScreen.kt": {
+    "mtime": 1783436358.7822747,
+    "ast_hash": "cfd2ff96512ea1fc77fd596d9ac81c14",
+    "semantic_hash": "cfd2ff96512ea1fc77fd596d9ac81c14"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/items/ItemFormViewModel.kt": {
+    "mtime": 1782396879.343661,
+    "ast_hash": "36d48bb75fead33d8044de83703248bc",
+    "semantic_hash": "36d48bb75fead33d8044de83703248bc"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/items/ItemListScreen.kt": {
+    "mtime": 1783436194.4758663,
+    "ast_hash": "04231d03fe05c818184d47be5ee3a625",
+    "semantic_hash": "04231d03fe05c818184d47be5ee3a625"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/items/ItemListViewModel.kt": {
+    "mtime": 1783444268.0823853,
+    "ast_hash": "1423f0ba5aee8286cb2c4c9228c0b697",
+    "semantic_hash": "1423f0ba5aee8286cb2c4c9228c0b697"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/navigation/AppNavigation.kt": {
+    "mtime": 1783498361.1182706,
+    "ast_hash": "de16b476e7769eba7e7e40998366839d",
+    "semantic_hash": "de16b476e7769eba7e7e40998366839d"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/pos/PosOrderDetailScreen.kt": {
+    "mtime": 1783499762.2591696,
+    "ast_hash": "37852c747fdc40500b81a098445c705f",
+    "semantic_hash": "37852c747fdc40500b81a098445c705f"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/pos/PosOrderDetailViewModel.kt": {
+    "mtime": 1783444271.5898688,
+    "ast_hash": "2466d8405fcaa3020d5706480575c96f",
+    "semantic_hash": "2466d8405fcaa3020d5706480575c96f"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/pos/PosOrderListScreen.kt": {
+    "mtime": 1783444042.2945411,
+    "ast_hash": "d6e7ace89ee7e7c3246b1346167cb20e",
+    "semantic_hash": "d6e7ace89ee7e7c3246b1346167cb20e"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/pos/PosOrderListViewModel.kt": {
+    "mtime": 1783444167.344947,
+    "ast_hash": "c9e36b4eb463b8e806239c800e4b61a8",
+    "semantic_hash": "c9e36b4eb463b8e806239c800e4b61a8"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/pos/PosTerminalScreen.kt": {
+    "mtime": 1783439393.838907,
+    "ast_hash": "f59dd8a5e844f2da949da7f6f6976c35",
+    "semantic_hash": "f59dd8a5e844f2da949da7f6f6976c35"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/pos/PosTerminalViewModel.kt": {
+    "mtime": 1787172463.3807716,
+    "ast_hash": "021b1e7acbd0c5f7c6973e3af3d49314",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/prescription/UploadPrescriptionScreen.kt": {
+    "mtime": 1783439358.587669,
+    "ast_hash": "8a5d2445464fcad7f1ab2545069cb4a9",
+    "semantic_hash": "8a5d2445464fcad7f1ab2545069cb4a9"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/profile/ProfileScreen.kt": {
+    "mtime": 1783439359.366848,
+    "ast_hash": "1e2b230ff5bb197f89f9ab4e92964cad",
+    "semantic_hash": "1e2b230ff5bb197f89f9ab4e92964cad"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/reports/DailySalesScreen.kt": {
+    "mtime": 1783436093.4318035,
+    "ast_hash": "93f2a745e50e88748feeef2b15cacdd3",
+    "semantic_hash": "93f2a745e50e88748feeef2b15cacdd3"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/reports/DailySalesViewModel.kt": {
+    "mtime": 1783444273.7271197,
+    "ast_hash": "0d47328a80789e79ddfd0e31ad1ec5b8",
+    "semantic_hash": "0d47328a80789e79ddfd0e31ad1ec5b8"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/settings/AppModule.kt": {
+    "mtime": 1783255801.598386,
+    "ast_hash": "01c9fea008ebb312dad8f1e745ed1ad9",
+    "semantic_hash": "01c9fea008ebb312dad8f1e745ed1ad9"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/settings/ModuleConfig.kt": {
+    "mtime": 1783255548.6970508,
+    "ast_hash": "39f9657e47807f02c1904dd8fbabd501",
+    "semantic_hash": "39f9657e47807f02c1904dd8fbabd501"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/settings/SettingsScreen.kt": {
+    "mtime": 1783444117.5689344,
+    "ast_hash": "3de0e5d6b48a0ab42f0d8f0fdeb8883c",
+    "semantic_hash": "3de0e5d6b48a0ab42f0d8f0fdeb8883c"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/settings/SettingsViewModel.kt": {
+    "mtime": 1783444084.6512933,
+    "ast_hash": "dbcf6f0f47761b8aec006b8943320b9a",
+    "semantic_hash": "dbcf6f0f47761b8aec006b8943320b9a"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/shop/CheckoutScreen.kt": {
+    "mtime": 1783439322.2966325,
+    "ast_hash": "1be42110f6f808822789a29ff1077e31",
+    "semantic_hash": "1be42110f6f808822789a29ff1077e31"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/shop/CheckoutViewModel.kt": {
+    "mtime": 1783506738.2867198,
+    "ast_hash": "7329a93889057074448cdb6db41cf888",
+    "semantic_hash": "7329a93889057074448cdb6db41cf888"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/shop/MedicineCatalogScreen.kt": {
+    "mtime": 1787172460.7257953,
+    "ast_hash": "e133acb3f35b6021737ace5fb6aa7db9",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/shop/MedicineCatalogViewModel.kt": {
+    "mtime": 1787172457.5521877,
+    "ast_hash": "28e65781f326fa67ed7f2edfb983ac5e",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/shop/ProductDetailScreen.kt": {
+    "mtime": 1783437368.0143757,
+    "ast_hash": "8087a76f4a56eef282d17b7141191f6d",
+    "semantic_hash": "8087a76f4a56eef282d17b7141191f6d"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/shop/ProductDetailViewModel.kt": {
+    "mtime": 1783494656.414769,
+    "ast_hash": "e341ca900321e3868accbd2a0d6e0365",
+    "semantic_hash": "e341ca900321e3868accbd2a0d6e0365"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/shop/ShopCart.kt": {
+    "mtime": 1783254728.7225466,
+    "ast_hash": "21143430ed87bb5fd71adcda983a14c8",
+    "semantic_hash": "21143430ed87bb5fd71adcda983a14c8"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/shop/components/CartItemCard.kt": {
+    "mtime": 1783437253.015014,
+    "ast_hash": "76f49d124aa852c7457cc0a72284c9d3",
+    "semantic_hash": "76f49d124aa852c7457cc0a72284c9d3"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/shop/components/PaymentSummary.kt": {
+    "mtime": 1783437225.186522,
+    "ast_hash": "048a3aa788a95e81c9d86b8b02c273c1",
+    "semantic_hash": "048a3aa788a95e81c9d86b8b02c273c1"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/shop/components/PrimaryButton.kt": {
+    "mtime": 1783437208.2330778,
+    "ast_hash": "3692629f2b913c315828500e1c342137",
+    "semantic_hash": "3692629f2b913c315828500e1c342137"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/shop/components/ProductImage.kt": {
+    "mtime": 1783437216.8091314,
+    "ast_hash": "58cf3d6da3ebfd5dc4c94efe10f1f3ff",
+    "semantic_hash": "58cf3d6da3ebfd5dc4c94efe10f1f3ff"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/shop/components/QuantitySelector.kt": {
+    "mtime": 1783437214.4374332,
+    "ast_hash": "478ae75ce63dccbc08f6a6fadcea0a31",
+    "semantic_hash": "478ae75ce63dccbc08f6a6fadcea0a31"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/shop/components/RoundedIconButton.kt": {
+    "mtime": 1783437210.824335,
+    "ast_hash": "378a4a3ca55a0814769a4ee46cf8cb5d",
+    "semantic_hash": "378a4a3ca55a0814769a4ee46cf8cb5d"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/shop/components/VoucherCard.kt": {
+    "mtime": 1783437228.2009904,
+    "ast_hash": "b2ab5e55d96ecbf29463a392f66e4a68",
+    "semantic_hash": "b2ab5e55d96ecbf29463a392f66e4a68"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/shop/model/CartItem.kt": {
+    "mtime": 1783254686.0614552,
+    "ast_hash": "60a8a367bf7e12ec978ba5067c5b8246",
+    "semantic_hash": "60a8a367bf7e12ec978ba5067c5b8246"
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/shop/model/Product.kt": {
+    "mtime": 1787172447.2171323,
+    "ast_hash": "03c1b18e3e3aaf982c9c122692a05dc0",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/rxsoft/mobile/ui/theme/Theme.kt": {
+    "mtime": 1783431220.7075644,
+    "ast_hash": "b2a78ed0661d05b37f8c512a95a86399",
+    "semantic_hash": "b2a78ed0661d05b37f8c512a95a86399"
+  },
+  "app/src/main/java/com/rxsoft/mobile/util/Constants.kt": {
+    "mtime": 1782304381.6978378,
+    "ast_hash": "8c3863a558f25bd924f215a3955d8046",
+    "semantic_hash": "8c3863a558f25bd924f215a3955d8046"
+  },
+  "app/src/main/java/com/rxsoft/mobile/util/PinManager.kt": {
+    "mtime": 1783498328.4802227,
+    "ast_hash": "81d836ee559f7f647b857ef9274e4bbf",
+    "semantic_hash": "81d836ee559f7f647b857ef9274e4bbf"
+  },
+  "app/src/main/java/com/rxsoft/mobile/util/PosConfigManager.kt": {
+    "mtime": 1783443959.436353,
+    "ast_hash": "46804352b3f11d060a1d6dcc6c3a108d",
+    "semantic_hash": "46804352b3f11d060a1d6dcc6c3a108d"
+  },
+  "app/src/main/java/com/rxsoft/mobile/util/ReceiptPrinter.kt": {
+    "mtime": 1782396789.6384904,
+    "ast_hash": "96edd9d5896183af8ee9b5a770d45927",
+    "semantic_hash": "96edd9d5896183af8ee9b5a770d45927"
+  },
+  "app/src/main/java/com/rxsoft/mobile/util/ServerUrlManager.kt": {
+    "mtime": 1783410114.8647826,
+    "ast_hash": "bcde0e4f28daa4329bff2dc1a297da5b",
+    "semantic_hash": "bcde0e4f28daa4329bff2dc1a297da5b"
+  },
+  "app/src/main/java/com/rxsoft/mobile/util/SessionManager.kt": {
+    "mtime": 1783498269.787895,
+    "ast_hash": "db63b53b8903d0c0eccd419fb55c8c3b",
+    "semantic_hash": "db63b53b8903d0c0eccd419fb55c8c3b"
+  },
+  "app/src/main/java/com/rxsoft/mobile/util/TokenManager.kt": {
+    "mtime": 1782304383.5361874,
+    "ast_hash": "9df18a27f89349648d677282fdff3563",
+    "semantic_hash": "9df18a27f89349648d677282fdff3563"
+  },
+  "app/src/main/java/com/rxsoft/mobile/util/UiState.kt": {
+    "mtime": 1782312651.5507236,
+    "ast_hash": "33ddd8fad7f54fa05dfd5d559a0f90f6",
+    "semantic_hash": "33ddd8fad7f54fa05dfd5d559a0f90f6"
+  },
+  "build.gradle.kts": {
+    "mtime": 1782304633.0570796,
+    "ast_hash": "6af7cd4ba1da9359437433dee9c3baf3",
+    "semantic_hash": "6af7cd4ba1da9359437433dee9c3baf3"
+  },
+  "gradlew": {
+    "mtime": 1782302884.0505085,
+    "ast_hash": "266606e78242737ef3da02a80ea0564d",
+    "semantic_hash": "266606e78242737ef3da02a80ea0564d"
+  },
+  "settings.gradle.kts": {
+    "mtime": 1782302885.0089602,
+    "ast_hash": "19b87e1dc510df0a623b724a5da422fb",
+    "semantic_hash": "19b87e1dc510df0a623b724a5da422fb"
+  },
+  "snippets/CartItemCard.kt": {
+    "mtime": 1783253313.7905068,
+    "ast_hash": "e19d277c1b6678cca82b506b974b6f37",
+    "semantic_hash": "e19d277c1b6678cca82b506b974b6f37"
+  },
+  "snippets/CheckoutScreen.kt": {
+    "mtime": 1783253394.6750631,
+    "ast_hash": "67e8ee5d2bcc71462f0ab369b21ef126",
+    "semantic_hash": "67e8ee5d2bcc71462f0ab369b21ef126"
+  },
+  "snippets/MedicineCatalog.kt": {
+    "mtime": 1783183979.1160479,
+    "ast_hash": "14b34df5acc378398bcf81acefd2520a",
+    "semantic_hash": "14b34df5acc378398bcf81acefd2520a"
+  },
+  "snippets/PaymentSummary.kt": {
+    "mtime": 1783253329.7700243,
+    "ast_hash": "d2e19fa925e066130033fbd87818f4d5",
+    "semantic_hash": "d2e19fa925e066130033fbd87818f4d5"
+  },
+  "snippets/PrimaryButton.kt": {
+    "mtime": 1783253236.0822148,
+    "ast_hash": "e7066f4f42865f6e3fd1d5b32b737f07",
+    "semantic_hash": "e7066f4f42865f6e3fd1d5b32b737f07"
+  },
+  "snippets/ProductDetailScreen.kt": {
+    "mtime": 1783253346.9914043,
+    "ast_hash": "98624cf3ce78622e50783b6565aafc91",
+    "semantic_hash": "98624cf3ce78622e50783b6565aafc91"
+  },
+  "snippets/ProductImage.kt": {
+    "mtime": 1783253267.963424,
+    "ast_hash": "36b9466b4bc160ee63a488a1a3043c64",
+    "semantic_hash": "36b9466b4bc160ee63a488a1a3043c64"
+  },
+  "snippets/ProfileScreen.kt": {
+    "mtime": 1783232133.4261892,
+    "ast_hash": "65f6ca3ad2dda8aea0ecd51295deb9e6",
+    "semantic_hash": "65f6ca3ad2dda8aea0ecd51295deb9e6"
+  },
+  "snippets/QuantitySelector.kt": {
+    "mtime": 1783255185.396876,
+    "ast_hash": "59eb23eb0825791d1b88ad3fbf4ec122",
+    "semantic_hash": "59eb23eb0825791d1b88ad3fbf4ec122"
+  },
+  "snippets/QuantitySelectorPreview.kt": {
+    "mtime": 1783253205.2991917,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "snippets/RoundedIconButton.kt": {
+    "mtime": 1783253251.5948906,
+    "ast_hash": "316f27952bcee981dbe83a4bf397df4b",
+    "semantic_hash": "316f27952bcee981dbe83a4bf397df4b"
+  },
+  "snippets/UploadPrescriptionScreen.kt": {
+    "mtime": 1783183778.9419909,
+    "ast_hash": "25dc77a35f32782bdd1a19fcf55ba3b4",
+    "semantic_hash": "25dc77a35f32782bdd1a19fcf55ba3b4"
+  },
+  "snippets/VoucherCard.kt": {
+    "mtime": 1783253283.5240815,
+    "ast_hash": "0a5351ab8010c29d95502c896e1426d9",
+    "semantic_hash": "0a5351ab8010c29d95502c896e1426d9"
+  },
+  "terminal.sh": {
+    "mtime": 1783414316.1967793,
+    "ast_hash": "43e3b6b4d860aa78f1f86cfa9fd75177",
+    "semantic_hash": "43e3b6b4d860aa78f1f86cfa9fd75177"
+  },
+  ".opencode/package.json": {
+    "mtime": 1783604440.8506637,
+    "ast_hash": "c9442b1dfba4cd254e8dc712cf2d3da8",
+    "semantic_hash": ""
+  },
+  "host.sh": {
+    "mtime": 1787173698.5921414,
+    "ast_hash": "b47da6a3824a24e119d3571d8282aa22",
+    "semantic_hash": ""
+  },
+  ".agents/rxsoft-mobile.agent.md": {
+    "mtime": 1783603277.1130629,
+    "ast_hash": "26d32e30fb83938d188d7536c872935d",
+    "semantic_hash": ""
+  },
+  ".opencode/skills/compose-screen.md": {
+    "mtime": 1783603005.97184,
+    "ast_hash": "49acd70728f52c276a4a9fae51d1d20b",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1784142720.8131738,
+    "ast_hash": "0ec1f28b7d4763b1b53d7c191775d3be",
+    "semantic_hash": ""
+  },
+  "skills/ 03-component-engineer.md": {
+    "mtime": 1783427475.952257,
+    "ast_hash": "5f8342517950db38f0cd1324a75ad340",
+    "semantic_hash": ""
+  },
+  "skills/01-design-system-architect.md": {
+    "mtime": 1783427488.7309253,
+    "ast_hash": "7474f0717c028099523adf54a1c04534",
+    "semantic_hash": ""
+  },
+  "skills/02-design-token-engineer.md": {
+    "mtime": 1783427514.2791376,
+    "ast_hash": "d127f790cf99ee16282d71b5e450b617",
+    "semantic_hash": ""
+  },
+  "skills/04-layout-pattern-engineer.md": {
+    "mtime": 1783427534.5736332,
+    "ast_hash": "31970fdd5ce6e610b3c929dcef486c28",
+    "semantic_hash": ""
+  },
+  "skills/05-screen-generator.md": {
+    "mtime": 1783427547.930471,
+    "ast_hash": "d07e728bbc4cfd3f1c79ee282736a7f6",
+    "semantic_hash": ""
+  },
+  "skills/07-compose-performance-reviewer.md": {
+    "mtime": 1783427579.7861292,
+    "ast_hash": "b0d7c9af16878beab6cd7b0b7c7df43d",
+    "semantic_hash": ""
+  },
+  "skills/08-accessibility-specialist.md": {
+    "mtime": 1783428105.1916223,
+    "ast_hash": "9023f994ffa5b0c6b20f029309df5b00",
+    "semantic_hash": ""
+  },
+  "skills/09-material3-expert.md": {
+    "mtime": 1783428243.609291,
+    "ast_hash": "ef5bb7f4393835d66b26ab8af2f2c1e7",
+    "semantic_hash": ""
+  },
+  "skills/10-android-animation-expert.md": {
+    "mtime": 1783428259.4103684,
+    "ast_hash": "436b71f645aee0dc6092f6e357f50713",
+    "semantic_hash": ""
+  },
+  "skills/11-compose-testing-expert.md": {
+    "mtime": 1783428295.2871006,
+    "ast_hash": "34203ad1cd100fabd1a425b28ad225a9",
+    "semantic_hash": ""
+  },
+  "skills/13-design-system-documentation.md": {
+    "mtime": 1783428328.9527156,
+    "ast_hash": "aea3121697e4d37120b5bd0399bf0113",
+    "semantic_hash": ""
+  },
+  "skills/14-theme-engineer.md": {
+    "mtime": 1783428431.9961822,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "skills/15-settings-screen-engineer.md": {
+    "mtime": 1783428495.2980819,
+    "ast_hash": "f9231aabcf9662242f5d6e9ec8fd3fe7",
+    "semantic_hash": ""
+  },
+  "skills/18-form-engineer.md": {
+    "mtime": 1783428687.170669,
+    "ast_hash": "ed29f5c1ff7eb4b7f2cfc60a89a2d094",
+    "semantic_hash": ""
+  },
+  "skills/19-data-table-engineer.md": {
+    "mtime": 1783428706.622037,
+    "ast_hash": "d02967d575fa5cfacb2f9de613131b50",
+    "semantic_hash": ""
+  },
+  "skills/20-dashboard-engineer.md": {
+    "mtime": 1783428726.6126502,
+    "ast_hash": "a6ac1525c11b9ba8f6c0958021e7c438",
+    "semantic_hash": ""
+  },
+  "skills/21-healthcare-ux.md": {
+    "mtime": 1783428745.846581,
+    "ast_hash": "cdbf9611ba0dca3ea0d0b14ced45bae2",
+    "semantic_hash": ""
+  },
+  "skills/22-state-management.md": {
+    "mtime": 1783428764.034744,
+    "ast_hash": "61974a044d0fc2f02bcfa0101649eac6",
+    "semantic_hash": ""
+  },
+  "skills/23-preview-generator.md": {
+    "mtime": 1783428786.7754169,
+    "ast_hash": "2bbd5553ce5e6f020757469b77940bbe",
+    "semantic_hash": ""
+  },
+  "skills/24-theme-customization.md": {
+    "mtime": 1783428803.6308,
+    "ast_hash": "83c870d92f830af016feab958232596c",
+    "semantic_hash": ""
+  },
+  "skills/anndroidespert.md": {
+    "mtime": 1783428027.9374266,
+    "ast_hash": "f02419b4869bb35c955c2fbd48517633",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-hdpi/ic_launcher.webp": {
+    "mtime": 1782302884.7048757,
+    "ast_hash": "39d9bb21eb48f128a71c3f01ad3cd427",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-hdpi/ic_launcher_round.webp": {
+    "mtime": 1782302884.71264,
+    "ast_hash": "70d6f58af3c76ee221c829b1ce9daa04",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-mdpi/ic_launcher.webp": {
+    "mtime": 1782302884.722953,
+    "ast_hash": "d2acce71c7b46e5e9540d23a9f7b2166",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-mdpi/ic_launcher_round.webp": {
+    "mtime": 1782302884.730075,
+    "ast_hash": "6376acb48f96a855ee95c113cd7fd616",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-xhdpi/ic_launcher.webp": {
+    "mtime": 1782302884.7408273,
+    "ast_hash": "bd087d80b70bec05a43c745f29dc3ffc",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp": {
+    "mtime": 1782302884.747604,
+    "ast_hash": "7479edd56ab712609f030054bffd7263",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-xxhdpi/ic_launcher.webp": {
+    "mtime": 1782302884.7583988,
+    "ast_hash": "ea180e8d1a2e8300cc998b987266b736",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp": {
+    "mtime": 1782302884.76495,
+    "ast_hash": "947842742b29eeda80ee0805e1600366",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp": {
+    "mtime": 1782302884.783039,
+    "ast_hash": "54ab624970c86c2146e76b93f27586f7",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp": {
+    "mtime": 1782302884.789984,
+    "ast_hash": "9ee591be72fb336861a8044086054daa",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/rxsoft/mobile/data/remote/interceptor/ServerUrlInterceptor.kt": {
+    "mtime": 1787174207.0517452,
+    "ast_hash": "f13230584cf37d72896e063e819c1fb3",
+    "semantic_hash": ""
+  }
+}
