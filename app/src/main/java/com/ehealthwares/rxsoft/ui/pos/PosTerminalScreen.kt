@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -89,6 +90,7 @@ import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
 import com.ehealthwares.rxsoft.util.ReceiptData
 import com.ehealthwares.rxsoft.util.ReceiptLine
 import com.ehealthwares.rxsoft.util.UiState
+import android.util.Log
 import com.ehealthwares.rxsoft.util.printReceipt
 import java.math.BigDecimal
 import java.text.NumberFormat
@@ -113,6 +115,8 @@ fun PosTerminalScreen(
     val selectedPaymentMethod by viewModel.selectedPaymentMethod.collectAsState()
     val priceLists by viewModel.priceLists.collectAsState()
     val selectedPriceListId by viewModel.selectedPriceListId.collectAsState()
+    val pendingSaleCount by viewModel.pendingSaleCount.collectAsState()
+    val isSyncing by viewModel.isSyncing.collectAsState()
     val themeColors = AppThemeColors.current
     val context = LocalContext.current
 
@@ -139,21 +143,39 @@ fun PosTerminalScreen(
         if (checkoutState is UiState.Success) {
             val sale = (checkoutState as UiState.Success<*>).data
             if (sale is com.ehealthwares.rxsoft.data.remote.dto.SaleDto) {
-                printReceipt(
-                    context,
-                    ReceiptData(
-                        saleNumber = sale.saleNumber,
-                        customerName = selectedCustomer?.name,
-                        items = cartItems.map {
-                            ReceiptLine(it.item.name, it.quantity, it.unitPrice, it.lineTotal)
-                        },
-                        subtotal = viewModel.subtotal,
-                        total = viewModel.subtotal,
-                        paidAmount = viewModel.subtotal,
-                        changeAmount = BigDecimal.ZERO
+                // Offline sales live only in the outbox (id is a local
+                // clientRef): keep the "saved offline" note visible instead of
+                // navigating to a detail screen that doesn't exist yet.
+                if (sale.status == OFFLINE_QUEUED_STATUS) return@LaunchedEffect
+                // Receipt printing must never crash the POS after a successful
+                // sale — failures are contained inside printReceipt (it falls
+                // back to a shareable PDF when no print service exists).
+                try {
+                    val paid = sale.payments.orEmpty().sumOf { it.amount }
+                    printReceipt(
+                        context,
+                        ReceiptData(
+                            saleNumber = sale.saleNumber,
+                            customerName = sale.customer?.name ?: selectedCustomer?.name,
+                            items = sale.lines.orEmpty().map { line ->
+                                ReceiptLine(
+                                    line.item?.name ?: "",
+                                    line.quantity,
+                                    line.unitPrice,
+                                    line.lineTotal
+                                )
+                            },
+                            subtotal = sale.totalAmount,
+                            total = sale.totalAmount,
+                            paidAmount = paid,
+                            changeAmount = (paid - sale.totalAmount).max(java.math.BigDecimal.ZERO)
+                        )
                     )
-                )
+                } catch (e: Exception) {
+                    Log.e("PosTerminalScreen", "Receipt generation failed", e)
+                }
                 onOrderCreated(sale.id)
+                viewModel.resetCheckoutState()
             }
         }
     }
@@ -200,7 +222,14 @@ fun PosTerminalScreen(
                             color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
                         )
                     }
+                    Spacer(modifier = Modifier.weight(1f))
+                    OfflineSyncBadge(
+                        pendingCount = pendingSaleCount,
+                        isSyncing = isSyncing,
+                        onClick = { viewModel.syncSalesNow() },
+                    )
                     if (cartItems.isNotEmpty()) {
+                        Spacer(modifier = Modifier.width(SpacingTokens.sm))
                         AppTopAppBarActions(
                             icon = Icons.Default.Delete,
                             onClick = { viewModel.clearCart() },
@@ -525,12 +554,22 @@ fun PosTerminalScreen(
                         else -> {}
                     }
 
-                    if (checkoutState is UiState.Error) {
-                        Text(
-                            (checkoutState as UiState.Error).message,
+                    when (val cs = checkoutState) {
+                        is UiState.Error -> Text(
+                            cs.message,
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodySmall,
                         )
+                        is UiState.Success ->
+                            if (cs.data.status == OFFLINE_QUEUED_STATUS) {
+                                Text(
+                                    "No connection — sale saved on this device and will sync automatically when back online.",
+                                    color = MaterialTheme.colorScheme.primary,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Medium,
+                                )
+                            }
+                        else -> {}
                     }
                 }
             },
@@ -553,6 +592,7 @@ fun PosTerminalScreen(
         )
     }
 
+    var showCustomerQuickAdd by remember { mutableStateOf(false) }
     if (showCustomerSearch) {
         CustomerSearchDialog(
             viewModel = viewModel,
@@ -560,7 +600,18 @@ fun PosTerminalScreen(
             onSelect = { customer ->
                 viewModel.selectCustomer(customer)
                 showCustomerSearch = false
-            }
+            },
+            onAddNew = {
+                showCustomerSearch = false
+                showCustomerQuickAdd = true
+            },
+        )
+    }
+
+    if (showCustomerQuickAdd) {
+        CustomerQuickAddDialog(
+            viewModel = viewModel,
+            onDismiss = { showCustomerQuickAdd = false },
         )
     }
 
@@ -640,6 +691,63 @@ private fun PriceListChip(
             .padding(horizontal = SpacingTokens.md, vertical = SpacingTokens.xs)
             .semantics { contentDescription = if (selected) "$label selected" else label },
     )
+}
+
+/**
+ * Header chip for offline sales: shows a cloud-off badge with the number of
+ * queued sales (tap = sync now), a spinning sync icon while syncing, and
+ * nothing when fully synced.
+ */
+@Composable
+private fun OfflineSyncBadge(
+    pendingCount: Int,
+    isSyncing: Boolean,
+    onClick: () -> Unit,
+) {
+    if (isSyncing) {
+        Row(
+            modifier = Modifier
+                .background(Color.White.copy(alpha = 0.2f), ShapeTokens.chip)
+                .padding(horizontal = SpacingTokens.sm, vertical = SpacingTokens.xs),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            androidx.compose.material3.CircularProgressIndicator(
+                modifier = Modifier.size(14.dp),
+                color = MaterialTheme.colorScheme.onPrimary,
+                strokeWidth = 2.dp,
+            )
+            Spacer(modifier = Modifier.width(SpacingTokens.xs))
+            Text(
+                "Syncing",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onPrimary,
+            )
+        }
+        return
+    }
+    if (pendingCount <= 0) return
+    Row(
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .background(Color.White.copy(alpha = 0.22f), ShapeTokens.chip)
+            .padding(horizontal = SpacingTokens.sm, vertical = SpacingTokens.xs)
+            .semantics { contentDescription = "Sync $pendingCount offline sales" },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            Icons.Default.CloudOff,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.size(14.dp),
+        )
+        Spacer(modifier = Modifier.width(SpacingTokens.xxs))
+        Text(
+            "$pendingCount offline",
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onPrimary,
+        )
+    }
 }
 
 @Composable
@@ -804,50 +912,54 @@ private fun CartItemRow(
                     description = "Remove ${item.item.name}",
                 )
             }
+            // Stepper row: [−] [price input] [+]   <list name>   line total
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                // Quantity stepper: round green − / + buttons
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    QuantityButton(
-                        icon = Icons.Default.Remove,
-                        description = "Decrease quantity",
-                        onClick = { onQuantityChange(item.quantity.subtract(BigDecimal.ONE)) },
+                QuantityButton(
+                    icon = Icons.Default.Remove,
+                    description = "Decrease quantity",
+                    onClick = { onQuantityChange(item.quantity.subtract(BigDecimal.ONE)) },
+                )
+                OutlinedTextField(
+                    value = priceText,
+                    onValueChange = { input ->
+                        priceText = input
+                        input.toBigDecimalOrNull()?.let {
+                            onManualPriceEdited(item.item.id)
+                            onPriceChange(it)
+                        }
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = SpacingTokens.xs),
+                    singleLine = true,
+                    textStyle = MaterialTheme.typography.bodyMedium,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    label = { Text("Unit price", style = MaterialTheme.typography.labelSmall) },
+                )
+                QuantityButton(
+                    icon = Icons.Default.Add,
+                    description = "Increase quantity",
+                    onClick = { onQuantityChange(item.quantity.add(BigDecimal.ONE)) },
+                )
+                Spacer(modifier = Modifier.width(SpacingTokens.sm))
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        format.format(item.lineTotal),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
                     )
                     Text(
-                        item.quantity.toPlainString(),
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = SpacingTokens.sm),
-                    )
-                    QuantityButton(
-                        icon = Icons.Default.Add,
-                        description = "Increase quantity",
-                        onClick = { onQuantityChange(item.quantity.add(BigDecimal.ONE)) },
+                        text = item.priceSource?.let { "$it · ×${item.quantity.toPlainString()}" }
+                            ?: "×${item.quantity.toPlainString()}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = AppThemeColors.current.muted,
                     )
                 }
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    format.format(item.lineTotal),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                )
             }
-            OutlinedTextField(
-                value = priceText,
-                onValueChange = { input ->
-                    priceText = input
-                    input.toBigDecimalOrNull()?.let {
-                        onManualPriceEdited(item.item.id)
-                        onPriceChange(it)
-                    }
-                },
-                modifier = Modifier.width(140.dp),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                label = { Text("Price", style = MaterialTheme.typography.bodySmall) },
-            )
         }
     }
 }
@@ -880,7 +992,8 @@ private fun QuantityButton(
 private fun CustomerSearchDialog(
     viewModel: PosTerminalViewModel,
     onDismiss: () -> Unit,
-    onSelect: (PartyDto) -> Unit
+    onSelect: (PartyDto) -> Unit,
+    onAddNew: () -> Unit,
 ) {
     val customerResults by viewModel.customerSearchResults.collectAsState()
     var search by remember { mutableStateOf("") }
@@ -940,7 +1053,118 @@ private fun CustomerSearchDialog(
             }
         },
         confirmButton = {
-            AppTextButton(text = "Close", onClick = onDismiss)
+            Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.xs)) {
+                AppTextButton(text = "Add New", onClick = onAddNew)
+                AppTextButton(text = "Close", onClick = onDismiss)
+            }
+        },
+    )
+}
+
+/**
+ * Quick walk-in customer entry from the POS customer picker: phone number
+ * (required, used to find the customer later) + optional name. When the name
+ * is left blank the customer is created as "<Weekday>@<HH:mm>" (e.g.
+ * "Monday@14:05"). The created customer is selected for the current sale.
+ */
+@Composable
+private fun CustomerQuickAddDialog(
+    viewModel: PosTerminalViewModel,
+    onDismiss: () -> Unit,
+) {
+    val createState by viewModel.customerCreateState.collectAsState()
+    var phone by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+    val saving = createState is CustomerQuickAddState.Saving
+
+    // Dismiss once the customer is created (the VM already selects it).
+    LaunchedEffect(createState) {
+        if (createState is CustomerQuickAddState.Created) onDismiss()
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        shape = ShapeTokens.dialog,
+        title = { Text("New Customer", style = MaterialTheme.typography.titleLarge) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(SpacingTokens.sm)) {
+                OutlinedTextField(
+                    value = phone,
+                    onValueChange = { phone = it.filter { c -> c.isDigit() }.take(15) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Phone number") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    singleLine = true,
+                )
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Name (optional)") },
+                    supportingText = {
+                        Text(
+                            "Leave empty to use ${viewModel.generateAutoCustomerName()}",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    },
+                    singleLine = true,
+                )
+
+                when (val st = createState) {
+                    is CustomerQuickAddState.DuplicateFound -> {
+                        Text(
+                            "A customer with this phone already exists:",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                        ListItem(
+                            headlineContent = { Text(st.existing.name) },
+                            supportingContent = st.existing.phone?.let { { Text(it) } },
+                            leadingContent = { Icon(Icons.Default.Person, contentDescription = null) },
+                            modifier = Modifier
+                                .clickable {
+                                    viewModel.useExistingCustomer(st.existing)
+                                    onDismiss()
+                                }
+                                .semantics { contentDescription = "Use existing customer" },
+                        )
+                        Text(
+                            "Tap the customer above to use it, or create a new one anyway.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    is CustomerQuickAddState.Failure -> Text(
+                        st.message,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                    else -> {}
+                }
+            }
+        },
+        confirmButton = {
+            // First press runs the duplicate check; if a duplicate was
+            // offered, this button becomes the explicit "create anyway".
+            val duplicateOffered = createState is CustomerQuickAddState.DuplicateFound
+            AppPrimaryButton(
+                text = when {
+                    saving -> "Saving..."
+                    duplicateOffered -> "Create Anyway"
+                    else -> "Save"
+                },
+                onClick = {
+                    viewModel.createCustomer(
+                        name = name,
+                        phone = phone,
+                        force = duplicateOffered,
+                    )
+                },
+                enabled = phone.isNotBlank() && !saving,
+            )
+        },
+        dismissButton = {
+            AppTextButton(text = "Cancel", onClick = onDismiss)
         },
     )
 }

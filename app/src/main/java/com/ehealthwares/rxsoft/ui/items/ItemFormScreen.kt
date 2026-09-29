@@ -3,6 +3,8 @@ package com.ehealthwares.rxsoft.ui.items
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,9 +13,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -35,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import coil.compose.AsyncImage
@@ -44,6 +49,7 @@ import com.ehealthwares.rxsoft.ui.designsystem.components.AppIconButton
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppLoadingState
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppOutlinedCard
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppPrimaryButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppSearchBar
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppTextField
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppTopAppBar
 import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
@@ -75,25 +81,46 @@ fun ItemFormScreen(
         if (state.saved) onSaved()
     }
 
-    if (showCategoryDialog && state.categories.isNotEmpty()) {
+    if (showCategoryDialog) {
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { showCategoryDialog = false },
             title = { Text("Select Category") },
             text = {
                 Column {
-                    state.categories.forEach { cat ->
-                        androidx.compose.material3.TextButton(
-                            onClick = {
-                                viewModel.updateCategoryId(cat.id ?: cat.name ?: "")
-                                showCategoryDialog = false
-                            },
-                            modifier = Modifier.fillMaxWidth(),
+                    AppSearchBar(
+                        query = state.categoryQuery,
+                        onQueryChange = viewModel::updateCategoryQuery,
+                        placeholder = "Search categories",
+                        searchDescription = "Search categories",
+                        modifier = Modifier.padding(bottom = SpacingTokens.sm),
+                    )
+                    when {
+                        state.refError != null -> EmptyListMessage(
+                            message = state.refError,
+                            onRetry = { viewModel.openCategoryDialog() },
+                        )
+                        state.categories.isEmpty() -> EmptyListMessage(
+                            message = if (state.categoryQuery.isBlank()) "Loading categories…" else "No categories match \"${state.categoryQuery}\"",
+                        )
+                        else -> LazyColumn(
+                            modifier = Modifier.fillMaxWidth().heightIn(max = 360.dp),
+                            verticalArrangement = Arrangement.spacedBy(SpacingTokens.xxs),
                         ) {
-                            Text(
-                                text = cat.name ?: cat.id ?: "",
-                                modifier = Modifier.fillMaxWidth(),
-                                style = MaterialTheme.typography.bodyLarge,
-                            )
+                            items(state.categories, key = { it.id ?: it.name ?: "" }) { cat ->
+                                androidx.compose.material3.TextButton(
+                                    onClick = {
+                                        viewModel.selectCategory(cat.id ?: cat.name ?: "")
+                                        showCategoryDialog = false
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) {
+                                    Text(
+                                        text = cat.name ?: cat.id ?: "",
+                                        modifier = Modifier.fillMaxWidth(),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -107,25 +134,46 @@ fun ItemFormScreen(
         )
     }
 
-    if (showUomDialog && state.uoms.isNotEmpty()) {
+    if (showUomDialog) {
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { showUomDialog = false },
             title = { Text("Select UOM") },
             text = {
                 Column {
-                    state.uoms.forEach { uom ->
-                        androidx.compose.material3.TextButton(
-                            onClick = {
-                                viewModel.updateBaseUomId(uom.id)
-                                showUomDialog = false
-                            },
-                            modifier = Modifier.fillMaxWidth(),
+                    AppSearchBar(
+                        query = state.uomQuery,
+                        onQueryChange = viewModel::updateUomQuery,
+                        placeholder = "Search UOMs",
+                        searchDescription = "Search UOMs",
+                        modifier = Modifier.padding(bottom = SpacingTokens.sm),
+                    )
+                    when {
+                        state.refError != null -> EmptyListMessage(
+                            message = state.refError,
+                            onRetry = { viewModel.openUomDialog() },
+                        )
+                        state.uoms.isEmpty() -> EmptyListMessage(
+                            message = if (state.uomQuery.isBlank()) "Loading UOMs…" else "No UOMs match \"${state.uomQuery}\"",
+                        )
+                        else -> LazyColumn(
+                            modifier = Modifier.fillMaxWidth().heightIn(max = 360.dp),
+                            verticalArrangement = Arrangement.spacedBy(SpacingTokens.xxs),
                         ) {
-                            Text(
-                                text = uom.name,
-                                modifier = Modifier.fillMaxWidth(),
-                                style = MaterialTheme.typography.bodyLarge,
-                            )
+                            items(state.uoms, key = { it.id }) { uom ->
+                                androidx.compose.material3.TextButton(
+                                    onClick = {
+                                        viewModel.selectUom(uom.id)
+                                        showUomDialog = false
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) {
+                                    Text(
+                                        text = uom.name,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -214,22 +262,61 @@ fun ItemFormScreen(
                     label = "Name",
                 )
 
-                val catName = state.categories.find { it.id == state.categoryId }?.name ?: state.categoryId
+                // Category: typing searches the server live; picking from the
+                // suggestions (or the dialog) sets the actual id.
+                val catName = state.categories.find { it.id == state.categoryId }?.name
+                val categoryText = state.categoryQuery.ifBlank { catName ?: state.categoryId }
+                val showCategorySuggestions = state.categoryQuery.isNotBlank() &&
+                    state.categories.isNotEmpty()
                 AppTextField(
-                    value = if (state.categoryId.isNotEmpty()) catName else "",
-                    onValueChange = { viewModel.updateCategoryId(it) },
+                    value = categoryText,
+                    onValueChange = viewModel::updateCategoryQuery,
                     label = "Category",
                     trailingIcon = Icons.Default.ArrowDropDown,
-                    onTrailingIconClick = { showCategoryDialog = true },
+                    onTrailingIconClick = {
+                        viewModel.openCategoryDialog()
+                        showCategoryDialog = true
+                    },
+                    isError = state.categoryId.isBlank() && state.categoryQuery.isNotBlank() &&
+                        state.categories.isEmpty(),
                 )
+                if (showCategorySuggestions) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 200.dp)
+                            .verticalScroll(rememberScrollState()),
+                    ) {
+                        state.categories.forEach { cat ->
+                            Text(
+                                text = cat.name ?: cat.id ?: "",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null,
+                                    ) {
+                                        viewModel.selectCategory(cat.id ?: cat.name ?: "")
+                                    }
+                                    .padding(horizontal = SpacingTokens.sm, vertical = SpacingTokens.xs),
+                            )
+                        }
+                    }
+                }
 
-                val uomName = state.uoms.find { it.id == state.baseUomId }?.name ?: state.baseUomId
+                // UOM: pick from the searchable dialog — fills base, purchase & sale.
+                val uomName = state.uoms.find { it.id == state.baseUomId }?.name
                 AppTextField(
-                    value = if (state.baseUomId.isNotEmpty()) uomName else "",
-                    onValueChange = { viewModel.updateBaseUomId(it) },
+                    value = state.baseUomId.takeIf { it.isNotBlank() }?.let { uomName ?: it }.orEmpty(),
+                    onValueChange = { },
                     label = "UOM (sets base, purchase & sale)",
+                    readOnly = true,
                     trailingIcon = Icons.Default.ArrowDropDown,
-                    onTrailingIconClick = { showUomDialog = true },
+                    onTrailingIconClick = {
+                        viewModel.openUomDialog()
+                        showUomDialog = true
+                    },
                 )
 
                 AppTextField(
@@ -315,6 +402,30 @@ fun ItemFormScreen(
                         state.name.isNotBlank() &&
                         (state.item != null || (state.categoryId.isNotBlank() && state.baseUomId.isNotBlank())),
                 )
+            }
+        }
+    }
+}
+
+/** Message shown inside a picker dialog when the list is empty or failed. */
+@Composable
+private fun EmptyListMessage(
+    message: String?,
+    onRetry: (() -> Unit)? = null,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(vertical = SpacingTokens.md),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = message ?: "Nothing found",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        if (onRetry != null) {
+            Spacer(modifier = Modifier.height(SpacingTokens.sm))
+            androidx.compose.material3.TextButton(onClick = onRetry) {
+                Text("Retry")
             }
         }
     }

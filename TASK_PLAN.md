@@ -1,3 +1,27 @@
+# Fix log — 2026-09-29 (all implemented, built 13:52, installed on SM-A055F)
+
+## Issue 1: UOM dropdown empty on New Item — FIXED
+- Root cause 1 (parse): API `items/dependencies/uoms` returns `rounding: 0.01` (number). App `UomDto.rounding` was `Int?` → Moshi `JsonDataException` → whole list parse failed → `Result.failure` → empty list, error swallowed in `ItemFormViewModel.load()`.
+  - Fix: `UomDto.rounding` is now `BigDecimal?` (data/remote/dto/SaleDtos.kt).
+- Root cause 2 (pagination): backend caps these endpoints at `limit<=100` (default 20). Categories total 36, UOMs total 115 on production — app fetched only the first 20.
+  - Fix: `ItemsApi` gained paginated variants (`limit`, `page`, `search`); `PosRepository.getCategories(search)/getUoms(search)` walk all pages with `limit=100`.
+- Resilience: `ItemFormViewModel` now injects `CategoryDao`/`UomDao` and falls back to the Room caches (`cached_categories`, `cached_uoms`, populated by startup sync) when the API fails.
+- UX: `ItemFormScreen` picker dialogs always open (previously gated on `state.categories.isNotEmpty()`), include an `AppSearchBar` (debounced server search), loading/empty/error+Retry states. Category field shows live suggestions while typing (typing no longer clobbers the selected id — `categoryQuery` is separate from `categoryId`). UOM field is read-only with a dropdown.
+
+## Issue 2: Receipt crash after POS sale — FIXED
+- Crash: `ActivityNotFoundException: No Activity found to handle null` at `ReceiptPrinter.kt:41` (`PrintManager.print`) — device has no print service enabled.
+- Fix: `printReceipt` guards the print call; on failure it renders the receipt to a `PdfDocument` in `cacheDir/receipts/` and opens the share sheet (ACTION_SEND, FileProvider authority `${applicationId}.fileprovider`). Manifest gained the FileProvider + `res/xml/file_paths.xml` (cache-path `receipts/`).
+- `PosTerminalScreen` checkout effect now: try/catch around receipt, uses server `SaleDto` (real lines/paid/change), and calls `viewModel.resetCheckoutState()` so the LaunchedEffect cannot refire.
+
+## Issue 3: New Order — combine 3 fields into 1 ("IT, GD") — DONE
+- `CreateOrderScreen` state replaced: single `lineQuery` + `selItemId`/`selItemLabel` + `selGenericCode`/`selGenericName`.
+- `CreateOrderFields.kt` rewritten as `CreateOrderLineFields`: one `AppTextField` labelled "IT, GD" (placeholder "Item / generic, or free text"), merged catalog+generic suggestions (max 6, with `code · item` / `code · generic` subtitles, "Added" state for dupes), Quantity/Unit price in one row, Add line enabled when a pick exists or text is non-blank.
+- Free-text rule: if nothing was picked, the typed text becomes `freetextName` on the line.
+- Wire format unchanged (`CreateOrderItem(itemId, freetextName, genericItemCode, ...)`), so the backend/order payload is identical.
+
+---
+
+(Original plan below, kept for reference)
 # RxSoft Mobile App — Improvement Plan
 
 _Created: 2026-09-27 | Status: PLANNING — no changes yet_

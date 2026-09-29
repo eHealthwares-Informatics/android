@@ -200,17 +200,41 @@ class PosRepository @Inject constructor(
         }
     }
 
-    suspend fun getCategories(): Result<List<CategoryDto>> {
+    suspend fun getCategories(): Result<List<CategoryDto>> = getCategories(null)
+
+    /** Fetch ALL categories, walking the server's pagination (limit capped at 100). */
+    suspend fun getCategories(search: String?): Result<List<CategoryDto>> {
         return try {
-            Result.success(itemsApi.getCategories().data)
+            val all = mutableListOf<CategoryDto>()
+            var page = 1
+            while (true) {
+                val response = itemsApi.getCategories(limit = 100, page = page, search = search)
+                all += response.data
+                val total = response.meta?.total ?: all.size
+                if (all.size >= total || response.data.isEmpty()) break
+                page++
+            }
+            Result.success(all)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun getUoms(): Result<List<UomDto>> {
+    suspend fun getUoms(): Result<List<UomDto>> = getUoms(null)
+
+    /** Fetch ALL uoms, walking the server's pagination (limit capped at 100). */
+    suspend fun getUoms(search: String?): Result<List<UomDto>> {
         return try {
-            Result.success(itemsApi.getUoms().data)
+            val all = mutableListOf<UomDto>()
+            var page = 1
+            while (true) {
+                val response = itemsApi.getUoms(limit = 100, page = page, search = search)
+                all += response.data
+                val total = response.meta?.total ?: all.size
+                if (all.size >= total || response.data.isEmpty()) break
+                page++
+            }
+            Result.success(all)
         } catch (e: Exception) {
             Result.failure(e)
         }

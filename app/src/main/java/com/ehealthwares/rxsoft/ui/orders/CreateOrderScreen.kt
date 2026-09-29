@@ -9,16 +9,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -27,9 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ehealthwares.rxsoft.data.repository.OrderSubmitResult
@@ -48,7 +43,7 @@ internal data class DraftOrderLine(
     val quantity: Int = 1,
     val unitPrice: BigDecimal = BigDecimal.ZERO,
 )
-/** Full-screen New Order. Item pick fills generic + freetext; generic pick fills freetext. */
+/** Full-screen New Order. One combined field: pick a catalog item or generic, or type free text. */
 @Composable
 fun CreateOrderScreen(
     onBack: () -> Unit,
@@ -60,13 +55,11 @@ fun CreateOrderScreen(
     val searchResults by viewModel.searchResults.collectAsState()
     val searching by viewModel.searching.collectAsState()
     var paymentMethod by remember { mutableStateOf("cash") }
-    var itemQuery by remember { mutableStateOf("") }
+    var lineQuery by remember { mutableStateOf("") }
     var selItemId by remember { mutableStateOf<String?>(null) }
     var selItemLabel by remember { mutableStateOf("") }
-    var genericQuery by remember { mutableStateOf("") }
-    var genericTouched by remember { mutableStateOf(false) }
-    var freetextName by remember { mutableStateOf("") }
-    var freetextTouched by remember { mutableStateOf(false) }
+    var selGenericCode by remember { mutableStateOf<String?>(null) }
+    var selGenericName by remember { mutableStateOf("") }
     var qtyText by remember { mutableStateOf("1") }
     var priceText by remember { mutableStateOf("") }
     var lines by remember { mutableStateOf(listOf<DraftOrderLine>()) }
@@ -81,23 +74,23 @@ fun CreateOrderScreen(
         }
     }
     fun clearInputs() {
-        itemQuery = ""; selItemId = null; selItemLabel = ""
-        genericQuery = ""; genericTouched = false
-        freetextName = ""; freetextTouched = false
+        lineQuery = ""; selItemId = null; selItemLabel = ""
+        selGenericCode = null; selGenericName = ""
         qtyText = "1"; priceText = ""; viewModel.clearSearch()
     }
 
 
     fun addLine() {
         val itemId = selItemId
-        val gcode = genericQuery.trim().ifEmpty { null }
-        val free = freetextName.trim().ifEmpty { null }
+        val gcode = selGenericCode
+        // Nothing picked: whatever is typed becomes the free-text name.
+        val free = if (itemId == null && gcode == null) lineQuery.trim().ifEmpty { null } else null
         if (itemId == null && gcode == null && free == null) return
         val qty = qtyText.toIntOrNull()?.coerceAtLeast(1) ?: 1
         val price = priceText.toBigDecimalOrNull() ?: BigDecimal.ZERO
         val label = buildList {
             if (itemId != null) add(if (selItemLabel.isNotBlank()) selItemLabel else "Item")
-            else if (gcode != null) add(gcode)
+            else if (gcode != null) add(if (selGenericName.isNotBlank()) selGenericName else gcode)
             if (free != null) add(free)
         }.joinToString(" - ").ifEmpty { "Line" }
         lines = lines + DraftOrderLine(label, itemId, gcode, free, qty, price)
@@ -151,51 +144,38 @@ fun CreateOrderScreen(
             }
             HorizontalDivider()
             Text("Order line", style = MaterialTheme.typography.titleSmall)
-            OutlinedTextField(
-                value = itemQuery,
-                onValueChange = { q ->
-                    itemQuery = q
-                    if (selItemId != null && q != selItemLabel) {
-                        selItemId = null; selItemLabel = ""
-                        if (!genericTouched) genericQuery = ""
-                        if (!freetextTouched) freetextName = ""
-                    }
-                    viewModel.search(q)
-                },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("1 - Item (search catalog)") },
-                singleLine = true,
-            )
-            CreateOrderCascadeFields(
-                selItemId = selItemId,
-                selItemLabel = selItemLabel,
-                itemQuery = itemQuery,
+            CreateOrderLineFields(
+                query = lineQuery,
                 searching = searching,
                 searchResults = searchResults,
+                selItemId = selItemId,
+                selItemLabel = selItemLabel,
+                pickedGenericCode = selGenericCode,
+                pickedGenericName = selGenericName,
                 lines = lines,
-                genericQuery = genericQuery,
-                freetextName = freetextName,
                 qtyText = qtyText,
                 priceText = priceText,
                 createState = createState,
-                onPickItem = { hit ->
+                onQueryChange = { q ->
+                    lineQuery = q
+                    // Editing the text drops the previous pick (unless the text
+                    // still matches the picked label).
+                    if (selItemId != null && q != selItemLabel) { selItemId = null; selItemLabel = "" }
+                    if (selGenericCode != null && q != selGenericName) { selGenericCode = null; selGenericName = "" }
+                    viewModel.search(q)
+                },
+                onPickCatalog = { hit ->
                     selItemId = hit.item.itemId
                     selItemLabel = hit.item.displayName ?: hit.item.name
-                    itemQuery = selItemLabel
-                    genericQuery = hit.item.genericProductCode ?: ""
-                    genericTouched = false
-                    freetextName = hit.item.displayName ?: hit.item.name
-                    freetextTouched = false
-                },
-                onGenericChange = { v ->
-                    genericQuery = v; genericTouched = true
-                    if (selItemId == null && !freetextTouched) freetextName = v
+                    lineQuery = selItemLabel
+                    selGenericCode = null; selGenericName = ""
                 },
                 onPickGeneric = { hit ->
-                    genericQuery = hit.product.code; genericTouched = false
-                    freetextName = hit.product.name; freetextTouched = false
+                    selGenericCode = hit.product.code
+                    selGenericName = hit.product.name
+                    lineQuery = hit.product.name
+                    selItemId = null; selItemLabel = ""
                 },
-                onFreetextChange = { freetextName = it; freetextTouched = true },
                 onQtyChange = { qtyText = it.filter { c -> c.isDigit() } },
                 onPriceChange = { priceText = it },
                 onAddLine = { addLine() },

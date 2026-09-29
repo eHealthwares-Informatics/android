@@ -128,7 +128,7 @@ data class UomDto(
     @Json(name = "categoryId") val categoryId: String? = null,
     val category: ReferenceDto? = null,
     val factor: BigDecimal = BigDecimal.ONE,
-    val rounding: Int? = null,
+    val rounding: BigDecimal? = null,
     @Json(name = "uomType") val uomType: String? = null,
     @Json(name = "isActive") val isActive: Boolean? = null
 )

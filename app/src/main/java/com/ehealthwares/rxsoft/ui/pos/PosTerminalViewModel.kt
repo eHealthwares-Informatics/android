@@ -6,13 +6,16 @@ import androidx.lifecycle.viewModelScope
 import com.ehealthwares.rxsoft.data.local.CachedPriceListEntity
 import com.ehealthwares.rxsoft.data.local.CachedStockBalanceEntity
 import com.ehealthwares.rxsoft.data.local.PriceDao
+import com.ehealthwares.rxsoft.data.local.PendingSaleDao
 import com.ehealthwares.rxsoft.data.local.PriceListDao
 import com.ehealthwares.rxsoft.data.local.StockBalanceDao
 import com.ehealthwares.rxsoft.data.remote.dto.*
+import com.ehealthwares.rxsoft.data.repository.CustomerRepository
 import com.ehealthwares.rxsoft.data.repository.InventoryRepository
 import com.ehealthwares.rxsoft.data.repository.StockAdjustResult
 import com.ehealthwares.rxsoft.data.repository.PosRepository
 import com.ehealthwares.rxsoft.data.repository.SaleSubmitResult
+import com.ehealthwares.rxsoft.util.OfflineSyncManager
 import com.ehealthwares.rxsoft.util.PosConfigManager
 import com.ehealthwares.rxsoft.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,16 +41,35 @@ data class CartItem(
     val unitPrice: BigDecimal,
     val uomId: String? = null,
     val uomName: String? = null,
-    val uomFactor: BigDecimal = BigDecimal.ONE
+    val uomFactor: BigDecimal = BigDecimal.ONE,
+    /** Where the unit price came from (price-list name) — null when manual/default. */
+    val priceSource: String? = null,
 ) {
     val lineTotal: BigDecimal get() = quantity.multiply(unitPrice).multiply(uomFactor)
 }
+
+/** State machine for the POS quick-add-customer dialog. */
+sealed interface CustomerQuickAddState {
+    data object Idle : CustomerQuickAddState
+    data object Saving : CustomerQuickAddState
+    /** A customer with this phone already exists — the UI offers to select it. */
+    data class DuplicateFound(val existing: PartyDto) : CustomerQuickAddState
+    /** Customer created (and selected); the dialog should dismiss. */
+    data class Created(val customer: CustomerDto) : CustomerQuickAddState
+    data class Failure(val message: String) : CustomerQuickAddState
+}
+
+/** Marker status for sales created offline and queued for sync. */
+const val OFFLINE_QUEUED_STATUS = "QUEUED_OFFLINE"
 
 @HiltViewModel
 class PosTerminalViewModel @Inject constructor(
     private val posRepository: PosRepository,
     private val posConfigManager: PosConfigManager,
     private val inventoryRepository: InventoryRepository,
+    private val customerRepository: CustomerRepository,
+    private val pendingSaleDao: PendingSaleDao,
+    private val offlineSyncManager: OfflineSyncManager,
     private val stockBalanceDao: StockBalanceDao,
     private val priceListDao: PriceListDao,
     private val priceDao: PriceDao,
@@ -77,11 +99,20 @@ class PosTerminalViewModel @Inject constructor(
     private val _customerSearchResults = MutableStateFlow<UiState<List<PartyDto>>>(UiState.Idle)
     val customerSearchResults: StateFlow<UiState<List<PartyDto>>> = _customerSearchResults.asStateFlow()
 
+    private val _customerCreateState = MutableStateFlow<CustomerQuickAddState>(CustomerQuickAddState.Idle)
+    val customerCreateState: StateFlow<CustomerQuickAddState> = _customerCreateState.asStateFlow()
+
     private val _paymentMethods = MutableStateFlow<UiState<List<PaymentMethodDto>>>(UiState.Idle)
     val paymentMethods: StateFlow<UiState<List<PaymentMethodDto>>> = _paymentMethods.asStateFlow()
 
     private val _checkoutState = MutableStateFlow<UiState<SaleDto>>(UiState.Idle)
     val checkoutState: StateFlow<UiState<SaleDto>> = _checkoutState.asStateFlow()
+
+    /** Sales sitting in the offline outbox, waiting to be pushed. */
+    private val _pendingSaleCount = MutableStateFlow(0)
+    val pendingSaleCount: StateFlow<Int> = _pendingSaleCount.asStateFlow()
+
+    val isSyncing: StateFlow<Boolean> = offlineSyncManager.isSyncing
 
     private val _selectedPaymentMethod = MutableStateFlow<PaymentMethodDto?>(null)
     val selectedPaymentMethod: StateFlow<PaymentMethodDto?> = _selectedPaymentMethod.asStateFlow()
@@ -110,6 +141,7 @@ class PosTerminalViewModel @Inject constructor(
     init {
         posConfigManager.loadConfig()
         loadPriceLists()
+        refreshPendingSaleCount()
         viewModelScope.launch {
             posConfigManager.config.collect { cfg ->
                 if (_selectedPriceListId.value == null) {
@@ -165,7 +197,7 @@ class PosTerminalViewModel @Inject constructor(
                     null
                 }
                 if (cached != null) {
-                    cart.copy(unitPrice = cached)
+                    cart.copy(unitPrice = cached, priceSource = priceListName(listId))
                 } else {
                     missingRemote.add(cart.item.id)
                     cart
@@ -181,7 +213,7 @@ class PosTerminalViewModel @Inject constructor(
                         try {
                             val fetched = posRepository.getItemPrice(listId, itemId).getOrNull()
                             if (fetched != null && itemId in autoPricedItemIds) {
-                                updateUnitPrice(itemId, fetched)
+                                updateUnitPrice(itemId, fetched, priceListName(listId))
                             }
                         } finally {
                             priceLookupInFlight.remove(itemId)
@@ -251,11 +283,12 @@ class PosTerminalViewModel @Inject constructor(
                         } catch (e: Exception) {
                             null
                         }
-                        cached?.let { updateUnitPrice(item.id, it) }
+                        val listName = priceListName(priceListId)
+                        cached?.let { updateUnitPrice(item.id, it, listName) }
                         // …then refresh from the API.
                         posRepository.getItemPrice(priceListId, item.id)
                             .onSuccess { fetchedPrice ->
-                                fetchedPrice?.let { updateUnitPrice(item.id, it) }
+                                fetchedPrice?.let { updateUnitPrice(item.id, it, listName) }
                             }
                             .onFailure {
                                 Log.w("PosTerminalVM", "Price lookup failed for ${item.id}: ${it.message}")
@@ -281,11 +314,18 @@ class PosTerminalViewModel @Inject constructor(
         _cartItems.value = current
     }
 
-    fun updateUnitPrice(itemId: String, unitPrice: BigDecimal) {
+    private fun priceListName(listId: String?): String? =
+        listId?.let { id -> _priceLists.value.firstOrNull { it.id == id }?.name }
+
+    fun updateUnitPrice(itemId: String, unitPrice: BigDecimal, source: String? = null) {
         val current = _cartItems.value.toMutableList()
         val idx = current.indexOfFirst { it.item.id == itemId }
         if (idx >= 0) {
-            current[idx] = current[idx].copy(unitPrice = unitPrice)
+            current[idx] = if (source != null) {
+                current[idx].copy(unitPrice = unitPrice, priceSource = source)
+            } else {
+                current[idx].copy(unitPrice = unitPrice)
+            }
         }
         _cartItems.value = current
     }
@@ -293,6 +333,12 @@ class PosTerminalViewModel @Inject constructor(
     /** Manual price edit from the UI — the line is no longer auto-priced. */
     fun onManualPriceEdited(itemId: String) {
         autoPricedItemIds.remove(itemId)
+        val current = _cartItems.value.toMutableList()
+        val idx = current.indexOfFirst { it.item.id == itemId }
+        if (idx >= 0 && current[idx].priceSource != null) {
+            current[idx] = current[idx].copy(priceSource = null)
+            _cartItems.value = current
+        }
     }
 
     fun removeFromCart(itemId: String) {
@@ -308,6 +354,81 @@ class PosTerminalViewModel @Inject constructor(
 
     fun selectCustomer(customer: PartyDto?) {
         _selectedCustomer.value = customer
+    }
+
+    /** Today's weekday name, e.g. "Monday". */
+    fun currentDayName(): String =
+        java.time.LocalDate.now().dayOfWeek.getDisplayName(
+            java.time.format.TextStyle.FULL, java.util.Locale.ENGLISH
+        )
+
+    /**
+     * Auto name for a phone-only quick-add customer: "<Day>@<time>",
+     * e.g. "Monday@14:05". Time is the device's local 24h time.
+     */
+    fun generateAutoCustomerName(): String {
+        val time = java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))
+        return "${currentDayName()}@$time"
+    }
+
+    /**
+     * Quick-add a walk-in customer from the POS customer picker. Unless
+     * [force] is set, an existing customer with the same phone is offered
+     * back to the UI as [CustomerQuickAddState.DuplicateFound] instead of
+     * creating a twin. On success the customer is selected for the current
+     * sale and reported as [CustomerQuickAddState.Created].
+     */
+    fun createCustomer(name: String, phone: String, force: Boolean = false) {
+        val normalizedPhone = phone.trim()
+        if (normalizedPhone.isEmpty()) {
+            _customerCreateState.value = CustomerQuickAddState.Failure("Phone number is required")
+            return
+        }
+        viewModelScope.launch {
+            _customerCreateState.value = CustomerQuickAddState.Saving
+
+            if (!force) {
+                // Duplicate guard: search by the exact phone before creating.
+                // The backend search matches party.phone LIKE %term%.
+                posRepository.searchCustomers(normalizedPhone)
+                    .onSuccess { hits ->
+                        hits.firstOrNull { it.phone?.trim() == normalizedPhone }?.let { existing ->
+                            Log.d("PosTerminalVM", "Duplicate phone: offering existing customer ${existing.id}")
+                            _customerCreateState.value = CustomerQuickAddState.DuplicateFound(existing)
+                            return@launch
+                        }
+                    }
+                    .onFailure { e ->
+                        // Can't verify uniqueness right now — proceed with the
+                        // create; a network error will surface there.
+                        Log.w("PosTerminalVM", "Duplicate pre-check skipped: ${e.message}")
+                    }
+            }
+
+            val effectiveName = name.trim().ifEmpty { generateAutoCustomerName() }
+            customerRepository.createCustomer(
+                name = effectiveName,
+                phone = normalizedPhone,
+                email = null
+            ).onSuccess { created ->
+                Log.d("PosTerminalVM", "Customer created: ${created.id}")
+                _customerCreateState.value = CustomerQuickAddState.Created(created)
+                selectCustomer(PartyDto(id = created.id, name = created.name, phone = created.phone))
+            }.onFailure { e ->
+                Log.e("PosTerminalVM", "Customer create failed: ${e.message}", e)
+                _customerCreateState.value = CustomerQuickAddState.Failure(e.message ?: "Could not create customer")
+            }
+        }
+    }
+
+    /** User chose to select the existing customer offered by the duplicate check. */
+    fun useExistingCustomer(existing: PartyDto) {
+        selectCustomer(existing)
+        _customerCreateState.value = CustomerQuickAddState.Idle
+    }
+
+    fun resetCustomerCreateState() {
+        _customerCreateState.value = CustomerQuickAddState.Idle
     }
 
     fun searchCustomers(query: String) {
@@ -424,7 +545,35 @@ class PosTerminalViewModel @Inject constructor(
                 }
                 is SaleSubmitResult.Queued -> {
                     Log.w("PosTerminalVM", "Sale queued offline: ${result.clientRef}")
-                    _checkoutState.value = UiState.Error("Sale queued for sync when online")
+                    // Offline: the sale is safely in the outbox. Surface it as a
+                    // success (with a queued marker) so the cashier still gets a
+                    // receipt and the cart clears — not an error.
+                    val offlineSale = SaleDto(
+                        id = result.clientRef,
+                        saleNumber = saleNumber,
+                        saleChannel = "mobile-offline",
+                        customer = _selectedCustomer.value,
+                        status = OFFLINE_QUEUED_STATUS,
+                        totalAmount = total,
+                        paidAmount = total,
+                        lines = cart.mapIndexed { idx, c ->
+                            SaleLineDto(
+                                id = null,
+                                lineNumber = idx + 1,
+                                item = c.item,
+                                quantity = c.quantity,
+                                unitPrice = c.unitPrice,
+                                lineTotal = c.quantity.multiply(c.unitPrice)
+                            )
+                        },
+                        payments = listOf(SalePaymentDto(id = null, paymentMethod = paymentMethod, amount = total)),
+                        saleDate = "",
+                        soldBy = null,
+                        notes = "Saved offline — will sync automatically"
+                    )
+                    clearCart()
+                    _checkoutState.value = UiState.Success(offlineSale)
+                    refreshPendingSaleCount()
                 }
             }
         }
@@ -432,6 +581,26 @@ class PosTerminalViewModel @Inject constructor(
 
     fun resetCheckoutState() {
         _checkoutState.value = UiState.Idle
+    }
+
+    /** Re-read the offline sale outbox count for the header badge. */
+    fun refreshPendingSaleCount() {
+        viewModelScope.launch {
+            _pendingSaleCount.value = try {
+                pendingSaleDao.count()
+            } catch (e: Exception) {
+                Log.w("PosTerminalVM", "Pending sale count failed: ${e.message}")
+                0
+            }
+        }
+    }
+
+    /** Header badge tap: push queued sales now (no-op when offline). */
+    fun syncSalesNow() {
+        viewModelScope.launch {
+            offlineSyncManager.refreshAndSync()
+            refreshPendingSaleCount()
+        }
     }
 
     // ── Stock gate ───────────────────────────────────────────────────────────

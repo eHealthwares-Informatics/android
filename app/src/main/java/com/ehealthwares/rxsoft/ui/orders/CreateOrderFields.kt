@@ -1,101 +1,182 @@
 package com.ehealthwares.rxsoft.ui.orders
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.KeyboardType
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppSecondaryButton
+import com.ehealthwares.rxsoft.ui.designsystem.components.AppTextField
+import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
 import com.ehealthwares.rxsoft.util.UiState
 
+/**
+ * Single combined "IT, GD" entry field for an order line — mirrors the New
+ * Item screen's search-as-you-type pattern. Typing searches the catalog and
+ * generic products at once; picking a suggestion fills the corresponding
+ * slot (item id or generic code). If nothing is picked, the typed text is
+ * submitted as the free-text name.
+ */
 @Composable
-internal fun CreateOrderCascadeFields(
-    selItemId: String?,
-    selItemLabel: String,
-    itemQuery: String,
+internal fun CreateOrderLineFields(
+    query: String,
     searching: Boolean,
     searchResults: List<OrderSearchHit>,
+    selItemId: String?,
+    selItemLabel: String,
+    pickedGenericCode: String?,
+    pickedGenericName: String,
     lines: List<DraftOrderLine>,
-    genericQuery: String,
-    freetextName: String,
     qtyText: String,
     priceText: String,
     createState: UiState<*>,
-    onPickItem: (OrderSearchHit.Catalog) -> Unit,
-    onGenericChange: (String) -> Unit,
+    onQueryChange: (String) -> Unit,
+    onPickCatalog: (OrderSearchHit.Catalog) -> Unit,
     onPickGeneric: (OrderSearchHit.Generic) -> Unit,
-    onFreetextChange: (String) -> Unit,
     onQtyChange: (String) -> Unit,
     onPriceChange: (String) -> Unit,
     onAddLine: () -> Unit,
     onRemoveLine: (DraftOrderLine) -> Unit,
 ) {
-    if (selItemId != null) {
-        Text("Selected: $selItemLabel", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
-    } else if (itemQuery.trim().length >= 2) {
+    AppTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        label = "IT, GD",
+        placeholder = "Item / generic, or free text",
+        singleLine = true,
+    )
+
+    when {
+        selItemId != null -> Text(
+            "Selected: $selItemLabel",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        pickedGenericCode != null -> Text(
+            "Generic: $pickedGenericName ($pickedGenericCode)",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary,
+        )
+    }
+
+    if (selItemId == null && pickedGenericCode == null && query.trim().length >= 2) {
         if (searching) {
             Text("Searching...", style = MaterialTheme.typography.bodySmall)
         } else {
-            val hits = searchResults.filterIsInstance<OrderSearchHit.Catalog>()
-            if (hits.isEmpty()) Text("No catalog match - use generic or free text below.", style = MaterialTheme.typography.bodySmall)
-            hits.take(5).forEach { hit ->
-                TextButton(onClick = { onPickItem(hit) }, enabled = lines.none { it.itemId == hit.item.itemId }) {
-                    Text("${hit.item.displayName ?: hit.item.name} - ${hit.item.code ?: "catalog"}", fontWeight = FontWeight.Medium)
+            if (searchResults.isEmpty()) {
+                Text(
+                    "No match — the text will be added as free text.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 200.dp)
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                searchResults.take(6).forEach { hit ->
+                    val alreadyInLines = when (hit) {
+                        is OrderSearchHit.Catalog -> lines.any { it.itemId == hit.item.itemId }
+                        is OrderSearchHit.Generic -> lines.any { it.genericItemCode == hit.product.code }
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                enabled = !alreadyInLines,
+                            ) {
+                                when (hit) {
+                                    is OrderSearchHit.Catalog -> onPickCatalog(hit)
+                                    is OrderSearchHit.Generic -> onPickGeneric(hit)
+                                }
+                            }
+                            .padding(horizontal = SpacingTokens.sm, vertical = SpacingTokens.xs),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = when (hit) {
+                                    is OrderSearchHit.Catalog -> hit.item.displayName ?: hit.item.name
+                                    is OrderSearchHit.Generic -> hit.product.name
+                                },
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                            )
+                            Text(
+                                text = when (hit) {
+                                    is OrderSearchHit.Catalog -> "${hit.item.code ?: "catalog"} · item"
+                                    is OrderSearchHit.Generic -> "${hit.product.code} · generic"
+                                },
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        if (alreadyInLines) {
+                            Text(
+                                "Added",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
                 }
             }
         }
     }
-    OutlinedTextField(
-        value = genericQuery,
-        onValueChange = onGenericChange,
-        modifier = Modifier.fillMaxWidth(),
-        label = { Text("2 - Generic product (code or name)") },
-        singleLine = true,
-    )
-    if (selItemId == null && genericQuery.trim().length >= 2 && !searching) {
-        searchResults.filterIsInstance<OrderSearchHit.Generic>().take(5).forEach { hit ->
-            TextButton(onClick = { onPickGeneric(hit) }, enabled = lines.none { it.genericItemCode == hit.product.code }) {
-                Text("${hit.product.name} - ${hit.product.code}")
-            }
-        }
-    }
-    OutlinedTextField(
-        value = freetextName,
-        onValueChange = onFreetextChange,
-        modifier = Modifier.fillMaxWidth(),
-        label = { Text("3 - Free text (item name)") },
-        singleLine = true,
-    )
-    Row(horizontalArrangement = Arrangement.spacedBy(com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens.sm)) {
-        OutlinedTextField(
-            value = qtyText, onValueChange = onQtyChange, modifier = Modifier.weight(1f),
-            label = { Text("Quantity") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true,
+
+    Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.sm)) {
+        AppTextField(
+            value = qtyText,
+            onValueChange = onQtyChange,
+            modifier = Modifier.weight(1f),
+            label = "Quantity",
+            keyboardType = KeyboardType.Number,
+            singleLine = true,
         )
-        OutlinedTextField(
-            value = priceText, onValueChange = onPriceChange, modifier = Modifier.weight(1f),
-            label = { Text("Unit price") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), singleLine = true,
+        AppTextField(
+            value = priceText,
+            onValueChange = onPriceChange,
+            modifier = Modifier.weight(1f),
+            label = "Unit price",
+            keyboardType = KeyboardType.Decimal,
+            singleLine = true,
         )
     }
     AppSecondaryButton(
-        text = "Add line", onClick = onAddLine,
-        enabled = selItemId != null || genericQuery.isNotBlank() || freetextName.isNotBlank(),
+        text = "Add line",
+        onClick = onAddLine,
+        enabled = selItemId != null || pickedGenericCode != null || query.isNotBlank(),
         modifier = Modifier.fillMaxWidth(),
     )
     androidx.compose.material3.HorizontalDivider()
     Text("Lines (${lines.size})", style = MaterialTheme.typography.titleSmall)
     if (lines.isEmpty()) {
-        Text("Pick an item (auto-fills generic + free text), or enter generic / free text.", style = MaterialTheme.typography.bodySmall)
+        Text(
+            "Search an item or generic and pick it, or just type a name to add it as free text.",
+            style = MaterialTheme.typography.bodySmall,
+        )
     } else {
-        Column(verticalArrangement = Arrangement.spacedBy(com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens.xs)) {
+        Column(verticalArrangement = Arrangement.spacedBy(SpacingTokens.xs)) {
             lines.forEach { line ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),

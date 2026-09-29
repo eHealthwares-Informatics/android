@@ -24,4 +24,20 @@ interface ItemsApi {
 
     @GET("items/dependencies/uoms")
     suspend fun getUoms(): ListResponse<UomDto>
+
+    /** Server caps this endpoint at limit<=100; use it to fetch all pages. */
+    @GET("items/dependencies/categories")
+    suspend fun getCategories(
+        @Query("limit") limit: Int,
+        @Query("page") page: Int = 1,
+        @Query("search") search: String? = null,
+    ): ListResponse<CategoryDto>
+
+    /** Server caps this endpoint at limit<=100; use it to fetch all pages. */
+    @GET("items/dependencies/uoms")
+    suspend fun getUoms(
+        @Query("limit") limit: Int,
+        @Query("page") page: Int = 1,
+        @Query("search") search: String? = null,
+    ): ListResponse<UomDto>
 }
