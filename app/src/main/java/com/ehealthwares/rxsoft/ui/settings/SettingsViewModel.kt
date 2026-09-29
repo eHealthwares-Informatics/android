@@ -75,20 +75,9 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun saveServerUrl(url: String) {
-        serverUrlManager.useCustom(normalizeUserUrl(url))
+        serverUrlManager.useCustom(url.trim())
         _serverMode.value = ServerUrlManager.Mode.CUSTOM
         _serverUrl.value = serverUrlManager.getUrl()
-    }
-
-    private fun normalizeUserUrl(url: String): String {
-        val trimmed = url.trim().trimEnd('/')
-        if (trimmed.isEmpty() || !trimmed.contains("://")) return trimmed
-        val path = try {
-            java.net.URI(trimmed).path
-        } catch (_: Exception) {
-            null
-        }
-        return if (path.isNullOrBlank() || path == "/") "$trimmed/api" else trimmed
     }
 
 

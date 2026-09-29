@@ -19,30 +19,28 @@ class ServerUrlManager @Inject constructor(
         private const val CONVERSATION_KEY = "conversation_base_url"
 
         /** Production API base URL. */
-        const val PRODUCTION_URL = "https://api.ehealthwares.com/api/"
+        const val PRODUCTION_URL = "https://api.ehealthwares.com"
 
         private const val MODE_KEY = "server_mode"
+
+        /** URLs previously saved with an auto-appended /api (legacy bug). */
+        private val LEGACY_PROD_URLS = setOf(
+            "https://api.ehealthwares.com/api",
+            "https://api.ehealthwares.com/api/",
+        )
     }
 
     /** Build-time default (local emulator) URL. */
     fun defaultUrl(): String = BuildConfig.API_BASE_URL
 
     /**
-     * Ensure a host-only URL carries the API path: `https://host` becomes
-     * `https://host/api` (the backend serves under `/api`). URLs that already
-     * include a path — e.g. `https://host/api` or a staging prefix — pass
-     * through untouched.
+     * Sanitize a user-entered URL: trim whitespace and trailing slashes only.
+     * The path is used exactly as provided — the app never appends or strips
+     * path segments (e.g. `/api`) on its own.
      */
     fun normalizeUrl(url: String): String {
         val trimmed = url.trim().trimEnd('/')
-        if (trimmed.isEmpty()) return BuildConfig.API_BASE_URL
-        if (!trimmed.contains("://")) return trimmed // scheme-less: leave as typed
-        val path = try {
-            java.net.URI(trimmed).path
-        } catch (_: Exception) {
-            null
-        }
-        return if (path.isNullOrBlank() || path == "/") "$trimmed/api" else trimmed
+        return trimmed.ifEmpty { BuildConfig.API_BASE_URL }
     }
 
     /** True when [url] points at the production API host (any path). */
@@ -109,7 +107,12 @@ class ServerUrlManager @Inject constructor(
 
     fun getUrl(): String {
         val raw = prefs.getString(KEY, null) ?: BuildConfig.API_BASE_URL
-        // Normalize legacy saved values (host-only URLs get /api appended).
+        // One-time fix: older builds auto-appended /api and saved it — the prod
+        // host does not serve under /api, so rewrite those to the real URL.
+        if (raw in LEGACY_PROD_URLS) {
+            setUrl(PRODUCTION_URL)
+            return PRODUCTION_URL
+        }
         val normalized = normalizeUrl(raw)
         // One-time migration: legacy installs had a prod URL saved without a
         // mode key — adopt PRODUCTION mode so the switch reflects reality.
