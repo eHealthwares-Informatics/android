@@ -55,7 +55,6 @@ import com.ehealthwares.rxsoft.BuildConfig
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppFilterChip
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppLoadingState
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppPrimaryButton
-import com.ehealthwares.rxsoft.ui.designsystem.components.AppTextButton
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppTextField
 import com.ehealthwares.rxsoft.ui.designsystem.token.ShapeTokens
 import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
@@ -66,7 +65,6 @@ import androidx.compose.foundation.layout.widthIn
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
-    startInPhoneMode: Boolean = false,
     viewModel: AuthViewModel = androidx.hilt.navigation.compose.hiltViewModel(),
 ) {
     val colors = MaterialTheme.colorScheme
@@ -154,7 +152,6 @@ fun LoginScreen(
             ) {
                 LoginFormContent(
                     viewModel = viewModel,
-                    startInPhoneMode = startInPhoneMode,
                     username = username,
                     password = password,
                     passwordVisible = passwordVisible,
@@ -254,8 +251,7 @@ fun LoginScreen(
 
                         LoginFormContent(
                             viewModel = viewModel,
-                            startInPhoneMode = startInPhoneMode,
-                            username = username,
+                                    username = username,
                             password = password,
                             passwordVisible = passwordVisible,
                             loginState = loginState,
@@ -328,7 +324,6 @@ private fun FeatureItem(text: String) {
 @Composable
 private fun LoginFormContent(
     viewModel: AuthViewModel,
-    startInPhoneMode: Boolean = false,
     username: String,
     password: String,
     passwordVisible: Boolean,
@@ -349,17 +344,8 @@ private fun LoginFormContent(
     onServerUrlReset: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
-    val shopperState by viewModel.shopperState.collectAsState()
-    val otpRequested by viewModel.otpRequested.collectAsState()
-    val devOtp by viewModel.devOtp.collectAsState()
 
-    var phoneMode by remember { mutableStateOf(startInPhoneMode) }
-    var phone by remember { mutableStateOf("") }
-    var channel by remember { mutableStateOf("whatsapp") }
-    var otp by remember { mutableStateOf("") }
-
-    if (!phoneMode) {
-        AppTextField(
+    AppTextField(
             value = username,
             onValueChange = onUsernameChange,
             label = "Username",
@@ -405,117 +391,9 @@ private fun LoginFormContent(
         }
 
         Spacer(modifier = Modifier.height(SpacingTokens.lg))
-        AppTextButton(
-            text = "Continue with phone",
-            onClick = {
-                phoneMode = true
-                otp = ""
-            },
-        )
-    } else {
-        // DEV ONLY: show the code the server just generated, and pre-fill the
-        // OTP field so sign-in can be tested before SMS/WhatsApp delivery works.
-        LaunchedEffect(devOtp) { devOtp?.let { otp = it } }
-        devOtp?.let { code ->
-            Surface(
-                color = colors.primaryContainer,
-                shape = ShapeTokens.md,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Column(modifier = Modifier.padding(SpacingTokens.md)) {
-                    Text(
-                        "OTP (test only)",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = colors.onPrimaryContainer,
-                    )
-                    Text(
-                        code,
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = colors.onPrimaryContainer,
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(SpacingTokens.md))
-        }
-        Text(
-            text = "Sign in with your phone number",
-            style = MaterialTheme.typography.bodyMedium,
-            color = colors.onSurfaceVariant,
-        )
-        Spacer(modifier = Modifier.height(SpacingTokens.lg))
-        AppTextField(
-            value = phone,
-            onValueChange = { phone = it },
-            label = "Phone number",
-            singleLine = true,
-            keyboardType = KeyboardType.Phone,
-            imeAction = ImeAction.Next,
-        )
-        Spacer(modifier = Modifier.height(SpacingTokens.md))
-        Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.sm)) {
-            AppFilterChip(
-                selected = channel == "whatsapp",
-                onClick = { channel = "whatsapp" },
-                label = "WhatsApp",
-            )
-            AppFilterChip(
-                selected = channel == "sms",
-                onClick = { channel = "sms" },
-                label = "SMS",
-            )
-        }
-        Spacer(modifier = Modifier.height(SpacingTokens.lg))
-
-        if (!otpRequested) {
-            AppPrimaryButton(
-                text = "Send code",
-                onClick = { viewModel.requestShopperOtp(phone, channel) },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = phone.isNotBlank() && shopperState !is UiState.Loading,
-            )
-        } else {
-            AppTextField(
-                value = otp,
-                onValueChange = { otp = it },
-                label = "OTP code",
-                singleLine = true,
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done,
-                onImeAction = { viewModel.verifyShopperOtp(phone, otp) },
-            )
-            Spacer(modifier = Modifier.height(SpacingTokens.lg))
-            AppPrimaryButton(
-                text = "Verify & Continue",
-                onClick = { viewModel.verifyShopperOtp(phone, otp) },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = otp.length >= 4 && shopperState !is UiState.Loading,
-            )
-            AppTextButton(
-                text = "Resend code",
-                onClick = { viewModel.requestShopperOtp(phone, channel) },
-            )
-        }
-
-        if (shopperState is UiState.Error) {
-            Spacer(modifier = Modifier.height(SpacingTokens.sm))
-            Text(
-                text = (shopperState as UiState.Error).message,
-                style = MaterialTheme.typography.bodySmall,
-                color = colors.error,
-            )
-        }
-
-        Spacer(modifier = Modifier.height(SpacingTokens.lg))
-        AppTextButton(
-            text = "Back to sign in",
-            onClick = { phoneMode = false },
-        )
-    }
-
     // Server configuration — hidden by default; revealed by tapping the
     // app logo 5x (easter egg). Shows the two modes: Production / Custom.
-    if (showServerConfig && !phoneMode) {
+    if (showServerConfig) {
         Spacer(modifier = Modifier.height(SpacingTokens.lg))
         Text(
             text = "Server Mode",

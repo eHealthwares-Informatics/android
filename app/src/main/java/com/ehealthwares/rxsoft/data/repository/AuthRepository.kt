@@ -4,9 +4,6 @@ import android.util.Log
 import com.ehealthwares.rxsoft.data.remote.api.AuthApi
 import com.ehealthwares.rxsoft.data.remote.dto.LoginRequest
 import com.ehealthwares.rxsoft.data.remote.dto.CurrentUserResponse
-import com.ehealthwares.rxsoft.data.remote.dto.ShopperOtpResponse
-import com.ehealthwares.rxsoft.data.remote.dto.ShopperRequestOtpRequest
-import com.ehealthwares.rxsoft.data.remote.dto.ShopperVerifyOtpRequest
 import com.ehealthwares.rxsoft.util.TokenManager
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
@@ -24,8 +21,6 @@ class AuthRepository @Inject constructor(
 
             Log.d("AuthRepo", "Saving tokens to DataStore")
             tokenManager.saveTokens(authResponse.accessToken, authResponse.refreshToken)
-            tokenManager.setMobileShopper(false)
-            tokenManager.saveUserPhone(null)
 
             Log.d("AuthRepo", "Calling GET /auth/me")
             val user = authApi.me()
@@ -38,29 +33,6 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    /** Request an OTP for mobile shopper phone sign-in. */
-    suspend fun requestShopperOtp(phone: String, channel: String): Result<ShopperOtpResponse> {
-        return try {
-            Result.success(authApi.shopperRequestOtp(ShopperRequestOtpRequest(phone, channel)))
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    /** Sign in the shopper by phone (the OTP is verified client-side). */
-    suspend fun verifyShopperOtp(phone: String): Result<CurrentUserResponse> {
-        return try {
-            val authResponse = authApi.shopperVerifyOtp(ShopperVerifyOtpRequest(phone))
-            tokenManager.saveTokens(authResponse.accessToken, authResponse.refreshToken)
-            tokenManager.setMobileShopper(true)
-            tokenManager.saveUserPhone(phone)
-            Result.success(authApi.me())
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    suspend fun isMobileShopper(): Boolean = tokenManager.isMobileShopper.first()
 
     suspend fun logout() {
         Log.d("AuthRepo", "Logging out — clearing tokens")

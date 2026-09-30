@@ -15,7 +15,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Inventory2
-import androidx.compose.material.icons.outlined.Medication
 import androidx.compose.material.icons.outlined.PointOfSale
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -117,14 +116,6 @@ fun SettingsScreen(
                 icon = Icons.Outlined.PointOfSale,
                 isActive = activeModules.contains(AppModule.POS),
                 onToggle = { resolvedVm.toggleModule(AppModule.POS) }
-            )
-            Spacer(Modifier.height(SpacingTokens.sm))
-            ModuleToggleCard(
-                title = AppModule.SHOP.title,
-                description = AppModule.SHOP.description,
-                icon = Icons.Outlined.Medication,
-                isActive = activeModules.contains(AppModule.SHOP),
-                onToggle = { resolvedVm.toggleModule(AppModule.SHOP) }
             )
             Spacer(Modifier.height(SpacingTokens.sm))
             ModuleToggleCard(

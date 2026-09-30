@@ -19,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Inventory2
@@ -33,7 +32,6 @@ import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -239,15 +237,6 @@ object PharmacyMenuSections {
         ),
     )
 
-    val shop = DrawerMenuSection(
-        title = "Shop",
-        icon = Icons.Default.Store,
-        items = listOf(
-            DrawerMenuItem(route = "shop", title = "Catalog", icon = Icons.Default.Medication),
-            DrawerMenuItem(route = "chat", title = "Messages", icon = Icons.Default.ChatBubble),
-        ),
-    )
-
     val inventory = DrawerMenuSection(
         title = "Inventory",
         icon = Icons.Default.Inventory2,
@@ -283,5 +272,5 @@ object PharmacyMenuSections {
         ),
     )
 
-    val all = listOf(sales, shop, inventory, reports, analytics, settings)
+    val all = listOf(sales, inventory, reports, analytics, settings)
 }

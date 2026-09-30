@@ -31,11 +31,10 @@ import javax.inject.Inject
 sealed class AppScreen {
     data object Loading : AppScreen()
     data object Login : AppScreen()
-    data object ShopperAuth : AppScreen()
     data object PinSetup : AppScreen()
     data object PinUnlock : AppScreen()
     data object Syncing : AppScreen()
-    data class Main(val guest: Boolean = false, val shopper: Boolean = false) : AppScreen()
+    data object Main : AppScreen()
 }
 
 @HiltViewModel
@@ -64,15 +63,9 @@ class AuthViewModel @Inject constructor(
     private val _loginState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val loginState: StateFlow<UiState<Unit>> = _loginState.asStateFlow()
 
-    private val _shopperState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
-    val shopperState: StateFlow<UiState<Unit>> = _shopperState.asStateFlow()
 
-    private val _otpRequested = MutableStateFlow(false)
-    val otpRequested: StateFlow<Boolean> = _otpRequested.asStateFlow()
 
     /** DEV ONLY: last OTP returned by the server, shown on-screen. */
-    private val _devOtp = MutableStateFlow<String?>(null)
-    val devOtp: StateFlow<String?> = _devOtp.asStateFlow()
 
     private val _serverUrl = MutableStateFlow(serverUrlManager.getUrl())
     val serverUrl: StateFlow<String> = _serverUrl.asStateFlow()
@@ -103,29 +96,18 @@ class AuthViewModel @Inject constructor(
     private var syncJob: Job? = null
     private var backoffJob: Job? = null
 
-    /** Whether the current session is a self-onboarded mobile shopper. */
-    private var shopperSession = false
-
     init {
         viewModelScope.launch {
             val loggedIn = authRepository.isLoggedIn()
-            val shopper = authRepository.isMobileShopper()
-            shopperSession = shopper
             when {
                 !loggedIn -> {
-                    Log.d(TAG, "Not logged in, showing guest shop")
-                    _screenState.value = AppScreen.Main(guest = true)
-                }
-                shopper -> {
-                    // Shoppers bypass PIN entirely: load the catalog, then enter
-                    // the shop shell.
-                    Log.d(TAG, "Mobile shopper session — syncing into shop")
-                    beginStartupSync()
+                    Log.d(TAG, "Not logged in, showing sign-in")
+                    _screenState.value = AppScreen.Login
                 }
                 !pinManager.hasCredentials() -> {
-                    Log.w(TAG, "Logged in but credentials missing, resetting to guest")
+                    Log.w(TAG, "Logged in but credentials missing, resetting to sign-in")
                     authRepository.logout()
-                    _screenState.value = AppScreen.Main(guest = true)
+                    _screenState.value = AppScreen.Login
                 }
                 !pinManager.isPinSet() -> {
                     Log.d(TAG, "Logged in but no PIN set, showing PIN setup")
@@ -145,11 +127,6 @@ class AuthViewModel @Inject constructor(
             sessionManager.isTimedOut.collect { timedOut ->
                 val current = _screenState.value
                 if (!timedOut || current !is AppScreen.Main) return@collect
-                if (current.guest || current.shopper || shopperSession) {
-                    // Shoppers/guests never see the PIN lock after inactivity.
-                    if (current.shopper || shopperSession) sessionManager.recordActivity()
-                    return@collect
-                }
                 Log.d(TAG, "Session timed out, showing PIN unlock")
                 _screenState.value = AppScreen.PinUnlock
                 _resetPinTrigger.emit(Unit)
@@ -173,7 +150,6 @@ class AuthViewModel @Inject constructor(
             authRepository.login(username, password)
                 .onSuccess {
                     Log.d(TAG, "Login succeeded")
-                    shopperSession = false
                     sessionManager.reset()
                     pinManager.saveCredentials(username, password, null)
                     posConfigManager.loadConfig()
@@ -202,60 +178,8 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    // ── Mobile shopper (phone + OTP) ──────────────────────────────────────────
-
-    fun startShopperAuth() {
-        _shopperState.value = UiState.Idle
-        _otpRequested.value = false
-        _devOtp.value = null
-        _screenState.value = AppScreen.ShopperAuth
-    }
-
-    fun requestShopperOtp(phone: String, channel: String) {
-        viewModelScope.launch {
-            _shopperState.value = UiState.Loading
-            authRepository.requestShopperOtp(phone, channel)
-                .onSuccess {
-                    _shopperState.value = UiState.Success(Unit)
-                    _otpRequested.value = true
-                    _devOtp.value = it.code
-                }
-                .onFailure { e ->
-                    Log.e(TAG, "Shopper OTP request failed: ${e.message}")
-                    _shopperState.value = UiState.Error(e.message ?: "Could not send code")
-                }
-        }
-    }
-
-    fun verifyShopperOtp(phone: String, code: String) {
-        // OTP verification is local: compare against the code the server sent.
-        val expected = _devOtp.value
-        if (expected != null && code.trim() != expected) {
-            _shopperState.value = UiState.Error("Incorrect code")
-            return
-        }
-        viewModelScope.launch {
-            _shopperState.value = UiState.Loading
-            authRepository.verifyShopperOtp(phone)
-                .onSuccess {
-                    Log.d(TAG, "Shopper sign-in succeeded")
-                    shopperSession = true
-                    sessionManager.reset()
-                    _shopperState.value = UiState.Success(Unit)
-                    _otpRequested.value = false
-                    _devOtp.value = null
-                    beginStartupSync()
-                }
-                .onFailure { e ->
-                    Log.e(TAG, "Shopper sign-in failed: ${e.message}")
-                    _shopperState.value = UiState.Error(e.message ?: "Sign in failed")
-                }
-        }
-    }
-
     fun onPinAuthenticated() {
         sessionManager.reset()
-        shopperSession = false
         beginStartupSync()
     }
 
@@ -272,7 +196,7 @@ class AuthViewModel @Inject constructor(
     fun logout() {
         viewModelScope.launch {
             performLogout()
-            _screenState.value = AppScreen.Main(guest = true)
+            _screenState.value = AppScreen.Login
         }
     }
 
@@ -284,16 +208,12 @@ class AuthViewModel @Inject constructor(
             authRepository.logout()
         } catch (_: Exception) {}
         pinManager.clearAll()
-        shopperSession = false
         _loginState.value = UiState.Idle
     }
 
-    /** Open the sign-in screen from guest mode. */
+    /** Open the sign-in screen (e.g. from settings). */
     fun requireLogin() {
         _loginState.value = UiState.Idle
-        _shopperState.value = UiState.Idle
-        _otpRequested.value = false
-        _devOtp.value = null
         _screenState.value = AppScreen.Login
     }
 
@@ -326,7 +246,7 @@ class AuthViewModel @Inject constructor(
             val timeoutMs = syncSettingsManager.timeoutMillis.first()
             try {
                 withTimeout(timeoutMs) { syncRepository.ensureSynced() }
-                _screenState.value = AppScreen.Main(shopper = shopperSession)
+                _screenState.value = AppScreen.Main
             } catch (e: TimeoutCancellationException) {
                 Log.w(TAG, "Startup sync timed out after ${timeoutMs}ms")
                 finishStartupSync("Sync is taking longer than expected.")
@@ -341,7 +261,7 @@ class AuthViewModel @Inject constructor(
     private suspend fun finishStartupSync(message: String) {
         if (syncRepository.hasCache()) {
             Log.w(TAG, "Proceeding with cached data: $message")
-            _screenState.value = AppScreen.Main(shopper = shopperSession)
+            _screenState.value = AppScreen.Main
         } else {
             _canContinueOffline.value = true
             _syncError.value = message
@@ -356,7 +276,7 @@ class AuthViewModel @Inject constructor(
     }
 
     fun continueOffline() {
-        _screenState.value = AppScreen.Main(shopper = shopperSession)
+        _screenState.value = AppScreen.Main
         backoffJob = viewModelScope.launch {
             // Kick off immediate background sync in case network is actually available,
             // then keep retrying with exponential backoff (30s, 60s, 120s ... capped 5m)

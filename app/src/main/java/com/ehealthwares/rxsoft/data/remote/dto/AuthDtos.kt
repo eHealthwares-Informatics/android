@@ -39,21 +39,3 @@ data class ModuleInfoDto(
     val name: String? = null
 )
 
-@JsonClass(generateAdapter = true)
-data class ShopperRequestOtpRequest(
-    val phone: String,
-    val channel: String
-)
-
-@JsonClass(generateAdapter = true)
-data class ShopperVerifyOtpRequest(
-    val phone: String
-)
-
-@JsonClass(generateAdapter = true)
-data class ShopperOtpResponse(
-    val sent: Boolean = false,
-    val channel: String? = null,
-    /** DEV ONLY: the generated code, surfaced so it can be shown on-screen. */
-    val code: String? = null
-)
