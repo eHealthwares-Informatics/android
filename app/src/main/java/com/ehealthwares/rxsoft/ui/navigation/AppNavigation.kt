@@ -61,7 +61,8 @@ import com.ehealthwares.rxsoft.ui.reports.DailySalesScreen
 import com.ehealthwares.rxsoft.ui.settings.AppModule
 import com.ehealthwares.rxsoft.ui.settings.SettingsScreen
 import com.ehealthwares.rxsoft.ui.settings.SettingsViewModel
-import com.ehealthwares.rxsoft.ui.designsystem.components.MedicalArtBackdrop
+import com.ehealthwares.rxsoft.ui.designsystem.components.RxAppBackdrop
+import com.ehealthwares.rxsoft.ui.designsystem.components.RxBackdropStyle
 import com.ehealthwares.rxsoft.ui.designsystem.theme.ThemeSettingsScreen
 import com.ehealthwares.rxsoft.ui.splash.SplashScreen
 import com.ehealthwares.rxsoft.ui.sync.SyncLoadingScreen
@@ -238,7 +239,7 @@ private fun MainContent(
     onMenuClick: (() -> Unit)?,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        MedicalArtBackdrop()
+        RxAppBackdrop(RxBackdropStyle.Pattern)
         Scaffold(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
         ) { innerPadding ->
