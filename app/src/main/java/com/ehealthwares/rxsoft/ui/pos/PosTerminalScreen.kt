@@ -852,21 +852,6 @@ private fun ProductSearchItem(item: ItemDto, onClick: () -> Unit) {
                 )
             }
         }
-        Spacer(modifier = Modifier.width(SpacingTokens.sm))
-        IconButton(
-            onClick = onClick,
-            modifier = Modifier
-                .size(28.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary),
-        ) {
-            Icon(
-                Icons.Default.Add,
-                contentDescription = "Add ${item.name}",
-                tint = Color.White,
-                modifier = Modifier.size(16.dp),
-            )
-        }
     }
 }
 
