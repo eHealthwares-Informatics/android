@@ -22,6 +22,7 @@ android {
         buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8000/api/\"")
         // Default web channel for the Conversation Engine chat (same id as the prognocare app).
         buildConfigField("String", "DEFAULT_WEB_CHANNEL_ID", "\"69bd061c11bf835d976c4e2f\"")
+        buildConfigField("String", "PRINTER_URL", "\"http://10.0.2.2:8094\"")
     }
     buildTypes {
         release {

@@ -1,5 +1,6 @@
 package com.ehealthwares.rxsoft.ui.pos
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,7 +10,10 @@ import com.ehealthwares.rxsoft.data.local.PriceDao
 import com.ehealthwares.rxsoft.data.local.PendingSaleDao
 import com.ehealthwares.rxsoft.data.local.PriceListDao
 import com.ehealthwares.rxsoft.data.local.StockBalanceDao
+import com.ehealthwares.rxsoft.data.remote.api.PrintApi
 import com.ehealthwares.rxsoft.data.remote.dto.*
+import com.ehealthwares.rxsoft.data.remote.dto.ReceiptPrintRequest
+import com.ehealthwares.rxsoft.data.remote.dto.ReceiptPrintItem
 import com.ehealthwares.rxsoft.data.repository.CustomerRepository
 import com.ehealthwares.rxsoft.data.repository.InventoryRepository
 import com.ehealthwares.rxsoft.data.repository.StockAdjustResult
@@ -17,8 +21,12 @@ import com.ehealthwares.rxsoft.data.repository.PosRepository
 import com.ehealthwares.rxsoft.data.repository.SaleSubmitResult
 import com.ehealthwares.rxsoft.util.OfflineSyncManager
 import com.ehealthwares.rxsoft.util.PosConfigManager
+import com.ehealthwares.rxsoft.util.ReceiptData
+import com.ehealthwares.rxsoft.util.ReceiptLine
 import com.ehealthwares.rxsoft.util.UiState
+import com.ehealthwares.rxsoft.util.printReceipt
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,6 +81,8 @@ class PosTerminalViewModel @Inject constructor(
     private val stockBalanceDao: StockBalanceDao,
     private val priceListDao: PriceListDao,
     private val priceDao: PriceDao,
+    private val printApi: PrintApi,
+    @ApplicationContext private val context: Context,
 ) : ViewModel() {
 
     private val _stockGate = MutableStateFlow<StockGate>(StockGate.Idle)
@@ -542,6 +552,7 @@ class PosTerminalViewModel @Inject constructor(
                 is SaleSubmitResult.Pushed -> {
                     Log.d("PosTerminalVM", "Sale created: ${result.sale.saleNumber}")
                     _checkoutState.value = UiState.Success(result.sale)
+                    firePrint(result.sale)
                 }
                 is SaleSubmitResult.Queued -> {
                     Log.w("PosTerminalVM", "Sale queued offline: ${result.clientRef}")
@@ -573,6 +584,7 @@ class PosTerminalViewModel @Inject constructor(
                     )
                     clearCart()
                     _checkoutState.value = UiState.Success(offlineSale)
+                    firePrint(offlineSale)
                     refreshPendingSaleCount()
                 }
             }
@@ -581,6 +593,42 @@ class PosTerminalViewModel @Inject constructor(
 
     fun resetCheckoutState() {
         _checkoutState.value = UiState.Idle
+    }
+
+    private fun firePrint(sale: SaleDto) {
+        val tag = "PosTerminalVM"
+        viewModelScope.launch {
+            val lines = sale.lines?.map { line ->
+                ReceiptPrintItem(
+                    name = line.item?.name ?: "Item",
+                    qty = line.quantity.toDouble(),
+                    price = line.unitPrice.toDouble(),
+                    total = line.lineTotal.toDouble(),
+                )
+            } ?: emptyList()
+            val request = ReceiptPrintRequest(
+                saleNumber = sale.saleNumber,
+                items = lines,
+                subtotal = lines.sumOf { it.total },
+                total = sale.totalAmount.toDouble(),
+                paidAmount = sale.paidAmount.toDouble(),
+            )
+            try {
+                printApi.printReceipt(request)
+            } catch (e: Exception) {
+                Log.w(tag, "Print service unavailable, falling back to local print", e)
+                val receiptData = ReceiptData(
+                    saleNumber = sale.saleNumber,
+                    customerName = sale.customer?.name,
+                    items = lines.map { ReceiptLine(it.name, it.qty.toBigDecimal(), it.price.toBigDecimal(), it.total.toBigDecimal()) },
+                    subtotal = sale.totalAmount,
+                    total = sale.totalAmount,
+                    paidAmount = sale.paidAmount,
+                    changeAmount = BigDecimal.ZERO,
+                )
+                printReceipt(context, receiptData)
+            }
+        }
     }
 
     /** Re-read the offline sale outbox count for the header badge. */

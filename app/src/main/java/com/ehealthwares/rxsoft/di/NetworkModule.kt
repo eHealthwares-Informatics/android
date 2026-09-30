@@ -8,6 +8,7 @@ import com.ehealthwares.rxsoft.data.remote.interceptor.ServerUrlInterceptor
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import com.ehealthwares.rxsoft.data.remote.interceptor.TokenRefreshInterceptor
 import com.ehealthwares.rxsoft.data.remote.interceptor.TraceLoggingInterceptor
+import com.ehealthwares.rxsoft.util.PrinterUrlManager
 import com.ehealthwares.rxsoft.util.ServerUrlManager
 import com.ehealthwares.rxsoft.util.TokenManager
 import com.squareup.moshi.Moshi
@@ -20,6 +21,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -147,5 +149,32 @@ object NetworkModule {
     @Singleton
     fun provideTraceLoggingInterceptor(): TraceLoggingInterceptor {
         return TraceLoggingInterceptor()
+    }
+
+    @Provides
+    @Singleton
+    @Named("print")
+    fun providePrintOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .connectTimeout(5, TimeUnit.SECONDS)
+            .readTimeout(5, TimeUnit.SECONDS)
+            .writeTimeout(5, TimeUnit.SECONDS)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun providePrintApi(
+        printerUrlManager: PrinterUrlManager,
+        @Named("print") printOkHttpClient: OkHttpClient,
+        moshi: Moshi,
+    ): PrintApi {
+        val baseUrl = printerUrlManager.getUrl().trimEnd('/') + "/"
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(printOkHttpClient)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create(PrintApi::class.java)
     }
 }

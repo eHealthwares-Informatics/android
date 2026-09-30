@@ -58,6 +58,7 @@ fun SettingsScreen(
 ) {
     val resolvedVm = externalVm ?: hiltViewModel<SettingsViewModel>()
     val serverUrl by resolvedVm.serverUrl.collectAsState()
+    val printerUrl by resolvedVm.printerUrl.collectAsState()
     val serverMode by resolvedVm.serverMode.collectAsState()
     val customServerUrl by resolvedVm.customServerUrl.collectAsState()
     val activeModules by resolvedVm.activeModules.collectAsState()
@@ -67,6 +68,8 @@ fun SettingsScreen(
     val syncProgress by resolvedVm.syncProgress.collectAsState()
     var editingUrl by remember { mutableStateOf(false) }
     var urlInput by remember(customServerUrl) { mutableStateOf(customServerUrl) }
+    var editingPrinterUrl by remember { mutableStateOf(false) }
+    var printerUrlInput by remember(printerUrl) { mutableStateOf(printerUrl) }
     var showSignOutDialog by remember { mutableStateOf(false) }
 
     if (showSignOutDialog) {
@@ -278,6 +281,41 @@ fun SettingsScreen(
                         } else {
                             AppTextButton(text = "Edit custom URL", onClick = { editingUrl = true })
                         }
+                    }
+
+                    Spacer(Modifier.height(SpacingTokens.lg))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    Spacer(Modifier.height(SpacingTokens.lg))
+
+                    Text("Printer Server URL", style = MaterialTheme.typography.titleSmall)
+                    Spacer(Modifier.height(SpacingTokens.xxs))
+                    Text(
+                        text = printerUrl,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.height(SpacingTokens.sm))
+                    if (editingPrinterUrl) {
+                        OutlinedTextField(
+                            value = printerUrlInput,
+                            onValueChange = { printerUrlInput = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            shape = ShapeTokens.md,
+                        )
+                        Spacer(Modifier.height(SpacingTokens.sm))
+                        Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.sm)) {
+                            AppOutlinedButton(
+                                text = "Cancel",
+                                onClick = { editingPrinterUrl = false; printerUrlInput = printerUrl },
+                            )
+                            Button(onClick = {
+                                resolvedVm.savePrinterUrl(printerUrlInput)
+                                editingPrinterUrl = false
+                            }) { Text("Save") }
+                        }
+                    } else {
+                        AppTextButton(text = "Edit printer URL", onClick = { editingPrinterUrl = true })
                     }
                 }
             }

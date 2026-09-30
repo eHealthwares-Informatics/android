@@ -6,6 +6,7 @@ import com.ehealthwares.rxsoft.data.local.SyncStateEntity
 import com.ehealthwares.rxsoft.data.repository.SyncProgress
 import com.ehealthwares.rxsoft.data.repository.SyncRepository
 import com.ehealthwares.rxsoft.util.PosConfigManager
+import com.ehealthwares.rxsoft.util.PrinterUrlManager
 import com.ehealthwares.rxsoft.util.ServerUrlManager
 import com.ehealthwares.rxsoft.util.SyncSettingsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,11 +24,15 @@ class SettingsViewModel @Inject constructor(
     private val moduleConfig: ModuleConfig,
     private val syncSettingsManager: SyncSettingsManager,
     private val syncRepository: SyncRepository,
-    val posConfigManager: PosConfigManager
+    val posConfigManager: PosConfigManager,
+    private val printerUrlManager: PrinterUrlManager,
 ) : ViewModel() {
 
     private val _serverUrl = MutableStateFlow(serverUrlManager.getUrl())
     val serverUrl: StateFlow<String> = _serverUrl.asStateFlow()
+
+    private val _printerUrl = MutableStateFlow(printerUrlManager.getUrl())
+    val printerUrl: StateFlow<String> = _printerUrl.asStateFlow()
 
     private val _serverMode = MutableStateFlow(serverUrlManager.getMode())
     val serverMode: StateFlow<ServerUrlManager.Mode> = _serverMode.asStateFlow()
@@ -78,6 +83,11 @@ class SettingsViewModel @Inject constructor(
         serverUrlManager.useCustom(url.trim())
         _serverMode.value = ServerUrlManager.Mode.CUSTOM
         _serverUrl.value = serverUrlManager.getUrl()
+    }
+
+    fun savePrinterUrl(url: String) {
+        printerUrlManager.setUrl(url.trim())
+        _printerUrl.value = printerUrlManager.getUrl()
     }
 
 
