@@ -225,7 +225,7 @@ class EnterPinViewModel @Inject constructor(
                 _navigation.value = PinNavigationEvent.NavigateToLogin
                 return@launch
             }
-            val result = authRepository.login(creds.username, creds.password)
+            val result = authRepository.restoreSession(creds.username, creds.password)
             _isVerifying.value = false
             if (result.isSuccess) {
                 Log.d(TAG, "Silent re-authentication succeeded")
