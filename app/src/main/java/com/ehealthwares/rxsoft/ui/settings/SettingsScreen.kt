@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -16,12 +17,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.PointOfSale
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.outlined.Print
+import androidx.compose.material.icons.outlined.Receipt
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
@@ -41,6 +50,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ehealthwares.rxsoft.data.local.SyncStateEntity
 import com.ehealthwares.rxsoft.util.ServerUrlManager
@@ -59,6 +69,9 @@ fun SettingsScreen(
     val resolvedVm = externalVm ?: hiltViewModel<SettingsViewModel>()
     val serverUrl by resolvedVm.serverUrl.collectAsState()
     val printerUrl by resolvedVm.printerUrl.collectAsState()
+    val discoveryState by resolvedVm.discoveryState.collectAsState()
+    val knownAgents by resolvedVm.knownAgents.collectAsState()
+    val testPrintState by resolvedVm.testPrintState.collectAsState()
     val serverMode by resolvedVm.serverMode.collectAsState()
     val customServerUrl by resolvedVm.customServerUrl.collectAsState()
     val activeModules by resolvedVm.activeModules.collectAsState()
@@ -287,13 +300,53 @@ fun SettingsScreen(
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                     Spacer(Modifier.height(SpacingTokens.lg))
 
-                    Text("Printer Server URL", style = MaterialTheme.typography.titleSmall)
-                    Spacer(Modifier.height(SpacingTokens.xxs))
-                    Text(
-                        text = printerUrl,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Printer Server URL", style = MaterialTheme.typography.titleSmall)
+                            Spacer(Modifier.height(SpacingTokens.xxs))
+                            Text(
+                                text = printerUrl,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        // Auto-discovery: scan the LAN for print-agents.
+                        IconButton(
+                            onClick = { resolvedVm.discoverPrinters() },
+                            enabled = discoveryState !is DiscoveryState.Scanning,
+                            modifier = Modifier.semantics {
+                                contentDescription = "Auto discover printers"
+                            },
+                        ) {
+                            if (discoveryState is DiscoveryState.Scanning) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(SpacingTokens.xl),
+                                    strokeWidth = 2.dp,
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Outlined.Search,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+                        }
+                    }
+
+                    DiscoveryResults(
+                        state = discoveryState,
+                        onSelect = {
+                            resolvedVm.selectDiscoveredPrinter(it)
+                            printerUrlInput = it.url
+                            resolvedVm.resetDiscovery()
+                        },
+                        onRetry = { resolvedVm.discoverPrinters() },
+                        onDismiss = { resolvedVm.resetDiscovery() },
                     )
+
                     Spacer(Modifier.height(SpacingTokens.sm))
                     if (editingPrinterUrl) {
                         OutlinedTextField(
@@ -301,10 +354,15 @@ fun SettingsScreen(
                             onValueChange = { printerUrlInput = it },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
+                            label = { Text("http://192.168.1.100:8094") },
                             shape = ShapeTokens.md,
                         )
                         Spacer(Modifier.height(SpacingTokens.sm))
                         Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.sm)) {
+                            AppOutlinedButton(
+                                text = "Test",
+                                onClick = { resolvedVm.testPrinterUrl() },
+                            )
                             AppOutlinedButton(
                                 text = "Cancel",
                                 onClick = { editingPrinterUrl = false; printerUrlInput = printerUrl },
@@ -316,6 +374,49 @@ fun SettingsScreen(
                         }
                     } else {
                         AppTextButton(text = "Edit printer URL", onClick = { editingPrinterUrl = true })
+                    }
+
+                    Spacer(Modifier.height(SpacingTokens.sm))
+                    TestPrintSection(
+                        state = testPrintState,
+                        onPrint = { resolvedVm.printTestPage() },
+                        onDismiss = { resolvedVm.resetTestPrint() },
+                    )
+
+                    if (knownAgents.isNotEmpty()) {
+                        Spacer(Modifier.height(SpacingTokens.md))
+                        Text(
+                            "Previously found",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Spacer(Modifier.height(SpacingTokens.xxs))
+                        knownAgents.forEach { agent ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { resolvedVm.savePrinterUrl(agent.url) }
+                                    .padding(vertical = SpacingTokens.xs)
+                                    .semantics { contentDescription = "Use printer ${agent.hostname}" },
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Print,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                Spacer(Modifier.width(SpacingTokens.sm))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(agent.hostname, style = MaterialTheme.typography.bodyMedium)
+                                    Text(
+                                        agent.url,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -332,6 +433,194 @@ fun SettingsScreen(
             }
 
             Spacer(Modifier.height(SpacingTokens.xxxl))
+        }
+    }
+}
+
+@Composable
+private fun TestPrintSection(
+    state: TestPrintState,
+    onPrint: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = onPrint,
+            enabled = state !is TestPrintState.Printing,
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics { contentDescription = "Print test page" },
+        ) {
+            if (state is TestPrintState.Printing) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp),
+                    strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                )
+                Spacer(Modifier.width(SpacingTokens.sm))
+                Text("Printing…")
+            } else {
+                Icon(
+                    imageVector = Icons.Outlined.Receipt,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                )
+                Spacer(Modifier.width(SpacingTokens.sm))
+                Text("Print test page")
+            }
+        }
+
+        when (state) {
+            is TestPrintState.Success -> {
+                Spacer(Modifier.height(SpacingTokens.sm))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Outlined.CheckCircle,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                    Spacer(Modifier.width(SpacingTokens.sm))
+                    Text(
+                        state.message,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            }
+
+            is TestPrintState.Failure -> {
+                Spacer(Modifier.height(SpacingTokens.sm))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Outlined.ErrorOutline,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.error,
+                    )
+                    Spacer(Modifier.width(SpacingTokens.sm))
+                    Text(
+                        state.message,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+                AppTextButton(text = "Dismiss", onClick = onDismiss)
+            }
+
+            else -> Unit
+        }
+    }
+}
+
+@Composable
+private fun DiscoveryResults(
+    state: DiscoveryState,
+    onSelect: (DiscoveredPrinter) -> Unit,
+    onRetry: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    when (state) {
+        is DiscoveryState.Idle -> Unit
+
+        is DiscoveryState.Scanning -> {
+            Spacer(Modifier.height(SpacingTokens.sm))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                CircularProgressIndicator(modifier = Modifier.size(SpacingTokens.lg), strokeWidth = 2.dp)
+                Spacer(Modifier.width(SpacingTokens.sm))
+                Text(
+                    "Searching this network…",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+
+        is DiscoveryState.Error -> {
+            Spacer(Modifier.height(SpacingTokens.sm))
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = ShapeTokens.lg,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                ),
+            ) {
+                Column(modifier = Modifier.padding(SpacingTokens.md)) {
+                    Text(
+                        state.message,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                    )
+                    Spacer(Modifier.height(SpacingTokens.xs))
+                    Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.sm)) {
+                        AppTextButton(text = "Retry", onClick = onRetry)
+                        AppTextButton(text = "Dismiss", onClick = onDismiss)
+                    }
+                }
+            }
+        }
+
+        is DiscoveryState.Found -> {
+            Spacer(Modifier.height(SpacingTokens.sm))
+            Text(
+                "${state.printers.size} printer server(s) found",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(SpacingTokens.xxs))
+            state.printers.forEach { printer ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = SpacingTokens.xxs)
+                        .clickable { onSelect(printer) }
+                        .semantics { contentDescription = "Use printer at ${printer.ip}" },
+                    shape = ShapeTokens.lg,
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(SpacingTokens.md),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Print,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                        Spacer(Modifier.width(SpacingTokens.sm))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                printer.info.hostname.ifBlank { printer.ip },
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            Text(
+                                printer.url,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Text(
+                                "${printer.info.printer} · ${printer.info.width} col",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                }
+            }
+            Spacer(Modifier.height(SpacingTokens.xxs))
+            Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.sm)) {
+                AppTextButton(text = "Scan again", onClick = onRetry)
+                AppTextButton(text = "Dismiss", onClick = onDismiss)
+            }
         }
     }
 }

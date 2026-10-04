@@ -23,3 +23,16 @@ data class ReceiptPrintItem(
     val price: Double,
     val total: Double,
 )
+
+/** Response from a print-agent's `GET /discover`. */
+@JsonClass(generateAdapter = true)
+data class AgentInfo(
+    val service: String = "",
+    val version: String = "",
+    val hostname: String = "",
+    val ips: List<String> = emptyList(),
+    val port: String = "8094",
+    val printer: String = "",
+    val width: Int = 32,
+    val platform: String = "",
+)

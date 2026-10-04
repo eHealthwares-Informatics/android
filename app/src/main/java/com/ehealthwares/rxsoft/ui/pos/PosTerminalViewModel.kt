@@ -84,6 +84,7 @@ class PosTerminalViewModel @Inject constructor(
     private val priceListDao: PriceListDao,
     private val priceDao: PriceDao,
     private val printApi: PrintApi,
+    private val printerUrlManager: com.ehealthwares.rxsoft.util.PrinterUrlManager,
     @ApplicationContext private val context: Context,
 ) : ViewModel() {
 
@@ -617,7 +618,7 @@ class PosTerminalViewModel @Inject constructor(
                 paidAmount = sale.paidAmount.toDouble(),
             )
             try {
-                printApi.printReceipt(request)
+                printApi.printReceipt("${printerUrlManager.getUrl().trimEnd('/')}/print/receipt", request)
             } catch (e: Exception) {
                 Log.w(tag, "Print service unavailable, falling back to local print", e)
                 val receiptData = ReceiptData(

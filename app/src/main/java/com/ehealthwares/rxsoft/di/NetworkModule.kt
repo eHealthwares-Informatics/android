@@ -8,7 +8,6 @@ import com.ehealthwares.rxsoft.data.remote.interceptor.ServerUrlInterceptor
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import com.ehealthwares.rxsoft.data.remote.interceptor.TokenRefreshInterceptor
 import com.ehealthwares.rxsoft.data.remote.interceptor.TraceLoggingInterceptor
-import com.ehealthwares.rxsoft.util.PrinterUrlManager
 import com.ehealthwares.rxsoft.util.ServerUrlManager
 import com.ehealthwares.rxsoft.util.TokenManager
 import com.squareup.moshi.Moshi
@@ -164,14 +163,25 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @Named("discovery")
+    fun provideDiscoveryOkHttpClient(): OkHttpClient {
+        // Short per-host timeout so scanning a /24 completes quickly.
+        return OkHttpClient.Builder()
+            .connectTimeout(400, TimeUnit.MILLISECONDS)
+            .readTimeout(400, TimeUnit.MILLISECONDS)
+            .build()
+    }
+
+    @Provides
+    @Singleton
     fun providePrintApi(
-        printerUrlManager: PrinterUrlManager,
         @Named("print") printOkHttpClient: OkHttpClient,
         moshi: Moshi,
     ): PrintApi {
-        val baseUrl = printerUrlManager.getUrl().trimEnd('/') + "/"
+        // Base URL is a placeholder; calls pass an absolute @Url so the
+        // configured printer can change at runtime.
         return Retrofit.Builder()
-            .baseUrl(baseUrl)
+            .baseUrl("http://localhost/")
             .client(printOkHttpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
