@@ -52,6 +52,8 @@ data class CartItem(
     val uomFactor: BigDecimal = BigDecimal.ONE,
     /** Where the unit price came from (price-list name) — null when manual/default. */
     val priceSource: String? = null,
+    /** Price list that supplied [unitPrice] — null when manual/default. */
+    val priceListId: String? = null,
 ) {
     val lineTotal: BigDecimal get() = quantity.multiply(unitPrice).multiply(uomFactor)
 }
@@ -207,7 +209,7 @@ class PosTerminalViewModel @Inject constructor(
                     null
                 }
                 if (cached != null) {
-                    cart.copy(unitPrice = cached, priceSource = priceListName(listId))
+                    cart.copy(unitPrice = cached, priceSource = priceListName(listId), priceListId = listId)
                 } else {
                     missingRemote.add(cart.item.id)
                     cart
@@ -223,7 +225,7 @@ class PosTerminalViewModel @Inject constructor(
                         try {
                             val fetched = posRepository.getItemPrice(listId, itemId).getOrNull()
                             if (fetched != null && itemId in autoPricedItemIds) {
-                                updateUnitPrice(itemId, fetched, priceListName(listId))
+                                updateUnitPrice(itemId, fetched, priceListName(listId), listId)
                             }
                         } finally {
                             priceLookupInFlight.remove(itemId)
@@ -294,11 +296,11 @@ class PosTerminalViewModel @Inject constructor(
                             null
                         }
                         val listName = priceListName(priceListId)
-                        cached?.let { updateUnitPrice(item.id, it, listName) }
+                        cached?.let { updateUnitPrice(item.id, it, listName, priceListId) }
                         // …then refresh from the API.
                         posRepository.getItemPrice(priceListId, item.id)
                             .onSuccess { fetchedPrice ->
-                                fetchedPrice?.let { updateUnitPrice(item.id, it, listName) }
+                                fetchedPrice?.let { updateUnitPrice(item.id, it, listName, priceListId) }
                             }
                             .onFailure {
                                 Log.w("PosTerminalVM", "Price lookup failed for ${item.id}: ${it.message}")
@@ -327,12 +329,12 @@ class PosTerminalViewModel @Inject constructor(
     private fun priceListName(listId: String?): String? =
         listId?.let { id -> _priceLists.value.firstOrNull { it.id == id }?.name }
 
-    fun updateUnitPrice(itemId: String, unitPrice: BigDecimal, source: String? = null) {
+    fun updateUnitPrice(itemId: String, unitPrice: BigDecimal, source: String? = null, priceListId: String? = null) {
         val current = _cartItems.value.toMutableList()
         val idx = current.indexOfFirst { it.item.id == itemId }
         if (idx >= 0) {
             current[idx] = if (source != null) {
-                current[idx].copy(unitPrice = unitPrice, priceSource = source)
+                current[idx].copy(unitPrice = unitPrice, priceSource = source, priceListId = priceListId)
             } else {
                 current[idx].copy(unitPrice = unitPrice)
             }
@@ -345,8 +347,8 @@ class PosTerminalViewModel @Inject constructor(
         autoPricedItemIds.remove(itemId)
         val current = _cartItems.value.toMutableList()
         val idx = current.indexOfFirst { it.item.id == itemId }
-        if (idx >= 0 && current[idx].priceSource != null) {
-            current[idx] = current[idx].copy(priceSource = null)
+        if (idx >= 0 && (current[idx].priceSource != null || current[idx].priceListId != null)) {
+            current[idx] = current[idx].copy(priceSource = null, priceListId = null)
             _cartItems.value = current
         }
     }
@@ -540,7 +542,8 @@ class PosTerminalViewModel @Inject constructor(
                         quantity = c.quantity,
                         unitPrice = c.unitPrice,
                         uomId = c.uomId ?: c.item.saleUomId ?: c.item.baseUomId ?: "",
-                        uomFactor = c.uomFactor
+                        uomFactor = c.uomFactor,
+                        priceListId = c.priceListId
                     )
                 },
                 payments = listOf(

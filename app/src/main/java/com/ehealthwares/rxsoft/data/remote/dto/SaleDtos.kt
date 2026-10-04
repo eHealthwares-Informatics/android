@@ -62,7 +62,8 @@ data class CreateSaleLine(
     @Json(name = "unitPrice") val unitPrice: BigDecimal,
     @Json(name = "uomId") val uomId: String,
     @Json(name = "uomFactor") val uomFactor: BigDecimal? = null,
-    @Json(name = "lotId") val lotId: String? = null
+    @Json(name = "lotId") val lotId: String? = null,
+    @Json(name = "priceListId") val priceListId: String? = null
 )
 
 @JsonClass(generateAdapter = true)
