@@ -59,6 +59,7 @@ import com.ehealthwares.rxsoft.ui.profile.UserDetailScreen
 import com.ehealthwares.rxsoft.ui.analytics.AnalyticsScreen
 import com.ehealthwares.rxsoft.ui.reports.DailySalesScreen
 import com.ehealthwares.rxsoft.ui.settings.AppModule
+import com.ehealthwares.rxsoft.ui.settings.SettingsPasswordDialog
 import com.ehealthwares.rxsoft.ui.settings.SettingsScreen
 import com.ehealthwares.rxsoft.ui.settings.SettingsViewModel
 import com.ehealthwares.rxsoft.ui.designsystem.components.RxAppBackdrop
@@ -75,11 +76,11 @@ sealed class Screen(val route: String, val title: String, val icon: androidx.com
     data object Profile : Screen("profile", "Profile")
     data object UserDetail : Screen("user-detail", "User Detail")
     data object ThemeSettings : Screen("theme_settings", "Appearance")
-    data object Pos : Screen("pos", "Sales")
-    data object Orders : Screen("orders", "Order")
+    data object Pos : Screen("pos", "POS")
+    data object Orders : Screen("orders", "Orders")
     data object CreateOrder : Screen("orders/new", "New Order")
     data object OrderLines : Screen("orders/lines", "Order Lines")
-    data object Purchases : Screen("purchases", "Purchase")
+    data object Purchases : Screen("purchases", "Purchases")
     data object PosTerminal : Screen("pos/terminal", "New Sale")
     data object SaleLines : Screen("pos/lines", "Sales Lines")
     data object PosDetail : Screen("pos/{saleId}", "Order Detail") {
@@ -96,9 +97,9 @@ sealed class Screen(val route: String, val title: String, val icon: androidx.com
     data object PriceListItems : Screen("price-lists/{priceListId}", "Prices") {
         fun createRoute(priceListId: String) = "price-lists/$priceListId"
     }
-    data object Reports : Screen("reports", "Reports")
+    data object Reports : Screen("reports", "Daily Sales")
     data object Analytics : Screen("analytics", "Analytics")
-    data object Settings : Screen("settings", "Settings")
+    data object Settings : Screen("settings", "App Settings")
     data object Chat : Screen("chat", "Messages")
     data object ChatThread : Screen("chat/{conversationId}?title={title}", "Chat") {
         fun createRoute(conversationId: String, title: String?) =
@@ -181,14 +182,18 @@ fun MainScaffold(authViewModel: AuthViewModel) {
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
+    // App Settings is password-gated: the drawer tap shows a prompt first.
+    // Reset when leaving the settings route so the next tap re-prompts.
+    var showSettingsGate by remember { mutableStateOf(false) }
+
     // Build drawer sections based on active modules.
     val sections = remember(activeModules) {
         buildList {
-            // Sales section (POS, Orders, Purchases)
+            // Sales section (POS, Orders, Customers, Price Lists)
             if (activeModules.contains(AppModule.POS)) {
                 add(PharmacyMenuSections.sales)
             }
-            // Inventory section (its own module — must NOT be triggered by POS)
+            // Inventory section (items, stock, purchases)
             if (activeModules.contains(AppModule.INVENTORY)) {
                 add(PharmacyMenuSections.inventory)
             }
@@ -202,7 +207,7 @@ fun MainScaffold(authViewModel: AuthViewModel) {
         }
     }
 
-    val onNavigate: (String) -> Unit = { route ->
+    val navigateTo: (String) -> Unit = { route ->
         navController.navigate(route) {
             popUpTo(navController.graph.findStartDestination().id) { saveState = true }
             launchSingleTop = true
@@ -210,9 +215,35 @@ fun MainScaffold(authViewModel: AuthViewModel) {
         }
     }
 
+    val onNavigate: (String) -> Unit = { route ->
+        if (route == Screen.Settings.route) {
+            // Gate App Settings behind the fixed password before navigating.
+            showSettingsGate = true
+        } else {
+            navigateTo(route)
+        }
+    }
+
+    // Leaving settings disarms the gate — next App Settings tap re-prompts.
+    LaunchedEffect(currentRoute) {
+        if (currentRoute != Screen.Settings.route) {
+            showSettingsGate = false
+        }
+    }
+
     val coroutineScope = rememberCoroutineScope()
     val openDrawer: () -> Unit = {
         coroutineScope.launch { drawerState.open() }
+    }
+
+    if (showSettingsGate) {
+        SettingsPasswordDialog(
+            onConfirm = {
+                showSettingsGate = false
+                navigateTo(Screen.Settings.route)
+            },
+            onDismiss = { showSettingsGate = false },
+        )
     }
 
     // Wrapper that always shows the drawer on every screen.
