@@ -17,7 +17,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -25,7 +24,6 @@ import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.PointOfSale
-import androidx.compose.material.icons.filled.PostAdd
 import androidx.compose.material.icons.filled.PriceChange
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.ReceiptLong
@@ -221,17 +219,16 @@ fun AppSideDrawer(
  * Predefined menu sections for the pharmacy app.
  */
 object PharmacyMenuSections {
+    /**
+     * Sales — create actions (New Sale / New Order) are FAB-driven on the
+     * respective list screens and are intentionally not listed here.
+     */
     val sales = DrawerMenuSection(
         title = "Sales",
         icon = Icons.Default.Receipt,
         items = listOf(
-            DrawerMenuItem(route = "pos/terminal", title = "New Sale", icon = Icons.Default.Add),
-            DrawerMenuItem(route = "pos", title = "POS Terminal", icon = Icons.Default.PointOfSale),
-            DrawerMenuItem(route = "pos/lines", title = "Sales Lines", icon = Icons.Default.ShoppingCart),
+            DrawerMenuItem(route = "pos", title = "POS", icon = Icons.Default.PointOfSale),
             DrawerMenuItem(route = "orders", title = "Orders", icon = Icons.Default.ReceiptLong),
-            DrawerMenuItem(route = "orders/new", title = "New Order", icon = Icons.Default.PostAdd),
-            DrawerMenuItem(route = "orders/lines", title = "Order Lines", icon = Icons.Default.Receipt),
-            DrawerMenuItem(route = "purchases", title = "Purchases", icon = Icons.Default.ShoppingBag),
             DrawerMenuItem(route = "customers", title = "Customers", icon = Icons.Default.People),
             DrawerMenuItem(route = "price-lists", title = "Price Lists", icon = Icons.Default.PriceChange),
         ),
@@ -244,6 +241,7 @@ object PharmacyMenuSections {
             DrawerMenuItem(route = "items", title = "Items", icon = Icons.Default.Medication),
             DrawerMenuItem(route = "inventory", title = "Stock Balance", icon = Icons.Default.Inventory2),
             DrawerMenuItem(route = "inventory/adjust", title = "Adjustment", icon = Icons.Default.Receipt),
+            DrawerMenuItem(route = "purchases", title = "Purchases", icon = Icons.Default.ShoppingBag),
         ),
     )
 
@@ -252,6 +250,8 @@ object PharmacyMenuSections {
         icon = Icons.Default.BarChart,
         items = listOf(
             DrawerMenuItem(route = "reports", title = "Daily Sales", icon = Icons.Default.BarChart),
+            DrawerMenuItem(route = "pos/lines", title = "Sales Lines", icon = Icons.Default.ShoppingCart),
+            DrawerMenuItem(route = "orders/lines", title = "Order Lines", icon = Icons.Default.Receipt),
         ),
     )
 
