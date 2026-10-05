@@ -7,11 +7,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.outlined.Payments
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.ReceiptLong
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -126,21 +131,119 @@ fun PosOrderListScreen(
 @Composable
 private fun SaleCard(sale: SaleDto, onClick: () -> Unit) {
     val format = remember { NumberFormat.getCurrencyInstance(Locale("en", "NG")) }
+    val dateLabel = remember(sale.saleDate) { formatSaleDate(sale.saleDate) }
+    val statusColor = statusColor(sale.status)
 
     AppCard(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(sale.saleNumber, fontWeight = FontWeight.Bold)
-            Text(sale.status.uppercase(), style = MaterialTheme.typography.bodySmall)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Outlined.ReceiptLong,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(modifier = Modifier.width(SpacingTokens.sm))
+                Text(sale.saleNumber, fontWeight = FontWeight.Bold)
+            }
+            StatusChip(status = sale.status, color = statusColor)
         }
-        Spacer(modifier = Modifier.height(SpacingTokens.xs))
-        Text(sale.customer?.name ?: "Walk-in", style = MaterialTheme.typography.bodyMedium)
+
+        Spacer(modifier = Modifier.height(SpacingTokens.sm))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = Icons.Outlined.Person,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.width(SpacingTokens.xs))
+            Text(sale.customer?.name ?: "Walk-in", style = MaterialTheme.typography.bodyMedium)
+        }
+
+        Spacer(modifier = Modifier.height(SpacingTokens.xxs))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = Icons.Outlined.Schedule,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.width(SpacingTokens.xs))
+            Text(
+                dateLabel,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+
+        Spacer(modifier = Modifier.height(SpacingTokens.sm))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Outlined.Payments,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(modifier = Modifier.width(SpacingTokens.xs))
+                Text(
+                    format.format(sale.totalAmount),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+            if (sale.soldBy?.username != null) {
+                Text(
+                    "by ${sale.soldBy.username}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun StatusChip(status: String, color: androidx.compose.ui.graphics.Color) {
+    androidx.compose.material3.Surface(
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(50),
+        color = color.copy(alpha = 0.15f),
+    ) {
         Text(
-            format.format(sale.totalAmount),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.primary,
+            status.uppercase(),
+            modifier = Modifier.padding(horizontal = SpacingTokens.sm, vertical = SpacingTokens.xxs),
+            style = MaterialTheme.typography.labelSmall,
+            color = color,
+            fontWeight = FontWeight.SemiBold,
         )
     }
 }
+
+@Composable
+private fun statusColor(status: String): androidx.compose.ui.graphics.Color =
+    when (status.lowercase()) {
+        "completed", "paid", "settled" -> MaterialTheme.colorScheme.primary
+        "pending", "draft", "open" -> MaterialTheme.colorScheme.tertiary
+        "cancelled", "voided", "refunded" -> MaterialTheme.colorScheme.error
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+/** ISO-8601 -> "dd MMM yyyy, HH:mm"; falls back to the raw string. */
+private fun formatSaleDate(iso: String): String = runCatching {
+    val cleaned = iso.substringBefore('.').replace("Z", "").replace(" ", "T")
+    val parser = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+    val date = parser.parse(cleaned) ?: return@runCatching iso
+    java.text.SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()).format(date)
+}.getOrDefault(iso)
