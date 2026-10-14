@@ -1,7 +1,7 @@
 {
   "app/build.gradle.kts": {
-    "mtime": 1790613755.792768,
-    "ast_hash": "052859e37ae4e21b620d62cbd9a2cb42",
+    "mtime": 1790777023.1292856,
+    "ast_hash": "53494f56f3c9b50ffe78f4e4bdea4588",
     "semantic_hash": ""
   },
   "build.gradle.kts": {
@@ -245,8 +245,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/data/remote/api/AuthApi.kt": {
-    "mtime": 1790613755.8040698,
-    "ast_hash": "4ba1dde6687b0ea60f7fc3f29f2a3725",
+    "mtime": 1790741871.5077229,
+    "ast_hash": "145eedfdead0e5489db14d7ea2947044",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/data/remote/api/ChatApi.kt": {
@@ -280,8 +280,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/data/remote/api/ItemsApi.kt": {
-    "mtime": 1790613755.813241,
-    "ast_hash": "d1bbe36f86675fd3f6cc79de807299fd",
+    "mtime": 1790685334.9944923,
+    "ast_hash": "a7aba7bea4fb78a55841e5c8d8b345b4",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/data/remote/api/PaymentMethodsApi.kt": {
@@ -330,8 +330,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/data/remote/dto/AuthDtos.kt": {
-    "mtime": 1790613755.8254633,
-    "ast_hash": "a9f6a976a7214ddc4bdd8d986dace733",
+    "mtime": 1790741871.509156,
+    "ast_hash": "1947b5752486dc49a66a1062621cac8f",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/data/remote/dto/BigDecimalAdapter.kt": {
@@ -400,8 +400,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/data/remote/dto/SaleDtos.kt": {
-    "mtime": 1790613755.8481753,
-    "ast_hash": "b63414116602d0a2bb66844e7217e44e",
+    "mtime": 1791114748.3251433,
+    "ast_hash": "28240ab325e20abbe899344a4d582466",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/data/remote/dto/SyncDtos.kt": {
@@ -410,13 +410,13 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/data/remote/interceptor/AuthInterceptor.kt": {
-    "mtime": 1790613755.8503823,
-    "ast_hash": "b4002d319f2c496283fc975c07a0dc4a",
+    "mtime": 1791115252.9301825,
+    "ast_hash": "2c09c136ce1204a5f070fc4b325fa326",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/data/remote/interceptor/ServerUrlInterceptor.kt": {
-    "mtime": 1790613755.8514264,
-    "ast_hash": "714534f76ceb539338643ded8ff8e75d",
+    "mtime": 1790628100.856087,
+    "ast_hash": "840752993d67c8c47bc06ff762c9ac62",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/data/remote/interceptor/TokenRefreshInterceptor.kt": {
@@ -430,8 +430,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/data/repository/AuthRepository.kt": {
-    "mtime": 1790613755.8548954,
-    "ast_hash": "15b2a0f658b7a95b16055ce3ce6483b0",
+    "mtime": 1791115252.9322739,
+    "ast_hash": "c4186a7bab56a830a2a2b91d683866d9",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/data/repository/CouponsRepository.kt": {
@@ -460,8 +460,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/data/repository/PosRepository.kt": {
-    "mtime": 1790613755.862046,
-    "ast_hash": "1f64403f72370f8ab0cb09797bd02e55",
+    "mtime": 1790685334.9948566,
+    "ast_hash": "70fc3e7637a1caa8da34cae0b134337a",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/data/repository/PricingRepository.kt": {
@@ -490,8 +490,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/di/NetworkModule.kt": {
-    "mtime": 1790613755.8694997,
-    "ast_hash": "fb0590e7ddf5c51cc24f19204508f329",
+    "mtime": 1791115252.9345458,
+    "ast_hash": "a501712067c23ab0d765f2118127fe2a",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/di/OfflineModule.kt": {
@@ -515,8 +515,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/auth/AuthViewModel.kt": {
-    "mtime": 1790613755.8752444,
-    "ast_hash": "94db3acf5866f517cc52a81e42f663c9",
+    "mtime": 1790741681.0281918,
+    "ast_hash": "6b30e723c801fef5140650a2c4824a14",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/auth/EnterPinScreen.kt": {
@@ -525,13 +525,13 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/auth/EnterPinViewModel.kt": {
-    "mtime": 1790613755.8775315,
-    "ast_hash": "0186b359ddbad8a76881fdef17dac588",
+    "mtime": 1791115252.935818,
+    "ast_hash": "548805854b0e03430668368e870ba7b9",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/auth/LoginScreen.kt": {
-    "mtime": 1790613755.8794188,
-    "ast_hash": "55fb97f3c349d51a6de80e31dcbcb27d",
+    "mtime": 1790741833.4072092,
+    "ast_hash": "929aa404f8378187d729d111b6fda5f4",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/chat/ChatOptionParser.kt": {
@@ -620,8 +620,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/design-system/components/AppSearchBar.kt": {
-    "mtime": 1790613755.8991053,
-    "ast_hash": "46be4f4b928ae0bdc81e5339944457d9",
+    "mtime": 1790685473.3526297,
+    "ast_hash": "964de387556cc5e85caadff946f62325",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/design-system/components/AppSnackbar.kt": {
@@ -630,8 +630,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/design-system/components/AppTextField.kt": {
-    "mtime": 1790613755.9010947,
-    "ast_hash": "4befa573cc5c0625570be0ca3a27d034",
+    "mtime": 1790627174.8624015,
+    "ast_hash": "da1a63017fc70ac7fda486e4abfa1f5a",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/design-system/components/AppTopAppBar.kt": {
@@ -715,8 +715,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/designsystem/components/AppSideDrawer.kt": {
-    "mtime": 1790613755.9235797,
-    "ast_hash": "2a2cfd2963800a524ebc2bae983c6334",
+    "mtime": 1791190064.1274776,
+    "ast_hash": "17750b261ea637326d065628ae6766d4",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/designsystem/components/LazyLinesAccordion.kt": {
@@ -765,13 +765,13 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/items/ItemFormScreen.kt": {
-    "mtime": 1790613755.9391162,
-    "ast_hash": "5019d7cc2b44c558bcaba1d9fe391b20",
+    "mtime": 1790685823.2480931,
+    "ast_hash": "03fb23669aa09913249004d2d22fcf6f",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/items/ItemFormViewModel.kt": {
-    "mtime": 1790613755.9403486,
-    "ast_hash": "2e2e28d698dea5a4e9b9b2523998ad66",
+    "mtime": 1790685423.006447,
+    "ast_hash": "07d25d62039911b00a563708a658e3bf",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/items/ItemListScreen.kt": {
@@ -785,18 +785,18 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/navigation/AppNavigation.kt": {
-    "mtime": 1790613755.944421,
-    "ast_hash": "7241f8d08200161ad000a193e424178b",
+    "mtime": 1791190099.708385,
+    "ast_hash": "1f3ce6caa8d2c5e1afd9cff366763011",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/orders/CreateOrderFields.kt": {
-    "mtime": 1790613755.9457664,
-    "ast_hash": "dfa9fe8fa6d71c0aa58ec3d4c17669f8",
+    "mtime": 1790686180.1130083,
+    "ast_hash": "72dca2bb49f03f6548ae592663a5f0fb",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/orders/CreateOrderScreen.kt": {
-    "mtime": 1790613755.9468324,
-    "ast_hash": "be381de3e3a1a8f018d7c385acbc2165",
+    "mtime": 1790686298.803111,
+    "ast_hash": "f76d3c7fb57667475348fa49d53155ab",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/orders/OrderLinesScreen.kt": {
@@ -820,18 +820,18 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/pos/PosOrderDetailScreen.kt": {
-    "mtime": 1790613755.955309,
-    "ast_hash": "b2a770afe7829cbf158c7aa97c48ee94",
+    "mtime": 1791115252.937136,
+    "ast_hash": "ba0131c2dee6057eb77aa664438ce17b",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/pos/PosOrderDetailViewModel.kt": {
-    "mtime": 1790613755.956565,
-    "ast_hash": "9481bb77debc9083e2a9fde2320d6314",
+    "mtime": 1791115252.9383523,
+    "ast_hash": "f6ce3ba19f708b93dd2839f57da14227",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/pos/PosOrderListScreen.kt": {
-    "mtime": 1790613755.957702,
-    "ast_hash": "18ecfbb3d66e50f4eb6f9bba643c009c",
+    "mtime": 1791115252.9393961,
+    "ast_hash": "43c5e8168f9ec7d2f8ef4e6a7ea3ef8d",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/pos/PosOrderListViewModel.kt": {
@@ -840,13 +840,13 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/pos/PosTerminalScreen.kt": {
-    "mtime": 1790624178.4852297,
-    "ast_hash": "88b035e583dc8d1447292ed72d05a977",
+    "mtime": 1790694642.6680238,
+    "ast_hash": "42dbc5c0b8a83ad4a18d9a37013512cc",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/pos/PosTerminalViewModel.kt": {
-    "mtime": 1790613755.9647741,
-    "ast_hash": "088d36efcbdea2dd391c67a85e2a8592",
+    "mtime": 1791115252.9405036,
+    "ast_hash": "b9a7046d142cb3bb879298858a7d661b",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/pos/SaleLinesScreen.kt": {
@@ -859,13 +859,8 @@
     "ast_hash": "1e8c4b197ac0a4a41526529d73723b18",
     "semantic_hash": ""
   },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/prescription/UploadPrescriptionScreen.kt": {
-    "mtime": 1790613755.9696982,
-    "ast_hash": "e1ebfad688fc42f83e54a64a8996b4e8",
-    "semantic_hash": ""
-  },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/pricing/PriceListItemsScreen.kt": {
-    "mtime": 1790613755.9710777,
+    "mtime": 1790685823.2468565,
     "ast_hash": "445c9ef5f4e0c1db9a086ea8b8b5c79d",
     "semantic_hash": ""
   },
@@ -925,8 +920,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/settings/AppModule.kt": {
-    "mtime": 1790613755.9877582,
-    "ast_hash": "8772e613e51cdc15de7e7303adaac1ed",
+    "mtime": 1790741952.1393707,
+    "ast_hash": "f988c532b9de27f401a22463d11287d6",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/settings/ModuleConfig.kt": {
@@ -935,93 +930,13 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/settings/SettingsScreen.kt": {
-    "mtime": 1790613755.9906526,
-    "ast_hash": "0be6414f0f04ffd7bc389c81135b567f",
+    "mtime": 1791115252.9423482,
+    "ast_hash": "5f849e0caf6888d9937db490218e9ab0",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/settings/SettingsViewModel.kt": {
-    "mtime": 1790613755.9922662,
-    "ast_hash": "9fbc70f2a7723e62413176008d34eb33",
-    "semantic_hash": ""
-  },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/shop/CheckoutScreen.kt": {
-    "mtime": 1790613755.993411,
-    "ast_hash": "a23feb2072d01ef901fad6997db9d56f",
-    "semantic_hash": ""
-  },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/shop/CheckoutViewModel.kt": {
-    "mtime": 1790613755.994298,
-    "ast_hash": "9c4fa5d2d574d2ee4ce7f85af9ebf242",
-    "semantic_hash": ""
-  },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/shop/MedicineCatalogScreen.kt": {
-    "mtime": 1790613755.9953856,
-    "ast_hash": "7eb37715626f545dd67d0859ff6e7902",
-    "semantic_hash": ""
-  },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/shop/MedicineCatalogViewModel.kt": {
-    "mtime": 1790613755.9967318,
-    "ast_hash": "1c0094aeeb161630eb59515720066abf",
-    "semantic_hash": ""
-  },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/shop/ProductDetailScreen.kt": {
-    "mtime": 1790613755.997891,
-    "ast_hash": "bc3124540a9b474df5be2585367e9317",
-    "semantic_hash": ""
-  },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/shop/ProductDetailViewModel.kt": {
-    "mtime": 1790613755.9988148,
-    "ast_hash": "32d50895c31c84d3087dbbce58839b71",
-    "semantic_hash": ""
-  },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/shop/ShopCart.kt": {
-    "mtime": 1790613755.999767,
-    "ast_hash": "eb6f1268a4b59e0489728333d08b485b",
-    "semantic_hash": ""
-  },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/shop/components/CartItemCard.kt": {
-    "mtime": 1790613756.0007355,
-    "ast_hash": "9b503cb697e178edf72c891fd3ad3ffb",
-    "semantic_hash": ""
-  },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/shop/components/PaymentSummary.kt": {
-    "mtime": 1790613756.0020497,
-    "ast_hash": "dd77b78a4906443dafad67f68b341e09",
-    "semantic_hash": ""
-  },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/shop/components/PrimaryButton.kt": {
-    "mtime": 1790613756.003353,
-    "ast_hash": "4b6d219e0759b516a6b075a0f90de236",
-    "semantic_hash": ""
-  },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/shop/components/ProductImage.kt": {
-    "mtime": 1790613756.0045042,
-    "ast_hash": "1ce35e41ef3dacc3cf33d0f76ea2ead3",
-    "semantic_hash": ""
-  },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/shop/components/QuantitySelector.kt": {
-    "mtime": 1790613756.0055578,
-    "ast_hash": "264653f5060383924ef7bb3c91ed4933",
-    "semantic_hash": ""
-  },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/shop/components/RoundedIconButton.kt": {
-    "mtime": 1790613756.0069602,
-    "ast_hash": "7994ba4fa0f8eaf3c6ec5e3da7131f01",
-    "semantic_hash": ""
-  },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/shop/components/VoucherCard.kt": {
-    "mtime": 1790613756.0080593,
-    "ast_hash": "5a3b296f5d2f2a5a7f3cbf09b5a8c13b",
-    "semantic_hash": ""
-  },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/shop/model/CartItem.kt": {
-    "mtime": 1790613756.0090601,
-    "ast_hash": "378392410105e335c3763b4e3900e2ab",
-    "semantic_hash": ""
-  },
-  "app/src/main/java/com/ehealthwares/rxsoft/ui/shop/model/Product.kt": {
-    "mtime": 1790613756.0103354,
-    "ast_hash": "168274e72015005e610d3a91914d8b95",
+    "mtime": 1791115252.9434576,
+    "ast_hash": "f891ca64e2c0cad38ee2ce96b8569c57",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/ui/splash/SplashScreen.kt": {
@@ -1050,8 +965,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/util/OfflineSyncManager.kt": {
-    "mtime": 1790613756.017042,
-    "ast_hash": "c75ed7a2015ca768c683179eb59aa3c5",
+    "mtime": 1790626496.4816844,
+    "ast_hash": "eb600e978639da58ae8ee265a0c3cb5c",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/util/PinManager.kt": {
@@ -1065,13 +980,13 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/util/ReceiptPrinter.kt": {
-    "mtime": 1790613756.025827,
-    "ast_hash": "a6bd8552850a3f9dfc5e270c3e3a6a5f",
+    "mtime": 1790685115.5354004,
+    "ast_hash": "1f228328ff45d6b551a6c8c5813132c7",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/util/ServerUrlManager.kt": {
-    "mtime": 1790613756.0271118,
-    "ast_hash": "0908cf07dbf348aafd89a538e6ac69fd",
+    "mtime": 1790631941.8410203,
+    "ast_hash": "41adfec82e74f14884e84a97379cc9ed",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/util/SessionManager.kt": {
@@ -1085,8 +1000,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/util/TokenManager.kt": {
-    "mtime": 1790613756.0304234,
-    "ast_hash": "a81b8b0185e782fd49d7c6b6fd40e825",
+    "mtime": 1790741912.2477605,
+    "ast_hash": "9b016d37c0ee3060d75f662351d7f358",
     "semantic_hash": ""
   },
   "app/src/main/java/com/ehealthwares/rxsoft/util/UiState.kt": {
@@ -1110,8 +1025,8 @@
     "semantic_hash": ""
   },
   "TASK_PLAN.md": {
-    "mtime": 1790498187.426746,
-    "ast_hash": "d2bfb4703acb32128b2bbbd26a681671",
+    "mtime": 1790686589.5991924,
+    "ast_hash": "c7cacd1cd259242ccdeee974e80c413e",
     "semantic_hash": ""
   },
   "app/src/main/res/drawable/ehw_logo.png": {
@@ -1177,6 +1092,46 @@
   "app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png": {
     "mtime": 1790279485.5974584,
     "ast_hash": "2bdbe9c06f211175d5e4111313498e22",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/ehealthwares/rxsoft/data/remote/api/PrintApi.kt": {
+    "mtime": 1791115252.927278,
+    "ast_hash": "4415e1f576c2d2c9dd91c2ac1023d1c7",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/ehealthwares/rxsoft/data/remote/api/PrintDiscoveryApi.kt": {
+    "mtime": 1791115253.0202463,
+    "ast_hash": "40885c046d664450a4c3a993a4620c95",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/ehealthwares/rxsoft/data/remote/dto/PrintDtos.kt": {
+    "mtime": 1791115252.9282422,
+    "ast_hash": "f81789d865df5386366c4940733aa434",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/ehealthwares/rxsoft/ui/designsystem/components/RxAppBackdrop.kt": {
+    "mtime": 1790770522.2814338,
+    "ast_hash": "bcfe5e5e67c51d0b9fbb6946461b1dbc",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/ehealthwares/rxsoft/ui/settings/SettingsPasswordDialog.kt": {
+    "mtime": 1791190073.7218528,
+    "ast_hash": "cc08db719231e22c92736ba2c3eccb12",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/ehealthwares/rxsoft/util/AppLog.kt": {
+    "mtime": 1791115253.0218968,
+    "ast_hash": "a9f76b7b20356ec123388ff3c6bfde36",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/ehealthwares/rxsoft/util/PrinterDiscovery.kt": {
+    "mtime": 1791115253.0228891,
+    "ast_hash": "6eb86f2626d13367ef6ac5ecd67a3546",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/ehealthwares/rxsoft/util/PrinterUrlManager.kt": {
+    "mtime": 1791115252.9450169,
+    "ast_hash": "c9080f20d4ba4f35e55053ebb760c3c4",
     "semantic_hash": ""
   }
 }

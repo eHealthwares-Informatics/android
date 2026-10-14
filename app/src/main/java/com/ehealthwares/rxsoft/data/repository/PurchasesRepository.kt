@@ -26,7 +26,7 @@ class PurchasesRepository @Inject constructor(
     private val itemsApi: ItemsApi,
     private val offlineItemDao: OfflineItemDao,
 ) {
-    suspend fun listPurchases(page: Int = 1, limit: Int = 20, search: String? = null): Result<List<PurchaseDto>> {
+    suspend fun listPurchases(page: Int = 1, limit: Int = 100, search: String? = null): Result<List<PurchaseDto>> {
         return try {
             val params = mutableMapOf("page" to page.toString(), "limit" to limit.toString())
             search?.let { params["search"] = it }
@@ -51,6 +51,7 @@ class PurchasesRepository @Inject constructor(
         note: String? = null,
         invoiceNumber: String? = null,
         currencyCode: String = "NGN",
+        status: String? = null,
     ): Result<PurchaseDto> {
         return try {
             val request = CreatePurchaseRequest(
@@ -59,6 +60,7 @@ class PurchasesRepository @Inject constructor(
                 currencyCode = currencyCode,
                 note = note,
                 invoiceNumber = invoiceNumber,
+                status = status,
                 lines = lines,
             )
             Result.success(purchasesApi.createPurchase(request))

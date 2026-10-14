@@ -3,6 +3,7 @@ package com.ehealthwares.rxsoft.di
 import com.ehealthwares.rxsoft.data.remote.api.*
 import com.ehealthwares.rxsoft.data.remote.dto.BigDecimalAdapter
 import com.ehealthwares.rxsoft.data.remote.dto.ListResponseAdapterFactory
+import com.ehealthwares.rxsoft.data.remote.dto.ReferenceDtoAdapter
 import com.ehealthwares.rxsoft.data.remote.interceptor.AuthInterceptor
 import com.ehealthwares.rxsoft.data.remote.interceptor.ServerUrlInterceptor
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -51,6 +52,7 @@ object NetworkModule {
     fun provideMoshi(): Moshi {
         return Moshi.Builder()
             .add(BigDecimalAdapter())
+            .add(ReferenceDtoAdapter())
             .add(ListResponseAdapterFactory())
             .add(KotlinJsonAdapterFactory())
             .build()
@@ -130,6 +132,10 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideChatApi(retrofit: Retrofit): ChatApi = retrofit.create(ChatApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideNotificationApi(retrofit: Retrofit): NotificationApi = retrofit.create(NotificationApi::class.java)
 
     @Provides
     @Singleton

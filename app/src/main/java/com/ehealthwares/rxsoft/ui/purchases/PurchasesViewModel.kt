@@ -35,11 +35,21 @@ class PurchasesViewModel @Inject constructor(
     private val _detail = MutableStateFlow<UiState<PurchaseDto>>(UiState.Idle)
     val detail: StateFlow<UiState<PurchaseDto>> = _detail.asStateFlow()
 
+    /** Lazily-loaded purchase details keyed by id — fetched when an accordion card expands. */
+    private val _details = MutableStateFlow<Map<String, UiState<PurchaseDto>>>(emptyMap())
+    val details: StateFlow<Map<String, UiState<PurchaseDto>>> = _details.asStateFlow()
+
     private val _createState = MutableStateFlow<UiState<PurchaseDto>>(UiState.Idle)
     val createState: StateFlow<UiState<PurchaseDto>> = _createState.asStateFlow()
 
     private val _actionState = MutableStateFlow<UiState<PurchaseDto>>(UiState.Idle)
     val actionState: StateFlow<UiState<PurchaseDto>> = _actionState.asStateFlow()
+
+    private val _isLoadingMore = MutableStateFlow(false)
+    val isLoadingMore: StateFlow<Boolean> = _isLoadingMore.asStateFlow()
+
+    private var currentPage = 1
+    private var hasMore = true
 
     // Lookups for the create flow
     private val _suppliers = MutableStateFlow<List<PartyDto>>(emptyList())
@@ -63,14 +73,39 @@ class PurchasesViewModel @Inject constructor(
     }
 
     fun loadPurchases() {
+        currentPage = 1
+        hasMore = true
         viewModelScope.launch {
             _purchases.value = UiState.Loading
-            purchasesRepository.listPurchases()
-                .onSuccess { _purchases.value = UiState.Success(it) }
+            purchasesRepository.listPurchases(page = 1)
+                .onSuccess {
+                    _purchases.value = UiState.Success(it)
+                    hasMore = it.size >= 100
+                }
                 .onFailure { e ->
                     Log.e("PurchasesVM", "Failed to load purchases: ${e.message}", e)
                     _purchases.value = UiState.Error(e.message ?: "Failed to load purchases")
                 }
+        }
+    }
+
+    /** Infinite scroll: append the next page of purchase orders. */
+    fun loadMorePurchases() {
+        if (_isLoadingMore.value || !hasMore) return
+        viewModelScope.launch {
+            _isLoadingMore.value = true
+            currentPage++
+            purchasesRepository.listPurchases(page = currentPage)
+                .onSuccess { items ->
+                    val current = (_purchases.value as? UiState.Success)?.data ?: emptyList()
+                    _purchases.value = UiState.Success(current + items)
+                    hasMore = items.size >= 100
+                }
+                .onFailure { e ->
+                    Log.e("PurchasesVM", "Failed to load more purchases: ${e.message}", e)
+                    currentPage--
+                }
+            _isLoadingMore.value = false
         }
     }
 
@@ -127,16 +162,38 @@ class PurchasesViewModel @Inject constructor(
         _detail.value = UiState.Idle
     }
 
+    /** Fetch (and cache) the full purchase for an expanded accordion card. */
+    fun loadDetailFor(id: String) {
+        if (_details.value[id] is UiState.Loading || _details.value[id] is UiState.Success) return
+        viewModelScope.launch {
+            _details.value = _details.value + (id to UiState.Loading)
+            purchasesRepository.getPurchase(id)
+                .onSuccess { purchase ->
+                    _details.value = _details.value + (id to UiState.Success(purchase))
+                }
+                .onFailure { e ->
+                    Log.e("PurchasesVM", "Failed to load purchase detail: ${e.message}", e)
+                    _details.value = _details.value + (id to UiState.Error(e.message ?: "Failed to load lines"))
+                }
+        }
+    }
+
+    /** Drop a cached detail so a retry or refresh refetches it. */
+    fun invalidateDetail(id: String) {
+        _details.value = _details.value - id
+    }
+
     fun createPurchase(
         supplierId: String,
         warehouseId: String,
         lines: List<CreatePurchaseLine>,
         note: String? = null,
         invoiceNumber: String? = null,
+        status: String? = null,
     ) {
         viewModelScope.launch {
             _createState.value = UiState.Loading
-            purchasesRepository.createPurchase(supplierId, warehouseId, lines, note, invoiceNumber)
+            purchasesRepository.createPurchase(supplierId, warehouseId, lines, note, invoiceNumber, status = status)
                 .onSuccess {
                     _createState.value = UiState.Success(it)
                     loadPurchases()
@@ -158,7 +215,10 @@ class PurchasesViewModel @Inject constructor(
             purchasesRepository.approvePurchase(id)
                 .onSuccess {
                     _actionState.value = UiState.Success(it)
+                    _details.value = _details.value - id
                     loadPurchases()
+                    // Refresh the expanded card so lines/status visibly update.
+                    loadDetailFor(id)
                 }
                 .onFailure { e ->
                     Log.e("PurchasesVM", "Failed to approve purchase: ${e.message}", e)
@@ -173,10 +233,14 @@ class PurchasesViewModel @Inject constructor(
             purchasesRepository.receiveGoods(purchaseId, lines, note)
                 .onSuccess {
                     _actionState.value = UiState.Success(it)
+                    _details.value = _details.value - purchaseId
                     loadPurchases()
                     if (_detail.value is UiState.Success && _detail.value.let { s -> (s as UiState.Success<PurchaseDto>).data.id } == purchaseId) {
                         loadDetail(purchaseId)
                     }
+                    // Refresh the expanded accordion card so received quantities
+                    // and the new PO status show up immediately.
+                    loadDetailFor(purchaseId)
                 }
                 .onFailure { e ->
                     Log.e("PurchasesVM", "Failed to receive goods: ${e.message}", e)

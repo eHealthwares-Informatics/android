@@ -8,7 +8,7 @@ import javax.inject.Inject
 class CustomerRepository @Inject constructor(
     private val customersApi: CustomersApi
 ) {
-    suspend fun listCustomers(search: String? = null, page: Int = 1, limit: Int = 20): Result<List<CustomerDto>> {
+    suspend fun listCustomers(search: String? = null, page: Int = 1, limit: Int = 100): Result<List<CustomerDto>> {
         return try {
             val params = mutableMapOf("page" to page.toString(), "limit" to limit.toString())
             search?.let { params["search"] = it }
@@ -29,6 +29,15 @@ class CustomerRepository @Inject constructor(
     suspend fun createCustomer(name: String, phone: String?, email: String?): Result<CustomerDto> {
         return try {
             val request = CreateCustomerRequest(name = name, phone = phone, email = email)
+            Result.success(customersApi.createCustomer(request))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /** Full request-based variant (used by the Customers list FAB dialog). */
+    suspend fun createCustomer(request: CreateCustomerRequest): Result<CustomerDto> {
+        return try {
             Result.success(customersApi.createCustomer(request))
         } catch (e: Exception) {
             Result.failure(e)

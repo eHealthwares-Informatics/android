@@ -1,16 +1,16 @@
-# Graph Report - rxsoft-mobile  (2026-09-28)
+# Graph Report - rxsoft-mobile  (2026-10-05)
 
 ## Corpus Check
-- 223 files · ~85,358 words
+- 214 files · ~88,160 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2022 nodes · 3427 edges · 182 communities (143 shown, 39 thin omitted)
-- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 283 edges (avg confidence: 0.8)
+- 2037 nodes · 3526 edges · 173 communities (133 shown, 40 thin omitted)
+- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 265 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `7861dd86`
+- Built from commit: `ed5e4cb2`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -142,20 +142,16 @@
 - AppErrorState
 - ThemePreferences
 - ItemListViewModel
-- CreateOrderCascadeFields
 - OfflineSyncManager
 - ConversationListScreen
 - .provideOkHttpClient
-- MedicineCatalogScreen
 - PosOrderListViewModel
-- CartItemCard
 - ServerUrlManager
 - SessionManager
 - OrderDtos.kt
 - ChatScreen
 - AppearanceMode
 - OrderLinesScreen
-- UploadPrescriptionScreen
 - BigDecimalAdapter
 - ServerUrlInterceptor
 - .parse
@@ -163,18 +159,13 @@
 - RxSoftTheme
 - PosOrderDetailViewModel
 - PosOrderListScreen
-- PriceListItemsScreen
 - ModuleConfig
-- PaymentSummary
 - SyncSettingsManager
 - make_launcher_icons.py
 - AppAlertDialog
-- DateRangeFilterRow
-- RoundedIconButton
 - AppBadge
 - ColorTokens.kt
 - LazyLinesAccordion
-- CartItem
 - RepositoryModule.kt
 - ElevationTokens.kt
 - MotionTokens.kt
@@ -184,53 +175,53 @@
 - Constants.kt
 
 ## God Nodes (most connected - your core abstractions)
-1. `PosTerminalViewModel` - 38 edges
-2. `MainContent()` - 35 edges
-3. `UiState` - 34 edges
-4. `OfflineDatabase` - 33 edges
-5. `AuthViewModel` - 33 edges
-6. `AppCard()` - 32 edges
-7. `Screen` - 31 edges
-8. `PurchasesViewModel` - 27 edges
-9. `CheckoutViewModel` - 26 edges
-10. `ChatRepository` - 25 edges
+1. `PosTerminalViewModel` - 52 edges
+2. `OfflineDatabase` - 33 edges
+3. `AuthViewModel` - 32 edges
+4. `AppCard()` - 32 edges
+5. `MainContent()` - 31 edges
+6. `UiState` - 31 edges
+7. `ItemFormViewModel` - 30 edges
+8. `SettingsViewModel` - 30 edges
+9. `Screen` - 27 edges
+10. `PurchasesViewModel` - 27 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `PosTerminalScreen()` --calls--> `ReceiptLine`  [INFERRED]
-  app/src/main/java/com/ehealthwares/rxsoft/ui/pos/PosTerminalScreen.kt → app/src/main/java/com/ehealthwares/rxsoft/util/ReceiptPrinter.kt
-- `ProductDetailScreen()` --references--> `Product`  [EXTRACTED]
-  snippets/ProductDetailScreen.kt → app/src/main/java/com/ehealthwares/rxsoft/ui/shop/model/Product.kt
-- `toItemDto()` --references--> `ItemDto`  [EXTRACTED]
-  app/src/main/java/com/ehealthwares/rxsoft/data/remote/dto/ItemDtos.kt → app/src/main/java/com/ehealthwares/rxsoft/data/remote/dto/SaleDtos.kt
+- `CartItemCard()` --references--> `CartItem`  [EXTRACTED]
+  snippets/CartItemCard.kt → app/src/main/java/com/ehealthwares/rxsoft/ui/pos/PosTerminalViewModel.kt
+- `CheckoutScreen()` --references--> `CartItem`  [EXTRACTED]
+  snippets/CheckoutScreen.kt → app/src/main/java/com/ehealthwares/rxsoft/ui/pos/PosTerminalViewModel.kt
 - `CustomerSearchDialog()` --calls--> `PartyDto`  [INFERRED]
   app/src/main/java/com/ehealthwares/rxsoft/ui/pos/PosTerminalScreen.kt → app/src/main/java/com/ehealthwares/rxsoft/data/remote/dto/SaleDtos.kt
 - `toItemDto()` --calls--> `ReferenceDto`  [INFERRED]
   app/src/main/java/com/ehealthwares/rxsoft/data/repository/PosRepository.kt → app/src/main/java/com/ehealthwares/rxsoft/data/remote/dto/SaleDtos.kt
+- `AnalyticsScreen()` --calls--> `AppTopAppBar()`  [INFERRED]
+  app/src/main/java/com/ehealthwares/rxsoft/ui/analytics/AnalyticsScreen.kt → app/src/main/java/com/ehealthwares/rxsoft/ui/design-system/components/AppTopAppBar.kt
 
 ## Import Cycles
 - None detected.
 
-## Communities (182 total, 39 thin omitted)
+## Communities (173 total, 40 thin omitted)
 
 ### Community 0 - "Inventory Items API"
-Cohesion: 0.40
-Nodes (3): UploadImageResponse, File, MultipartBody
+Cohesion: 0.10
+Nodes (16): Response, String, PrintDiscoveryApi, AgentInfo, Boolean, Int, List, String (+8 more)
 
 ### Community 1 - "UI State Components"
 Cohesion: 0.06
-Nodes (50): AppSideDrawer(), DrawerMenuItem, DrawerMenuSection, androidx, List, String, PharmacyMenuSections, Modifier (+42 more)
+Nodes (43): AppSideDrawer(), DrawerMenuItem, DrawerMenuSection, androidx, List, String, PharmacyMenuSections, Analytics (+35 more)
 
 ### Community 2 - "Cart & Checkout UI"
 Cohesion: 0.06
-Nodes (32): CartItemCard(), CartItem, Modifier, AddProductCard(), CheckoutScreen(), EmptyCartCard(), CartItem, List (+24 more)
+Nodes (31): Product, CartItemCard(), Modifier, AddProductCard(), CheckoutScreen(), EmptyCartCard(), List, String (+23 more)
 
 ### Community 3 - "Stock Adjustment"
 Cohesion: 0.07
 Nodes (28): Map, String, PurchasesApi, UpdatePurchaseStatusRequest, CreatePurchaseLine, CreatePurchaseRequest, PurchaseDto, PurchaseLineDto (+20 more)
 
 ### Community 4 - "Checkout ViewModel"
-Cohesion: 0.06
-Nodes (29): AuthApi, AuthResponse, CurrentUserResponse, LoginRequest, ModuleInfoDto, RefreshRequest, ShopperOtpResponse, ShopperRequestOtpRequest (+21 more)
+Cohesion: 0.26
+Nodes (5): CurrentUserResponse, AuthRepository, Boolean, Result, String
 
 ### Community 5 - "Medicine Catalog"
 Cohesion: 0.08
@@ -245,16 +236,16 @@ Cohesion: 0.46
 Nodes (7): Error, Idle, Loading, Success, UiState, Nothing, T
 
 ### Community 8 - "POS Sale Creation"
-Cohesion: 0.07
-Nodes (25): AdjustStockRequest, LotDto, StockBalanceDto, StockLocationDto, InventoryRepository, Int, List, Result (+17 more)
+Cohesion: 0.06
+Nodes (28): InventoryApi, Map, String, AdjustStockRequest, LotDto, StockBalanceDto, StockLocationDto, InventoryRepository (+20 more)
 
 ### Community 9 - "PIN Entry Screen"
-Cohesion: 0.07
-Nodes (21): Double, Int, Job, List, StateFlow, String, ViewModel, MedicineCatalogViewModel (+13 more)
+Cohesion: 0.11
+Nodes (18): DiscoveredPrinter, DiscoveryState, Error, Failure, Found, Idle, AppModule, Int (+10 more)
 
 ### Community 10 - "Customer API"
-Cohesion: 0.09
-Nodes (21): Entities, Boolean, Int, List, Map, StateFlow, String, PageResult (+13 more)
+Cohesion: 0.16
+Nodes (13): Entities, Boolean, com, Float, Int, List, Map, StateFlow (+5 more)
 
 ### Community 11 - "App Navigation"
 Cohesion: 0.25
@@ -273,24 +264,24 @@ Cohesion: 0.11
 Nodes (17): android, AnalyticsViewModel, Boolean, Context, Int, LocalDate, StateFlow, String (+9 more)
 
 ### Community 15 - "Item Form ViewModel"
-Cohesion: 0.13
-Nodes (7): ItemFormState, ItemFormViewModel, Boolean, StateFlow, String, ViewModel, Uri
+Cohesion: 0.11
+Nodes (8): ItemFormState, ItemFormViewModel, Boolean, Job, StateFlow, String, ViewModel, Uri
 
 ### Community 16 - "Receipt Printing"
-Cohesion: 0.14
-Nodes (14): Bundle, Context, printReceipt(), ReceiptData, ReceiptLine, ReceiptPrintAdapter, Array, CancellationSignal (+6 more)
+Cohesion: 0.20
+Nodes (8): Bundle, Array, CancellationSignal, LayoutResultCallback, PageRange, ParcelFileDescriptor, PrintAttributes, WriteResultCallback
 
 ### Community 17 - "Network & Payment Methods"
-Cohesion: 0.12
-Nodes (7): ConfigApi, GenericProductsApi, PaymentMethodsApi, UploadApi, Moshi, NetworkModule, Retrofit
+Cohesion: 0.13
+Nodes (5): ConfigApi, GenericProductsApi, PaymentMethodsApi, UploadApi, Retrofit
 
 ### Community 18 - "Login Screen"
-Cohesion: 0.11
-Nodes (14): CartItem, Idle, BigDecimal, Boolean, Job, List, StateFlow, String (+6 more)
+Cohesion: 0.08
+Nodes (23): CreateSaleLine, CreateSalePayment, PartyDto, SalePaymentDto, Created, CustomerQuickAddState, DuplicateFound, Failure (+15 more)
 
 ### Community 19 - "Text Field & Item Form"
-Cohesion: 0.14
-Nodes (12): AppTextField(), Boolean, ImageVector, Modifier, String, Unit, ItemFormScreen(), String (+4 more)
+Cohesion: 0.11
+Nodes (15): AppTextField(), androidx, Boolean, ImageVector, Modifier, String, Unit, CreateOrderLineFields() (+7 more)
 
 ### Community 20 - "Common API DTOs"
 Cohesion: 0.18
@@ -313,52 +304,52 @@ Cohesion: 0.24
 Nodes (8): bodyToString(), Interceptor, Map, Response, String, redactHeaders(), TraceLoggingInterceptor, okhttp3
 
 ### Community 26 - "POS Terminal Search"
-Cohesion: 0.14
-Nodes (8): CachedChatMessageDao, CachedConversationDao, Flow, List, String, CachedChatMessageEntity, CachedConversationEntity, CatalogItemWithPrice
+Cohesion: 0.13
+Nodes (8): Flow, List, PriceListDao, CachedChatMessageEntity, CachedConversationEntity, CachedPriceEntity, CachedPriceListEntity, PendingOrderEntity
 
 ### Community 27 - "Settings ViewModel"
-Cohesion: 0.10
-Nodes (12): ChatStateStore, Keys, Flow, Int, String, LastOpen, AppModule, Context (+4 more)
+Cohesion: 0.11
+Nodes (11): ChatStateStore, Keys, Flow, Int, String, LastOpen, AppModule, Context (+3 more)
 
 ### Community 28 - "Configuration API"
-Cohesion: 0.20
-Nodes (24): AnalyticsScreen(), CategoryRow(), formatNaira(), androidx, Double, Int, String, Unit (+16 more)
+Cohesion: 0.17
+Nodes (27): PurchasesAnalytics, SalesAnalytics, AnalyticsScreen(), CategoryRow(), formatNaira(), androidx, Double, Int (+19 more)
 
 ### Community 29 - "Bottom Nav & Stock Adjustment"
-Cohesion: 0.11
-Nodes (14): Map, String, SalesApi, CategoryDto, CreateSaleLine, CreateSalePayment, CreateSaleRequest, PartyDto (+6 more)
+Cohesion: 0.22
+Nodes (8): AppLog, Entry, Int, List, StateFlow, String, Char, Throwable
 
 ### Community 30 - "Prescription Upload"
 Cohesion: 0.36
 Nodes (8): BottomFloatingBar(), BrowseCard(), CreateRequestCard(), Int, Modifier, String, UploadCard(), UploadPrescriptionScreen()
 
 ### Community 31 - "Snackbar Component"
-Cohesion: 0.16
-Nodes (12): AppSnackbarHost(), Modifier, String, Unit, showInfo(), String, Unit, PriceListCard() (+4 more)
+Cohesion: 0.18
+Nodes (12): AppSnackbarHost(), Modifier, String, Unit, showInfo(), EditPriceDialog(), String, Unit (+4 more)
 
 ### Community 32 - "Session Manager"
 Cohesion: 0.16
-Nodes (9): ChatRepository, ConversationEnded, Boolean, List, Map, SharedFlow, StateFlow, String (+1 more)
+Nodes (10): ExchangeMessage, ChatRepository, ConversationEnded, Boolean, List, Map, SharedFlow, StateFlow (+2 more)
 
 ### Community 33 - "BigDecimal Adapter"
-Cohesion: 0.11
-Nodes (7): androidx, OfflineDatabase, PaymentMethodDao, PriceDao, CachedPaymentMethodEntity, Context, OfflineModule
+Cohesion: 0.10
+Nodes (9): CachedChatMessageDao, androidx, migrate(), OfflineDatabase, PendingOrderDao, PriceDao, Context, OfflineModule (+1 more)
 
 ### Community 34 - "Top App Bar"
-Cohesion: 0.23
-Nodes (7): ItemDto, BigDecimal, Int, List, Result, String, PosRepository
+Cohesion: 0.05
+Nodes (37): ItemsApi, Int, List, Map, String, Map, String, SalesApi (+29 more)
 
 ### Community 35 - "Prescription Upload Cards"
-Cohesion: 0.14
-Nodes (11): CheckoutViewModel, Double, Int, Intent, List, SharedFlow, StateFlow, String (+3 more)
+Cohesion: 0.27
+Nodes (5): AuthApi, AuthResponse, LoginRequest, ModuleInfoDto, RefreshRequest
 
 ### Community 36 - "Pricing API"
 Cohesion: 0.13
 Nodes (12): List, String, PaymentsApi, AvailablePaymentProviderDto, InitializePaymentRequest, InitializePaymentResponse, PaymentProviderRef, VerifyPaymentResponse (+4 more)
 
 ### Community 37 - "Profile Screen"
-Cohesion: 0.19
-Nodes (18): AppIconButton(), AppOutlinedButton(), AppPrimaryButton(), AppSecondaryButton(), AppTextButton(), Boolean, ImageVector, Modifier (+10 more)
+Cohesion: 0.15
+Nodes (22): AppIconButton(), AppOutlinedButton(), AppPrimaryButton(), AppSecondaryButton(), AppTextButton(), Boolean, ImageVector, Modifier (+14 more)
 
 ### Community 38 - "Module Config"
 Cohesion: 0.15
@@ -376,10 +367,6 @@ Nodes (6): Boolean, Int, SharedPreferences, String, PinManager, StoredCredential
 Cohesion: 0.15
 Nodes (12): API Services, Architecture, Build Variants, Design System, Features, Layers, Navigation, Project Structure (+4 more)
 
-### Community 42 - "Auth Interceptor"
-Cohesion: 0.12
-Nodes (5): Long, PendingOrderDao, PendingSaleDao, PendingOrderEntity, PendingSaleEntity
-
 ### Community 43 - "Chip Component"
 Cohesion: 0.21
 Nodes (9): GenericProductDto, Int, List, Result, String, OrdersRepository, OrderSubmitResult, Pushed (+1 more)
@@ -389,8 +376,8 @@ Cohesion: 0.17
 Nodes (10): ChatApi, Boolean, Int, Response, String, Unit, ConversationInboxResponse, ExchangeMessagesResponse (+2 more)
 
 ### Community 45 - "Badge Component"
-Cohesion: 0.16
-Nodes (13): DailySalesRow, DailyRowCard(), DailySalesScreen(), List, Unit, ReportSummaryCard(), TopItemCard(), DailySalesViewModel (+5 more)
+Cohesion: 0.22
+Nodes (11): DailySalesRow, DateRangeFilterRow(), DateRangePreset, List, String, DailyRowCard(), DailySalesScreen(), List (+3 more)
 
 ### Community 46 - "Gradle Wrapper Script"
 Cohesion: 0.83
@@ -405,12 +392,12 @@ Cohesion: 0.18
 Nodes (14): SaleLineDto, formatSaleLineDate(), String, Unit, SaleLineCard(), saleLineRowKey(), SaleLinesScreen(), List (+6 more)
 
 ### Community 49 - "Color Tokens"
-Cohesion: 0.15
-Nodes (8): ItemsApi, List, Map, String, CreateItemRequest, OrgItemDto, PatchItemRequest, toItemDto()
+Cohesion: 0.20
+Nodes (6): Response, String, Unit, PrintApi, ReceiptPrintRequest, ReceiptLine
 
 ### Community 50 - "Cart Item Model"
-Cohesion: 0.20
-Nodes (10): ExchangeMessage, ChatViewModel, ConversationListViewModel, Boolean, List, Map, SharedFlow, StateFlow (+2 more)
+Cohesion: 0.21
+Nodes (9): ChatViewModel, ConversationListViewModel, Boolean, List, Map, SharedFlow, StateFlow, String (+1 more)
 
 ### Community 51 - "Theme Definition"
 Cohesion: 0.17
@@ -421,32 +408,28 @@ Cohesion: 0.34
 Nodes (14): AppEmptyStateDashboard(), AppErrorStateDashboard(), AppLoadingStateDashboard(), AppointmentRow(), DashboardKpiCard(), DashboardQuickAction(), Color, ImageVector (+6 more)
 
 ### Community 53 - "Elevation Tokens"
-Cohesion: 0.14
-Nodes (13): PaymentMethodSummary, PurchasesAnalyticsSummary, PurchasesByCategory, PurchasesByLocation, PurchasesByStatus, PurchasesBySupplier, PurchasesRecent, PurchasesTopSupplier (+5 more)
+Cohesion: 0.06
+Nodes (31): List, Map, Response, ResponseBody, String, ReportsApi, PaymentMethodSummary, PurchasesAnalyticsSummary (+23 more)
 
 ### Community 54 - "Motion Tokens"
-Cohesion: 0.23
-Nodes (8): PurchasesAnalytics, SalesAnalytics, TopSellingItem, List, ResponseBody, Result, String, ReportsRepository
+Cohesion: 0.33
+Nodes (3): Moshi, NetworkModule, OkHttpClient
 
 ### Community 55 - "Shape Tokens"
 Cohesion: 0.22
 Nodes (13): ColorThemeSection(), CustomColorSection(), Boolean, Color, Long, Modifier, String, Unit (+5 more)
 
 ### Community 56 - "Spacing Tokens"
-Cohesion: 0.27
-Nodes (13): CartItemRow(), CustomerSearchDialog(), androidx, Boolean, CartItem, List, String, NoStockBalanceDialog() (+5 more)
+Cohesion: 0.16
+Nodes (20): AppSearchBar(), Modifier, String, CartItemRow(), CustomerQuickAddDialog(), CustomerSearchDialog(), androidx, Boolean (+12 more)
 
 ### Community 57 - "App Module"
 Cohesion: 0.18
 Nodes (3): CustomerDao, Int, CachedCustomerEntity
 
 ### Community 58 - "Constants"
-Cohesion: 0.22
-Nodes (6): Boolean, Boolean, Intent, String, PaymentAppDetector, PaymentProviderType
-
-### Community 61 - "Type Definitions"
-Cohesion: 0.18
-Nodes (3): CategoryDao, CachedCategoryEntity, CachedPriceEntity
+Cohesion: 0.31
+Nodes (5): Boolean, String, PaymentAppDetector, PaymentProviderType, Intent
 
 ### Community 76 - "09-material3-expert.md"
 Cohesion: 0.18
@@ -461,8 +444,8 @@ Cohesion: 0.20
 Nodes (7): CouponsApi, CouponValidationDto, ValidateCouponRequest, CouponsRepository, Double, Result, String
 
 ### Community 79 - "ListResponse"
-Cohesion: 0.27
-Nodes (6): List, Map, Response, ResponseBody, String, ReportsApi
+Cohesion: 0.42
+Nodes (8): drawReceipt(), Context, Float, printReceipt(), ReceiptData, ReceiptPrintAdapter, shareReceiptPdf(), PrintDocumentAdapter
 
 ### Community 80 - "ReportsApi"
 Cohesion: 0.29
@@ -486,7 +469,7 @@ Nodes (8): Accessibility, Assertions, Generate, Mission, Output, Performance, Te
 
 ### Community 85 - "SalesApi"
 Cohesion: 0.27
-Nodes (11): AppLinearProgress(), AppLoadingOverlay(), AppLoadingState(), AppPageLoading(), AppSkeletonLoader(), Boolean, Int, Modifier (+3 more)
+Nodes (10): AppLinearProgress(), AppLoadingOverlay(), AppPageLoading(), AppSkeletonLoader(), Boolean, Int, Modifier, String (+2 more)
 
 ### Community 86 - "Compose Screen — rxsoft-mobile"
 Cohesion: 0.25
@@ -497,8 +480,8 @@ Cohesion: 0.25
 Nodes (7): Generate, Input Components, Mission, Output, Principles, States, Validation
 
 ### Community 88 - "AppEmptyState"
-Cohesion: 0.27
-Nodes (11): formatSyncTime(), Boolean, ImageVector, List, Long, String, Unit, ModuleToggleCard() (+3 more)
+Cohesion: 0.24
+Nodes (13): DiscoveryResults(), formatSyncTime(), Boolean, ImageVector, List, Long, String, Unit (+5 more)
 
 ### Community 89 - "21-healthcare-ux.md"
 Cohesion: 0.29
@@ -512,13 +495,9 @@ Nodes (6): Avoid, Generate, Mission, Output, Principles, Support
 Cohesion: 0.29
 Nodes (6): Architecture, Generate, Mission, Output, Persistence, Support
 
-### Community 92 - "ProductDetailScreen"
-Cohesion: 0.17
-Nodes (9): Boolean, Modifier, String, PrimaryButton(), Modifier, String, ProductImage(), String (+1 more)
-
 ### Community 93 - "AppCard"
-Cohesion: 0.20
-Nodes (9): AppEmptyState(), ImageVector, Modifier, String, Unit, Unit, StockBalanceScreen(), StockCard() (+1 more)
+Cohesion: 0.12
+Nodes (16): AppEmptyState(), ImageVector, Modifier, String, Unit, AppErrorState(), Modifier, String (+8 more)
 
 ### Community 94 - "13-design-system-documentation.md"
 Cohesion: 0.33
@@ -545,48 +524,52 @@ Cohesion: 0.27
 Nodes (6): Boolean, List, StateFlow, String, ViewModel, PriceListViewModel
 
 ### Community 121 - "RxSoft Mobile App — Improvement Plan"
+Cohesion: 0.13
+Nodes (14): 4a. Cache Payment Methods, 4b. Offline Stock Adjustments, 4c. Update OfflineSyncManager, Execution Order, Fix log — 2026-09-29 (all implemented, built 13:52, installed on SM-A055F), Issue 1: Product Creation — Missing Required Backend Parameters, Issue 1: UOM dropdown empty on New Item — FIXED, Issue 2: Receipt crash after POS sale — FIXED (+6 more)
+
+### Community 122 - "OfflineItemDao"
+Cohesion: 0.13
+Nodes (5): CachedConversationDao, String, OfflineItemDao, CachedItemEntity, CatalogItemWithPrice
+
+### Community 123 - "PendingStockAdjustmentDao"
 Cohesion: 0.18
-Nodes (10): 4a. Cache Payment Methods, 4b. Offline Stock Adjustments, 4c. Update OfflineSyncManager, Execution Order, Issue 1: Product Creation — Missing Required Backend Parameters, Issue 2: Sync Timeout — "Continue Offline" Should Not Stop Sync, Issue 3: Medical Art Backdrop on Every Screen, Issue 4: Offline POS — Payment Modes, Stock Adjustments, and Sales (+2 more)
+Nodes (3): Long, PendingStockAdjustmentDao, PendingStockAdjustmentEntity
 
 ### Community 125 - "ListResponse"
-Cohesion: 0.27
-Nodes (5): InventoryApi, Map, String, ListResponse, UomDto
+Cohesion: 0.43
+Nodes (7): Field(), String, Unit, PosConfigCard(), UserDetailScreen(), UserFieldsCard(), UserHeader()
 
 ### Community 126 - "PaymentMethodDto"
-Cohesion: 0.33
-Nodes (6): PaymentMethodDto, Pushed, Queued, SaleSubmitResult, toCachedEntity(), toPaymentMethodDto()
+Cohesion: 0.38
+Nodes (3): UserPosConfig, StateFlow, PosConfigManager
 
 ### Community 127 - "AppTopAppBar"
-Cohesion: 0.24
-Nodes (8): AppTopAppBar(), AppTopAppBarActions(), ImageVector, Modifier, String, Unit, Unit, StockAdjustmentScreen()
+Cohesion: 0.19
+Nodes (12): AppTopAppBar(), AppTopAppBarActions(), ImageVector, Modifier, String, Unit, ImageVector, Int (+4 more)
 
 ### Community 128 - "SimpleBarChart"
-Cohesion: 0.31
-Nodes (9): BarChartData, drawBarChart(), Color, Double, Int, List, Modifier, String (+1 more)
+Cohesion: 0.27
+Nodes (10): BarChartData, drawBarChart(), Color, Double, Int, List, Modifier, String (+2 more)
 
 ### Community 129 - "MainContent"
-Cohesion: 0.24
-Nodes (9): Unit, MainContent(), ImageVector, Int, String, Unit, ProfileMenuItem(), ProfileScreen() (+1 more)
+Cohesion: 0.40
+Nodes (3): StateFlow, ViewModel, UserDetailViewModel
 
 ### Community 130 - "CheckoutScreen"
-Cohesion: 0.27
-Nodes (8): AddProductCard(), CheckoutScreen(), EmptyCartCard(), List, PaymentMethodCard(), Modifier, String, VoucherCard()
+Cohesion: 0.50
+Nodes (3): Interceptor, Response, TokenRefreshInterceptor
 
 ### Community 131 - "ThemeViewModel"
 Cohesion: 0.22
 Nodes (5): AndroidViewModel, Long, StateFlow, ThemeSettings, ThemeViewModel
 
-### Community 132 - "OfflineDatabase.kt"
-Cohesion: 0.28
-Nodes (4): migrate(), SyncStateDao, SyncStateEntity, SupportSQLiteDatabase
+### Community 133 - "PriceListDao"
+Cohesion: 0.70
+Nodes (4): EmptyListMessage(), ItemFormScreen(), String, Unit
 
 ### Community 136 - ".items"
-Cohesion: 0.28
-Nodes (6): CustomerCard(), CustomerListScreen(), Unit, ItemCard(), ItemListScreen(), Unit
-
-### Community 137 - "AppErrorState"
-Cohesion: 0.22
-Nodes (7): AppErrorState(), Modifier, String, Unit, String, Unit, PosOrderDetailScreen()
+Cohesion: 0.11
+Nodes (17): CustomerCard(), CustomerListScreen(), Unit, Modifier, RxAppBackdrop(), RxBackdropStyle, Unit, StockAdjustmentScreen() (+9 more)
 
 ### Community 138 - "ThemePreferences"
 Cohesion: 0.22
@@ -596,37 +579,25 @@ Nodes (5): Keys, Flow, Long, ThemeSettings, ThemePreferences
 Cohesion: 0.25
 Nodes (6): ItemListViewModel, Boolean, List, StateFlow, String, ViewModel
 
-### Community 140 - "CreateOrderCascadeFields"
-Cohesion: 0.25
-Nodes (7): CreateOrderCascadeFields(), Boolean, List, String, CreateOrderScreen(), DraftOrderLine, Unit
-
 ### Community 141 - "OfflineSyncManager"
-Cohesion: 0.28
-Nodes (4): Boolean, Long, StateFlow, OfflineSyncManager
+Cohesion: 0.23
+Nodes (5): Boolean, Job, Long, StateFlow, OfflineSyncManager
 
 ### Community 142 - "ConversationListScreen"
 Cohesion: 0.32
 Nodes (7): ConversationInboxItem, ConversationItem(), ConversationListScreen(), Modifier, String, Unit, toRelativeTime()
 
 ### Community 143 - ".provideOkHttpClient"
-Cohesion: 0.29
-Nodes (4): AuthInterceptor, Interceptor, Response, OkHttpClient
-
-### Community 144 - "MedicineCatalogScreen"
-Cohesion: 0.29
-Nodes (6): AppSearchBar(), Modifier, String, Unit, MedicineCard(), MedicineCatalogScreen()
+Cohesion: 0.40
+Nodes (3): AuthInterceptor, Interceptor, Response
 
 ### Community 145 - "PosOrderListViewModel"
 Cohesion: 0.25
 Nodes (5): Boolean, List, StateFlow, ViewModel, PosOrderListViewModel
 
-### Community 146 - "CartItemCard"
-Cohesion: 0.25
-Nodes (6): CartItemCard(), CartItem, Modifier, Int, Modifier, QuantitySelector()
-
 ### Community 147 - "ServerUrlManager"
-Cohesion: 0.39
-Nodes (3): SharedPreferences, String, ServerUrlManager
+Cohesion: 0.24
+Nodes (5): Boolean, SharedPreferences, String, Mode, ServerUrlManager
 
 ### Community 148 - "SessionManager"
 Cohesion: 0.32
@@ -647,10 +618,6 @@ Nodes (4): DarkModeToggle(), Boolean, Modifier, AppearanceMode
 ### Community 152 - "OrderLinesScreen"
 Cohesion: 0.48
 Nodes (6): formatOrderLineDate(), String, Unit, lineRowKey(), OrderLineCard(), OrderLinesScreen()
-
-### Community 153 - "UploadPrescriptionScreen"
-Cohesion: 0.43
-Nodes (6): BrowseCard(), CreateRequestCard(), Int, String, UploadCard(), UploadPrescriptionScreen()
 
 ### Community 154 - "BigDecimalAdapter"
 Cohesion: 0.47
@@ -673,24 +640,16 @@ Cohesion: 0.40
 Nodes (5): AppThemeColors, Boolean, ThemeSettings, RxSoftSpacing, RxSoftTheme()
 
 ### Community 159 - "PosOrderDetailViewModel"
-Cohesion: 0.33
-Nodes (4): StateFlow, String, ViewModel, PosOrderDetailViewModel
+Cohesion: 0.23
+Nodes (11): ReceiptPrintItem, Failure, Idle, List, StateFlow, String, ViewModel, PosOrderDetailViewModel (+3 more)
 
 ### Community 160 - "PosOrderListScreen"
-Cohesion: 0.40
-Nodes (5): Boolean, Unit, PosOrderListScreen(), SaleCard(), scrollingDown
-
-### Community 161 - "PriceListItemsScreen"
-Cohesion: 0.53
-Nodes (5): EditPriceDialog(), String, Unit, PriceItemRow(), PriceListItemsScreen()
+Cohesion: 0.31
+Nodes (10): formatSaleDate(), androidx, Boolean, String, Unit, PosOrderListScreen(), SaleCard(), StatusChip() (+2 more)
 
 ### Community 162 - "ModuleConfig"
 Cohesion: 0.47
 Nodes (4): AppModule, Set, StateFlow, ModuleConfig
-
-### Community 163 - "PaymentSummary"
-Cohesion: 0.47
-Nodes (5): Boolean, Modifier, String, PaymentSummary(), SummaryRow()
 
 ### Community 164 - "SyncSettingsManager"
 Cohesion: 0.40
@@ -703,14 +662,6 @@ Nodes (5): load_logo(), main(), make_background(), make_foreground(), make_legac
 ### Community 166 - "AppAlertDialog"
 Cohesion: 0.60
 Nodes (4): AppAlertDialog(), AppInfoDialog(), Modifier, String
-
-### Community 167 - "DateRangeFilterRow"
-Cohesion: 0.50
-Nodes (4): DateRangeFilterRow(), DateRangePreset, List, String
-
-### Community 168 - "RoundedIconButton"
-Cohesion: 0.40
-Nodes (4): ImageVector, Modifier, String, RoundedIconButton()
 
 ### Community 169 - "AppBadge"
 Cohesion: 0.50
@@ -725,24 +676,24 @@ Cohesion: 0.50
 Nodes (3): Boolean, String, LazyLinesAccordion()
 
 ## Knowledge Gaps
-- **191 isolated node(s):** `@opencode-ai/plugin`, `Keys`, `ModuleInfoDto`, `ListResponseMeta`, `ApiErrorResponse` (+186 more)
+- **194 isolated node(s):** `@opencode-ai/plugin`, `Keys`, `ModuleInfoDto`, `ListResponseMeta`, `ApiErrorResponse` (+189 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **39 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **40 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `UiState` connect `Item List Screen` to `Stock Adjustment`, `Checkout ViewModel`, `Medicine Catalog`, `Sales Reports API`, `POS Sale Creation`, `PIN Entry Screen`, `ItemListViewModel`, `CreateOrderCascadeFields`, `PIN Manager`, `PosOrderListViewModel`, `Login Screen`, `HTTP Logging Interceptor`, `Configuration API`, `PosOrderDetailViewModel`, `Prescription Upload Cards`, `Profile Screen`, `Module Config`, `Settings Screen`, `Badge Component`, `Mobile Theme`, `ReportsApi`, `PriceListViewModel`?**
-  _High betweenness centrality (0.176) - this node is a cross-community bridge._
-- **Why does `MainContent()` connect `MainContent` to `UI State Components`, `CheckoutScreen`, `Checkout ViewModel`, `Sales Reports API`, `.items`, `AppErrorState`, `Customer API`, `CreateOrderCascadeFields`, `ConversationListScreen`, `MedicineCatalogScreen`, `Text Field & Item Form`, `ChatScreen`, `OrderLinesScreen`, `UploadPrescriptionScreen`, `Configuration API`, `Snackbar Component`, `PosOrderListScreen`, `PriceListItemsScreen`, `Profile Screen`, `Badge Component`, `Mobile Theme`, `Theme Definition`, `Shape Tokens`, `Spacing Tokens`, `AppEmptyState`, `ProductDetailScreen`, `AppCard`, `AppTopAppBar`?**
-  _High betweenness centrality (0.167) - this node is a cross-community bridge._
-- **Why does `PosTerminalViewModel` connect `Login Screen` to `Top App Bar`, `Checkout ViewModel`, `PriceListDao`, `Item List Screen`, `Spacing Tokens`, `Bottom Nav & Stock Adjustment`, `PaymentMethodDto`?**
-  _High betweenness centrality (0.080) - this node is a cross-community bridge._
-- **Are the 28 inferred relationships involving `MainContent()` (e.g. with `AnalyticsScreen()` and `ChatScreen()`) actually correct?**
-  _`MainContent()` has 28 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `MainContent()` connect `.items` to `UI State Components`, `PriceListDao`, `Sales Reports API`, `PIN Entry Screen`, `ConversationListScreen`, `ChatScreen`, `OrderLinesScreen`, `Configuration API`, `Snackbar Component`, `PosOrderListScreen`, `Profile Screen`, `Badge Component`, `Mobile Theme`, `Theme Definition`, `Shape Tokens`, `Spacing Tokens`, `AppEmptyState`, `AppCard`, `ListResponse`, `AppTopAppBar`?**
+  _High betweenness centrality (0.158) - this node is a cross-community bridge._
+- **Why does `UiState` connect `Item List Screen` to `MainContent`, `Stock Adjustment`, `Medicine Catalog`, `Sales Reports API`, `POS Sale Creation`, `ItemListViewModel`, `PIN Manager`, `PosOrderListViewModel`, `Login Screen`, `Text Field & Item Form`, `HTTP Logging Interceptor`, `Configuration API`, `PosOrderDetailViewModel`, `Profile Screen`, `Module Config`, `Settings Screen`, `Mobile Theme`, `Elevation Tokens`, `ReportsApi`, `PriceListViewModel`, `PaymentMethodDto`?**
+  _High betweenness centrality (0.151) - this node is a cross-community bridge._
+- **Why does `SettingsViewModel` connect `PIN Entry Screen` to `Inventory Items API`, `OfflineDatabase.kt`, `.items`, `Customer API`, `ServerUrlManager`, `AppEmptyState`?**
+  _High betweenness centrality (0.095) - this node is a cross-community bridge._
+- **Are the 28 inferred relationships involving `AppCard()` (e.g. with `CategoryRow()` and `LocationRow()`) actually correct?**
+  _`AppCard()` has 28 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `@opencode-ai/plugin`, `Keys`, `ModuleInfoDto` to the rest of the system?**
-  _191 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _194 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Inventory Items API` be split into smaller, more focused modules?**
+  _Cohesion score 0.10416666666666667 - nodes in this community are weakly interconnected._
 - **Should `UI State Components` be split into smaller, more focused modules?**
-  _Cohesion score 0.05819209039548023 - nodes in this community are weakly interconnected._
-- **Should `Cart & Checkout UI` be split into smaller, more focused modules?**
-  _Cohesion score 0.05609756097560976 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06334841628959276 - nodes in this community are weakly interconnected._

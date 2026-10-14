@@ -2,19 +2,36 @@ package com.ehealthwares.rxsoft.ui.designsystem.templates
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Inbox
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,9 +40,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import com.ehealthwares.rxsoft.ui.designsystem.components.AccentIconBox
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppEmptyState
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppErrorState
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppLoadingState
@@ -43,6 +66,14 @@ fun <T> ListScreenTemplate(
     isLoadingMore: Boolean = false,
     onBack: (() -> Unit)? = null,
     onMenuClick: (() -> Unit)? = null,
+    // Mock-style header extras (optional; plain AppTopAppBar when unset).
+    subtitle: String? = null,
+    headerIcon: ImageVector? = null,
+    onSearchClick: (() -> Unit)? = null,
+    onAddClick: (() -> Unit)? = null,
+    addDescription: String = "Add",
+    // Pinned filter chips (or any header widget) rendered above the list.
+    filters: (@Composable () -> Unit)? = null,
     searchQuery: String = "",
     onSearchQueryChange: ((String) -> Unit)? = null,
     onRefresh: (() -> Unit)? = null,
@@ -108,17 +139,92 @@ fun <T> ListScreenTemplate(
     Scaffold(
         modifier = modifier,
         topBar = {
-            AppTopAppBar(
-                title = title,
-                onBack = onBack,
-                onMenuClick = onMenuClick,
-                actions = topBarActions,
-            )
+            if (headerIcon != null || subtitle != null) {
+                // Mock-style header: icon tile + title/subtitle + search + green add.
+                TopAppBar(
+                    navigationIcon = {
+                        if (onBack != null) {
+                            IconButton(onClick = onBack, modifier = Modifier.semantics { contentDescription = "Back" }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            }
+                        } else if (onMenuClick != null) {
+                            IconButton(onClick = onMenuClick, modifier = Modifier.semantics { contentDescription = "Open menu" }) {
+                                Icon(Icons.Default.Menu, contentDescription = "Menu")
+                            }
+                        }
+                    },
+                    title = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            AccentIconBox(icon = headerIcon ?: Icons.Outlined.Inbox)
+                            Spacer(Modifier.width(10.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = title,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
+                                if (subtitle != null) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(
+                                            text = subtitle,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                        Icon(
+                                            Icons.Default.ExpandMore,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.size(14.dp),
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    actions = {
+                        topBarActions()
+                        if (onSearchClick != null) {
+                            IconButton(
+                                onClick = onSearchClick,
+                                modifier = Modifier.semantics { contentDescription = "Search" },
+                            ) {
+                                Icon(Icons.Outlined.Search, contentDescription = "Search")
+                            }
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    ),
+                )
+            } else {
+                AppTopAppBar(
+                    title = title,
+                    onBack = onBack,
+                    onMenuClick = onMenuClick,
+                    actions = topBarActions,
+                )
+            }
         },
         floatingActionButton = {
-            if (fab != null && state is UiState.Success && state.data.isNotEmpty()) {
-                fab()
+            val fabContent: (@Composable () -> Unit)? = fab ?: onAddClick?.let { add -> {
+                    FloatingActionButton(
+                        onClick = add,
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.semantics { contentDescription = addDescription },
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = null)
+                    }
+                }
             }
+            val showFab = fabContent != null && !configMissing && state !is UiState.Error
+            if (showFab) fabContent!!()
         },
     ) { innerPadding ->
         val body: @Composable () -> Unit = {
@@ -147,27 +253,38 @@ fun <T> ListScreenTemplate(
                             action = emptyAction,
                         )
                     } else {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            state = listState,
-                            contentPadding = PaddingValues(
-                                horizontal = SpacingTokens.screenHorizontal,
-                                vertical = SpacingTokens.section,
-                            ),
-                            verticalArrangement = Arrangement.spacedBy(SpacingTokens.sm),
-                        ) {
-                            listContent(items)
-                            if (isLoadingMore) {
-                                item {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .semantics { contentDescription = "Loading more" },
-                                        contentAlignment = Alignment.Center,
-                                    ) {
-                                        androidx.compose.material3.CircularProgressIndicator(
-                                            modifier = Modifier.padding(SpacingTokens.sm),
-                                        )
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            if (filters != null) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = SpacingTokens.screenHorizontal, vertical = SpacingTokens.xs),
+                                ) {
+                                    filters()
+                                }
+                            }
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                state = listState,
+                                contentPadding = PaddingValues(
+                                    horizontal = SpacingTokens.screenHorizontal,
+                                    vertical = SpacingTokens.section,
+                                ),
+                                verticalArrangement = Arrangement.spacedBy(SpacingTokens.sm),
+                            ) {
+                                listContent(items)
+                                if (isLoadingMore) {
+                                    item {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .semantics { contentDescription = "Loading more" },
+                                            contentAlignment = Alignment.Center,
+                                        ) {
+                                            androidx.compose.material3.CircularProgressIndicator(
+                                                modifier = Modifier.padding(SpacingTokens.sm),
+                                            )
+                                        }
                                     }
                                 }
                             }

@@ -3,6 +3,7 @@ package com.ehealthwares.rxsoft.ui.auth
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ehealthwares.rxsoft.data.remote.dto.CurrentUserResponse
 import com.ehealthwares.rxsoft.data.repository.AuthRepository
 import com.ehealthwares.rxsoft.data.repository.SyncProgress
 import com.ehealthwares.rxsoft.data.repository.SyncRepository
@@ -166,6 +167,43 @@ class AuthViewModel @Inject constructor(
                 }
         }
     }
+
+    /**
+     * Shared social sign-in handler: exchange the provider token for the app's
+     * JWT pair, then continue down the same post-login path as password login
+     * (reset session, PIN setup/unlock, startup sync).
+     */
+    private fun socialSignIn(
+        block: suspend () -> Result<CurrentUserResponse>,
+        label: String,
+    ) {
+        viewModelScope.launch {
+            _loginState.value = UiState.Loading
+            block()
+                .onSuccess { user ->
+                    Log.d(TAG, "$label sign-in succeeded")
+                    sessionManager.reset()
+                    posConfigManager.loadConfig()
+                    _loginState.value = UiState.Success(Unit)
+                    beginStartupSync()
+                }
+                .onFailure { e ->
+                    Log.e(TAG, "$label sign-in failed: ${e.message}")
+                    _loginState.value = UiState.Error(e.message ?: "$label sign-in failed")
+                }
+        }
+    }
+
+    /** Surface a social-sign-in failure in the normal login error channel. */
+    fun onSocialError(message: String) {
+        _loginState.value = UiState.Error(message)
+    }
+
+    fun signInWithGoogle(idToken: String) =
+        socialSignIn({ authRepository.googleSignIn(idToken) }, "Google")
+
+    fun signInWithFacebook(accessToken: String) =
+        socialSignIn({ authRepository.facebookSignIn(accessToken) }, "Facebook")
 
     fun onLoginSuccess() {
         // Consume the success so re-showing the login screen doesn't re-trigger.

@@ -5,6 +5,7 @@ import com.ehealthwares.rxsoft.data.local.PendingStockAdjustmentEntity
 import com.ehealthwares.rxsoft.data.remote.api.InventoryApi
 import com.ehealthwares.rxsoft.data.remote.dto.AdjustStockRequest
 import com.ehealthwares.rxsoft.data.remote.dto.StockBalanceDto
+import com.ehealthwares.rxsoft.data.remote.dto.StockLocationDto
 import com.squareup.moshi.Moshi
 import java.util.UUID
 import javax.inject.Inject
@@ -25,14 +26,27 @@ class InventoryRepository @Inject constructor(
     suspend fun getStockBalances(
         search: String? = null,
         page: Int = 1,
-        limit: Int = 20,
+        limit: Int = 100,
         categoryCode: String? = null,
+        locationId: String? = null,
     ): Result<List<StockBalanceDto>> {
         return try {
             val params = mutableMapOf("page" to page.toString(), "limit" to limit.toString())
             search?.let { params["search"] = it }
             categoryCode?.let { params["categoryCode"] = it }
+            locationId?.let { params["locationId"] = it }
             Result.success(inventoryApi.stockBalances(params).data)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /** Stock locations for the location filter (limit capped at 100). */
+    suspend fun listStockLocations(search: String? = null): Result<List<StockLocationDto>> {
+        return try {
+            val params = mutableMapOf("limit" to "100")
+            search?.let { params["search"] = it }
+            Result.success(inventoryApi.stockLocations(params).data)
         } catch (e: Exception) {
             Result.failure(e)
         }

@@ -41,6 +41,7 @@ data class CreatePurchaseRequest(
     @Json(name = "currencyCode") val currencyCode: String = "NGN",
     val note: String? = null,
     @Json(name = "invoiceNumber") val invoiceNumber: String? = null,
+    val status: String? = null,
     val lines: List<CreatePurchaseLine>,
 )
 

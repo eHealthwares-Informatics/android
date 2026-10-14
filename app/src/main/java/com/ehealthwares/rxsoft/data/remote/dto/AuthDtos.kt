@@ -9,6 +9,18 @@ data class LoginRequest(
     val password: String
 )
 
+/** Google Credential Manager ID token (JWT), verified server-side. */
+@JsonClass(generateAdapter = true)
+data class GoogleAuthRequest(
+    @Json(name = "idToken") val idToken: String
+)
+
+/** Facebook Login access token, verified server-side via Graph. */
+@JsonClass(generateAdapter = true)
+data class FacebookAuthRequest(
+    @Json(name = "accessToken") val accessToken: String
+)
+
 @JsonClass(generateAdapter = true)
 data class RefreshRequest(
     @Json(name = "refreshToken") val refreshToken: String

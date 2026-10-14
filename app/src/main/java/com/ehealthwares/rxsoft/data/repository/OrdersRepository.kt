@@ -51,7 +51,7 @@ class OrdersRepository @Inject constructor(
         }
     }
 
-    suspend fun searchGenericProducts(query: String, page: Int = 1, limit: Int = 20): Result<List<GenericProductDto>> {
+    suspend fun searchGenericProducts(query: String, page: Int = 1, limit: Int = 100): Result<List<GenericProductDto>> {
         return try {
             Result.success(genericProductsApi.search(query, page, limit).data)
         } catch (e: Exception) {

@@ -60,9 +60,12 @@ import com.ehealthwares.rxsoft.ui.designsystem.components.AppErrorState
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppLoadingState
 import com.ehealthwares.rxsoft.ui.designsystem.components.AppTopAppBar
 import com.ehealthwares.rxsoft.ui.designsystem.components.BarChartData
+import com.ehealthwares.rxsoft.ui.designsystem.components.NotificationBell
 import com.ehealthwares.rxsoft.ui.designsystem.components.DateRangeFilterRow
 import com.ehealthwares.rxsoft.ui.designsystem.components.SimpleBarChart
 import com.ehealthwares.rxsoft.ui.designsystem.token.SpacingTokens
+import com.ehealthwares.rxsoft.ui.navigation.Screen
+import com.ehealthwares.rxsoft.ui.notifications.NotificationsViewModel
 import com.ehealthwares.rxsoft.util.UiState
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -79,8 +82,17 @@ private val tabLabels = listOf("Sales", "Purchases", "Orders")
 @Composable
 fun AnalyticsScreen(
     onMenuClick: (() -> Unit)? = null,
+    onNotificationsClick: () -> Unit = {},
     viewModel: AnalyticsViewModel = hiltViewModel(),
+    notificationsViewModel: NotificationsViewModel = hiltViewModel(),
 ) {
+    val unreadCount by notificationsViewModel.unreadCount.collectAsState()
+
+    // Best-effort subscription registration on dashboard open (no throw on 404).
+    LaunchedEffect(Unit) {
+        notificationsViewModel.registerSubscription()
+    }
+
     var selectedTab by remember { mutableIntStateOf(0) }
     var isRefreshing by remember { mutableStateOf(false) }
     var showFromPicker by remember { mutableStateOf(false) }
@@ -124,6 +136,10 @@ fun AnalyticsScreen(
             title = "Analytics",
             onMenuClick = onMenuClick,
             actions = {
+                NotificationBell(
+                    unreadCount = unreadCount,
+                    onClick = onNotificationsClick,
+                )
                 IconButton(
                     onClick = { viewModel.exportCsv(context) },
                     enabled = !isExporting,
