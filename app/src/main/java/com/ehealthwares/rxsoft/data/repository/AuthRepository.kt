@@ -2,6 +2,8 @@ package com.ehealthwares.rxsoft.data.repository
 
 import android.util.Log
 import com.ehealthwares.rxsoft.data.remote.api.AuthApi
+import com.ehealthwares.rxsoft.data.remote.dto.FacebookAuthRequest
+import com.ehealthwares.rxsoft.data.remote.dto.GoogleAuthRequest
 import com.ehealthwares.rxsoft.data.remote.dto.LoginRequest
 import com.ehealthwares.rxsoft.data.remote.dto.RefreshRequest
 import com.ehealthwares.rxsoft.data.remote.dto.CurrentUserResponse
@@ -34,6 +36,42 @@ class AuthRepository @Inject constructor(
         }
     }
 
+
+    /**
+     * Google social sign-in: exchange the Credential Manager ID token at the
+     * gateway (`auth/oauth/google`, channel='console'). The identity service
+     * links any existing account role by the provider-verified email or
+     * auto-registers the account; tokens persist through the TokenManager so
+     * PIN restore keeps working unchanged.
+     */
+    suspend fun googleSignIn(idToken: String): Result<CurrentUserResponse> {
+        Log.d("AuthRepo", "Google sign-in requested")
+        return try {
+            val authResponse = authApi.googleSignIn(GoogleAuthRequest(idToken))
+            tokenManager.saveTokens(authResponse.accessToken, authResponse.refreshToken)
+            val user = authApi.me()
+            Log.d("AuthRepo", "Google sign-in OK — id=${user.id}, roles=${user.roles}")
+            Result.success(user)
+        } catch (e: Exception) {
+            Log.e("AuthRepo", "Google sign-in FAILED: ${e.message}", e)
+            Result.failure(e)
+        }
+    }
+
+    /** Facebook social sign-in (see [googleSignIn]). */
+    suspend fun facebookSignIn(accessToken: String): Result<CurrentUserResponse> {
+        Log.d("AuthRepo", "Facebook sign-in requested")
+        return try {
+            val authResponse = authApi.facebookSignIn(FacebookAuthRequest(accessToken))
+            tokenManager.saveTokens(authResponse.accessToken, authResponse.refreshToken)
+            val user = authApi.me()
+            Log.d("AuthRepo", "Facebook sign-in OK — id=${user.id}, roles=${user.roles}")
+            Result.success(user)
+        } catch (e: Exception) {
+            Log.e("AuthRepo", "Facebook sign-in FAILED: ${e.message}", e)
+            Result.failure(e)
+        }
+    }
 
     suspend fun logout() {
         Log.d("AuthRepo", "Logging out — clearing tokens")

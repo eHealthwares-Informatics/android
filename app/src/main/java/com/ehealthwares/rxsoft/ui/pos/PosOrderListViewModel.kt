@@ -24,6 +24,13 @@ class PosOrderListViewModel @Inject constructor(
     private val _isLoadingMore = MutableStateFlow(false)
     val isLoadingMore: StateFlow<Boolean> = _isLoadingMore.asStateFlow()
 
+    /**
+     * Lazily-loaded sale details (with lines) keyed by sale id — fetched the
+     * first time an accordion card is expanded, then cached.
+     */
+    private val _saleDetails = MutableStateFlow<Map<String, UiState<SaleDto>>>(emptyMap())
+    val saleDetails: StateFlow<Map<String, UiState<SaleDto>>> = _saleDetails.asStateFlow()
+
     private var currentPage = 1
     private var hasMore = true
 
@@ -39,7 +46,7 @@ class PosOrderListViewModel @Inject constructor(
             posRepository.listSales(page = 1)
                 .onSuccess {
                     _sales.value = UiState.Success(it)
-                    hasMore = it.size >= 20
+                    hasMore = it.size >= 100
                 }
                 .onFailure { e ->
                     Log.e("PosOrderListVM", "Failed to load sales: ${e.message}", e)
@@ -57,13 +64,29 @@ class PosOrderListViewModel @Inject constructor(
                 .onSuccess { items ->
                     val current = (_sales.value as? UiState.Success)?.data ?: emptyList()
                     _sales.value = UiState.Success(current + items)
-                    hasMore = items.size >= 20
+                    hasMore = items.size >= 100
                 }
                 .onFailure { e ->
                     Log.e("PosOrderListVM", "Failed to load more sales: ${e.message}", e)
                     currentPage--
                 }
             _isLoadingMore.value = false
+        }
+    }
+
+    /** Fetch the full sale (with lines) for an expanded accordion card. */
+    fun loadSaleDetail(saleId: String) {
+        if (_saleDetails.value[saleId] is UiState.Loading) return
+        viewModelScope.launch {
+            _saleDetails.value = _saleDetails.value + (saleId to UiState.Loading)
+            posRepository.getSale(saleId)
+                .onSuccess { sale ->
+                    _saleDetails.value = _saleDetails.value + (saleId to UiState.Success(sale))
+                }
+                .onFailure { e ->
+                    Log.e("PosOrderListVM", "Failed to load sale detail: ${e.message}", e)
+                    _saleDetails.value = _saleDetails.value + (saleId to UiState.Error(e.message ?: "Failed to load items"))
+                }
         }
     }
 }

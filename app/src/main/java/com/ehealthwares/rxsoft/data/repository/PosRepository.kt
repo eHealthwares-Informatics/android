@@ -75,7 +75,7 @@ class PosRepository @Inject constructor(
         return Result.success(pushedCount)
     }
 
-    suspend fun listSales(page: Int = 1, limit: Int = 20): Result<List<SaleDto>> {
+    suspend fun listSales(page: Int = 1, limit: Int = 100): Result<List<SaleDto>> {
         return try {
             val params = mapOf("page" to page.toString(), "limit" to limit.toString())
             Result.success(salesApi.listSales(params).data)
@@ -94,7 +94,7 @@ class PosRepository @Inject constructor(
 
     suspend fun searchCustomers(query: String): Result<List<PartyDto>> {
         return try {
-            val params = mapOf("search" to query, "limit" to "20")
+            val params = mapOf("search" to query, "limit" to "100")
             Result.success(customersApi.listCustomers(params).data.map { c ->
                 PartyDto(id = c.id, name = c.name, phone = c.phone, email = c.email)
             })
@@ -166,7 +166,7 @@ class PosRepository @Inject constructor(
         }
     }
 
-    suspend fun listItems(page: Int = 1, limit: Int = 20, search: String? = null): Result<List<ItemDto>> {
+    suspend fun listItems(page: Int = 1, limit: Int = 100, search: String? = null): Result<List<ItemDto>> {
         return try {
             val params = mutableMapOf("page" to page.toString(), "limit" to limit.toString())
             search?.let { params["search"] = it }

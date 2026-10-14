@@ -42,11 +42,13 @@ import com.ehealthwares.rxsoft.ui.designsystem.components.PharmacyMenuSections
 import com.ehealthwares.rxsoft.ui.designsystem.token.MotionTokens
 import com.ehealthwares.rxsoft.ui.inventory.StockAdjustmentScreen
 import com.ehealthwares.rxsoft.ui.inventory.StockBalanceScreen
+import com.ehealthwares.rxsoft.ui.notifications.NotificationsScreen
 import com.ehealthwares.rxsoft.ui.items.ItemFormScreen
 import com.ehealthwares.rxsoft.ui.items.ItemListScreen
 import com.ehealthwares.rxsoft.ui.orders.CreateOrderScreen
 import com.ehealthwares.rxsoft.ui.orders.OrderLinesScreen
 import com.ehealthwares.rxsoft.ui.orders.OrderListScreen
+import com.ehealthwares.rxsoft.ui.purchases.CreatePurchaseScreen
 import com.ehealthwares.rxsoft.ui.purchases.PurchaseListScreen
 import com.ehealthwares.rxsoft.ui.pos.PosOrderDetailScreen
 import com.ehealthwares.rxsoft.ui.pos.PosOrderListScreen
@@ -81,6 +83,7 @@ sealed class Screen(val route: String, val title: String, val icon: androidx.com
     data object CreateOrder : Screen("orders/new", "New Order")
     data object OrderLines : Screen("orders/lines", "Order Lines")
     data object Purchases : Screen("purchases", "Purchases")
+    data object CreatePurchase : Screen("purchases/new", "New Purchase")
     data object PosTerminal : Screen("pos/terminal", "New Sale")
     data object SaleLines : Screen("pos/lines", "Sales Lines")
     data object PosDetail : Screen("pos/{saleId}", "Order Detail") {
@@ -99,6 +102,7 @@ sealed class Screen(val route: String, val title: String, val icon: androidx.com
     }
     data object Reports : Screen("reports", "Daily Sales")
     data object Analytics : Screen("analytics", "Analytics")
+    data object Notifications : Screen("notifications", "Notifications")
     data object Settings : Screen("settings", "App Settings")
     data object Chat : Screen("chat", "Messages")
     data object ChatThread : Screen("chat/{conversationId}?title={title}", "Chat") {
@@ -325,7 +329,18 @@ private fun MainContent(
             }
             composable(Screen.Purchases.route) {
                 authViewModel.recordActivity()
-                PurchaseListScreen(onMenuClick = onMenuClick)
+                PurchaseListScreen(
+                    onMenuClick = onMenuClick,
+                    onCreatePurchase = { navController.navigate(Screen.CreatePurchase.route) },
+                )
+            }
+            composable(Screen.CreatePurchase.route) {
+                authViewModel.recordActivity()
+                CreatePurchaseScreen(
+                    viewModel = hiltViewModel(),
+                    onBack = { navController.popBackStack() },
+                    onSaved = { navController.popBackStack() },
+                )
             }
             composable(Screen.PosTerminal.route) {
                 authViewModel.recordActivity()
@@ -415,7 +430,18 @@ private fun MainContent(
 
             composable(Screen.Analytics.route) {
                 authViewModel.recordActivity()
-                AnalyticsScreen(onMenuClick = onMenuClick)
+                AnalyticsScreen(
+                    onMenuClick = onMenuClick,
+                    onNotificationsClick = { navController.navigate(Screen.Notifications.route) },
+                )
+            }
+
+            composable(Screen.Notifications.route) {
+                authViewModel.recordActivity()
+                NotificationsScreen(
+                    onMenuClick = onMenuClick,
+                    onRequestClick = { navController.navigate(Screen.Orders.route) },
+                )
             }
 
             composable(Screen.Reports.route) {
