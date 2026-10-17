@@ -55,3 +55,31 @@ data class VerifyPaymentResponse(
     val paid: Boolean = false,
     @Json(name = "paidAt") val paidAt: String? = null,
 )
+
+@JsonClass(generateAdapter = true)
+data class CreatePaymentLinkRequest(
+    val type: String,
+    @Json(name = "customerId") val customerId: String? = null,
+    val amount: Double? = null,
+    val note: String? = null,
+    @Json(name = "expiresInDays") val expiresInDays: Int? = null,
+)
+
+@JsonClass(generateAdapter = true)
+data class CreatePaymentLinkResponse(
+    val token: String,
+    val url: String,
+)
+
+@JsonClass(generateAdapter = true)
+data class SendPaymentLinkRequest(
+    @Json(name = "channelId") val channelId: String,
+)
+
+@JsonClass(generateAdapter = true)
+data class SendPaymentLinkResponse(
+    val sent: Boolean = false,
+    @Json(name = "channelId") val channelId: String? = null,
+    @Json(name = "channelType") val channelType: String? = null,
+    val recipient: String? = null,
+)
