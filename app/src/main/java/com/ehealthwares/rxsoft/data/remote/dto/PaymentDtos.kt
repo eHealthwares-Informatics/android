@@ -60,6 +60,7 @@ data class VerifyPaymentResponse(
 data class CreatePaymentLinkRequest(
     val type: String,
     @Json(name = "customerId") val customerId: String? = null,
+    @Json(name = "orderId") val orderId: String? = null,
     val amount: Double? = null,
     val note: String? = null,
     @Json(name = "expiresInDays") val expiresInDays: Int? = null,
