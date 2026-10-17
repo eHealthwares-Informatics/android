@@ -154,6 +154,15 @@ class PosRepository @Inject constructor(
         }
     }
 
+    /** Org-configured notification channels (channel codes) for the send picker. */
+    suspend fun getOrgNotificationChannels(): Result<List<OrgNotificationChannelDto>> {
+        return try {
+            Result.success(configApi.orgConfig().notificationChannels)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun getItemPrice(priceListId: String, itemId: String): Result<BigDecimal?> {
         return try {
             val cached = priceDao.unitPrice(priceListId, itemId)

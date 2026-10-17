@@ -15,11 +15,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,12 +31,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ehealthwares.rxsoft.data.remote.dto.OrderDto
 import com.ehealthwares.rxsoft.data.remote.dto.OrderItemDto
+import com.ehealthwares.rxsoft.ui.pos.PaymentLinkUiState
 import com.ehealthwares.rxsoft.ui.designsystem.components.AccordionItemsHeader
 import com.ehealthwares.rxsoft.ui.designsystem.components.AccordionListCard
 import com.ehealthwares.rxsoft.ui.designsystem.components.AccordionTotalRow
@@ -60,8 +65,12 @@ fun OrderListScreen(
     val ordersState by viewModel.orders.collectAsState()
     val pendingCount by viewModel.pendingCount.collectAsState(initial = 0)
     val isSyncing by viewModel.isSyncing.collectAsState()
+    val paymentLinkState by viewModel.orderPaymentLinkState.collectAsState()
+    val orderChannels by viewModel.orderChannels.collectAsState()
+    val context = LocalContext.current
 
     var expandedId by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedOrderChannelId by remember { mutableStateOf<String?>(null) }
     var searchOpen by rememberSaveable { mutableStateOf(false) }
     var searchText by rememberSaveable { mutableStateOf("") }
     var selectedChip by rememberSaveable { mutableStateOf(ALL_ORDERS) }
@@ -157,10 +166,89 @@ fun OrderListScreen(
                         order = order,
                         expanded = expandedId == order.id,
                         onToggle = { expandedId = if (expandedId == order.id) null else order.id },
+                        onSendPaymentLink = {
+                            selectedOrderChannelId = null
+                            viewModel.loadOrderChannels()
+                            viewModel.createOrderPaymentLink(order)
+                        },
                     )
                 }
             },
         )
+
+        // Channel picker for "send payment link to customer" on an order.
+        val linkReady = paymentLinkState as? PaymentLinkUiState.Ready
+        if (linkReady != null || paymentLinkState is PaymentLinkUiState.Sending) {
+            AlertDialog(
+                onDismissRequest = { viewModel.resetOrderPaymentLink() },
+                title = { Text("Send payment link") },
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(SpacingTokens.sm)) {
+                        linkReady?.let {
+                            Text(
+                                "Link: /shop/pay/${it.token.take(6)}…",
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                        if (orderChannels.isEmpty()) {
+                            Text(
+                                "No notification channels configured. Add channel codes in Organisation Config.",
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        } else {
+                            Text("Send over", style = MaterialTheme.typography.labelLarge)
+                            orderChannels.forEach { channel ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    RadioButton(
+                                        selected = selectedOrderChannelId == channel.id,
+                                        onClick = { selectedOrderChannelId = channel.id },
+                                    )
+                                    Text(
+                                        "${channel.label} (${channel.type})",
+                                        modifier = Modifier.padding(start = SpacingTokens.sm),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = { selectedOrderChannelId?.let { viewModel.sendOrderPaymentLink(it) } },
+                        enabled = selectedOrderChannelId != null &&
+                            paymentLinkState !is PaymentLinkUiState.Sending,
+                    ) {
+                        Text(if (paymentLinkState is PaymentLinkUiState.Sending) "Sending…" else "Send")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { viewModel.resetOrderPaymentLink() }) { Text("Cancel") }
+                },
+            )
+        }
+    }
+
+    LaunchedEffect(paymentLinkState) {
+        when (val s = paymentLinkState) {
+            is PaymentLinkUiState.Sent -> {
+                android.widget.Toast.makeText(
+                    context,
+                    "Payment link sent to ${s.recipient ?: "the customer"}",
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+                viewModel.resetOrderPaymentLink()
+            }
+            is PaymentLinkUiState.Error -> {
+                android.widget.Toast.makeText(context, s.message, android.widget.Toast.LENGTH_LONG)
+                    .show()
+                viewModel.resetOrderPaymentLink()
+            }
+            else -> {}
+        }
     }
 }
 
@@ -169,6 +257,7 @@ private fun OrderAccordionCard(
     order: OrderDto,
     expanded: Boolean,
     onToggle: () -> Unit,
+    onSendPaymentLink: () -> Unit,
 ) {
     AccordionListCard(
         icon = Icons.Outlined.ShoppingBag,
@@ -198,6 +287,12 @@ private fun OrderAccordionCard(
             amount = order.totalAmount,
             modifier = Modifier.padding(horizontal = 12.dp),
         )
+        TextButton(
+            onClick = onSendPaymentLink,
+            modifier = Modifier.padding(horizontal = 12.dp),
+        ) {
+            Text("Send payment link")
+        }
         Spacer(Modifier.height(SpacingTokens.xs))
     }
 }

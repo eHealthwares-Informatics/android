@@ -22,11 +22,26 @@ data class UserPosConfig(
     @Json(name = "loginTimeoutMinutes") val loginTimeoutMinutes: Int?
 )
 
+/**
+ * One org-configured notification channel (channel code). Staff pick one of
+ * these before sending a payment link to a customer; the org manages them in
+ * Organisation Config.
+ */
+@JsonClass(generateAdapter = true)
+data class OrgNotificationChannelDto(
+    val id: String,
+    val label: String,
+    val type: String,
+    val code: String? = null,
+)
+
 @JsonClass(generateAdapter = true)
 data class OrganisationConfig(
     val id: String?,
     @Json(name = "posHeader") val posHeader: String?,
-    @Json(name = "defaultLoginTimeoutMinutes") val defaultLoginTimeoutMinutes: Int
+    @Json(name = "defaultLoginTimeoutMinutes") val defaultLoginTimeoutMinutes: Int,
+    @Json(name = "notificationChannels")
+    val notificationChannels: List<OrgNotificationChannelDto> = emptyList()
 )
 
 @JsonClass(generateAdapter = true)
