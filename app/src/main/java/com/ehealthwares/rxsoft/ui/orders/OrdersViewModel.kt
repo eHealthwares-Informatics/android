@@ -4,12 +4,16 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ehealthwares.rxsoft.data.remote.dto.CreateOrderItem
+import com.ehealthwares.rxsoft.data.remote.dto.CreatePaymentLinkRequest
 import com.ehealthwares.rxsoft.data.remote.dto.GenericProductDto
 import com.ehealthwares.rxsoft.data.remote.dto.OrderDto
+import com.ehealthwares.rxsoft.data.remote.dto.OrgNotificationChannelDto
 import com.ehealthwares.rxsoft.data.local.CachedItemEntity
 import com.ehealthwares.rxsoft.data.repository.OrderSubmitResult
 import com.ehealthwares.rxsoft.data.repository.OrdersRepository
+import com.ehealthwares.rxsoft.data.repository.PaymentsRepository
 import com.ehealthwares.rxsoft.data.repository.PosRepository
+import com.ehealthwares.rxsoft.ui.pos.PaymentLinkUiState
 import com.ehealthwares.rxsoft.util.OfflineSyncManager
 import com.ehealthwares.rxsoft.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +34,7 @@ sealed interface OrderSearchHit {
 class OrdersViewModel @Inject constructor(
     private val ordersRepository: OrdersRepository,
     private val posRepository: PosRepository,
+    private val paymentsRepository: PaymentsRepository,
     private val offlineSyncManager: OfflineSyncManager,
 ) : ViewModel() {
 
@@ -48,6 +53,13 @@ class OrdersViewModel @Inject constructor(
     val pendingOrders = ordersRepository.observePendingOrders()
     val pendingCount = ordersRepository.observePendingCount()
     val isSyncing = offlineSyncManager.isSyncing
+
+    /** Org-configured notification channels (channel codes) for the send picker. */
+    private val _orderChannels = MutableStateFlow<List<OrgNotificationChannelDto>>(emptyList())
+    val orderChannels: StateFlow<List<OrgNotificationChannelDto>> = _orderChannels.asStateFlow()
+
+    private val _orderPaymentLinkState = MutableStateFlow<PaymentLinkUiState>(PaymentLinkUiState.Idle)
+    val orderPaymentLinkState: StateFlow<PaymentLinkUiState> = _orderPaymentLinkState.asStateFlow()
 
     init {
         loadOrders()
@@ -68,6 +80,53 @@ class OrdersViewModel @Inject constructor(
                     _orders.value = UiState.Error(e.message ?: "Failed to load orders")
                 }
         }
+    }
+
+    /** Loads the org-configured notification channels for the send picker. */
+    fun loadOrderChannels() {
+        viewModelScope.launch {
+            posRepository.getOrgNotificationChannels()
+                .onSuccess { _orderChannels.value = it }
+                .onFailure { Log.e("OrdersVM", "Failed to load org channels: ${it.message}", it) }
+        }
+    }
+
+    /** Creates a payment link for an order, ready to be sent to the customer. */
+    fun createOrderPaymentLink(order: OrderDto) {
+        viewModelScope.launch {
+            _orderPaymentLinkState.value = PaymentLinkUiState.Creating
+            paymentsRepository.createPaymentLink(
+                CreatePaymentLinkRequest(type = "order_payment", orderId = order.id)
+            )
+                .onSuccess {
+                    _orderPaymentLinkState.value = PaymentLinkUiState.Ready(it.token, it.url)
+                }
+                .onFailure { e ->
+                    Log.e("OrdersVM", "Failed to create order payment link: ${e.message}", e)
+                    _orderPaymentLinkState.value =
+                        PaymentLinkUiState.Error(e.message ?: "Failed to create payment link")
+                }
+        }
+    }
+
+    /** Sends the created order link over the chosen org channel. */
+    fun sendOrderPaymentLink(channelId: String) {
+        val state = _orderPaymentLinkState.value
+        if (state !is PaymentLinkUiState.Ready) return
+        viewModelScope.launch {
+            _orderPaymentLinkState.value = PaymentLinkUiState.Sending
+            paymentsRepository.sendPaymentLink(state.token, channelId)
+                .onSuccess { _orderPaymentLinkState.value = PaymentLinkUiState.Sent(it.recipient) }
+                .onFailure { e ->
+                    Log.e("OrdersVM", "Failed to send order payment link: ${e.message}", e)
+                    _orderPaymentLinkState.value =
+                        PaymentLinkUiState.Error(e.message ?: "Failed to send payment link")
+                }
+        }
+    }
+
+    fun resetOrderPaymentLink() {
+        _orderPaymentLinkState.value = PaymentLinkUiState.Idle
     }
 
     /**

@@ -17,6 +17,7 @@ import com.ehealthwares.rxsoft.data.remote.dto.ReceiptPrintItem
 import com.ehealthwares.rxsoft.data.repository.CustomerRepository
 import com.ehealthwares.rxsoft.data.repository.InventoryRepository
 import com.ehealthwares.rxsoft.data.repository.StockAdjustResult
+import com.ehealthwares.rxsoft.data.repository.PaymentsRepository
 import com.ehealthwares.rxsoft.data.repository.PosRepository
 import com.ehealthwares.rxsoft.data.repository.SaleSubmitResult
 import com.ehealthwares.rxsoft.util.OfflineSyncManager
@@ -72,9 +73,21 @@ sealed interface CustomerQuickAddState {
 /** Marker status for sales created offline and queued for sync. */
 const val OFFLINE_QUEUED_STATUS = "QUEUED_OFFLINE"
 
+/** POS "send payment link to customer" flow state. */
+sealed interface PaymentLinkUiState {
+    data object Idle : PaymentLinkUiState
+    data object Creating : PaymentLinkUiState
+    /** Link created; the UI must ask which org channel to send over. */
+    data class Ready(val token: String, val url: String) : PaymentLinkUiState
+    data object Sending : PaymentLinkUiState
+    data class Sent(val recipient: String?) : PaymentLinkUiState
+    data class Error(val message: String) : PaymentLinkUiState
+}
+
 @HiltViewModel
 class PosTerminalViewModel @Inject constructor(
     private val posRepository: PosRepository,
+    private val paymentsRepository: PaymentsRepository,
     private val posConfigManager: PosConfigManager,
     private val inventoryRepository: InventoryRepository,
     private val customerRepository: CustomerRepository,
@@ -129,6 +142,13 @@ class PosTerminalViewModel @Inject constructor(
 
     private val _selectedPaymentMethod = MutableStateFlow<PaymentMethodDto?>(null)
     val selectedPaymentMethod: StateFlow<PaymentMethodDto?> = _selectedPaymentMethod.asStateFlow()
+
+    /** Org-configured notification channels (channel codes) for the send picker. */
+    private val _orgChannels = MutableStateFlow<List<OrgNotificationChannelDto>>(emptyList())
+    val orgChannels: StateFlow<List<OrgNotificationChannelDto>> = _orgChannels.asStateFlow()
+
+    private val _paymentLinkState = MutableStateFlow<PaymentLinkUiState>(PaymentLinkUiState.Idle)
+    val paymentLinkState: StateFlow<PaymentLinkUiState> = _paymentLinkState.asStateFlow()
 
     private val _priceLists = MutableStateFlow<List<CachedPriceListEntity>>(emptyList())
     val priceLists: StateFlow<List<CachedPriceListEntity>> = _priceLists.asStateFlow()
@@ -466,6 +486,69 @@ class PosTerminalViewModel @Inject constructor(
                     _paymentMethods.value = UiState.Error(e.message ?: "Failed to load payment methods")
                 }
         }
+    }
+
+    /** Loads the org-configured notification channels for the send picker. */
+    fun loadOrgNotificationChannels() {
+        viewModelScope.launch {
+            posRepository.getOrgNotificationChannels()
+                .onSuccess { _orgChannels.value = it }
+                .onFailure { Log.e("PosTerminalVM", "Failed to load org channels: ${it.message}", it) }
+        }
+    }
+
+    /**
+     * Creates a payment link for the selected customer (POS "send payment link").
+     * Mirrors the web POS: a wallet-deposit link for the customer; the backend
+     * requires the customer to have a linked user account.
+     */
+    fun createPaymentLinkForSelectedCustomer() {
+        val customer = _selectedCustomer.value
+        if (customer == null) {
+            _paymentLinkState.value =
+                PaymentLinkUiState.Error("Select a customer before sending a payment link")
+            return
+        }
+        if (_cartItems.value.isEmpty()) {
+            _paymentLinkState.value = PaymentLinkUiState.Error("Cart is empty")
+            return
+        }
+        viewModelScope.launch {
+            _paymentLinkState.value = PaymentLinkUiState.Creating
+            paymentsRepository.createPaymentLink(
+                CreatePaymentLinkRequest(
+                    type = "wallet_deposit",
+                    customerId = customer.id,
+                    amount = subtotal.toDouble(),
+                )
+            )
+                .onSuccess { _paymentLinkState.value = PaymentLinkUiState.Ready(it.token, it.url) }
+                .onFailure { e ->
+                    Log.e("PosTerminalVM", "Failed to create payment link: ${e.message}", e)
+                    _paymentLinkState.value =
+                        PaymentLinkUiState.Error(e.message ?: "Failed to create payment link")
+                }
+        }
+    }
+
+    /** Sends the created link over the chosen org channel. */
+    fun sendPaymentLink(channelId: String) {
+        val state = _paymentLinkState.value
+        if (state !is PaymentLinkUiState.Ready) return
+        viewModelScope.launch {
+            _paymentLinkState.value = PaymentLinkUiState.Sending
+            paymentsRepository.sendPaymentLink(state.token, channelId)
+                .onSuccess { _paymentLinkState.value = PaymentLinkUiState.Sent(it.recipient) }
+                .onFailure { e ->
+                    Log.e("PosTerminalVM", "Failed to send payment link: ${e.message}", e)
+                    _paymentLinkState.value =
+                        PaymentLinkUiState.Error(e.message ?: "Failed to send payment link")
+                }
+        }
+    }
+
+    fun resetPaymentLinkState() {
+        _paymentLinkState.value = PaymentLinkUiState.Idle
     }
 
     fun generateSaleCode(): String {

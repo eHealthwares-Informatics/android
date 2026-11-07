@@ -113,6 +113,8 @@ fun PosTerminalScreen(
     val adjustingItemId by viewModel.adjustingItemId.collectAsState()
     val adjustError by viewModel.adjustError.collectAsState()
     val selectedPaymentMethod by viewModel.selectedPaymentMethod.collectAsState()
+    val paymentLinkState by viewModel.paymentLinkState.collectAsState()
+    val orgChannels by viewModel.orgChannels.collectAsState()
     val priceLists by viewModel.priceLists.collectAsState()
     val selectedPriceListId by viewModel.selectedPriceListId.collectAsState()
     val pendingSaleCount by viewModel.pendingSaleCount.collectAsState()
@@ -121,6 +123,7 @@ fun PosTerminalScreen(
     val context = LocalContext.current
 
     var showPaymentDialog by remember { mutableStateOf(false) }
+    var selectedChannelId by remember { mutableStateOf<String?>(null) }
     var showNoStockDialog by remember { mutableStateOf(false) }
     var showSearchResults by remember { mutableStateOf(false) }
     var showCustomerSearch by remember { mutableStateOf(false) }
@@ -499,6 +502,25 @@ fun PosTerminalScreen(
         }
     }
 
+    LaunchedEffect(paymentLinkState) {
+        when (val s = paymentLinkState) {
+            is PaymentLinkUiState.Sent -> {
+                android.widget.Toast.makeText(
+                    context,
+                    "Payment link sent to ${s.recipient ?: "the customer"}",
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+                viewModel.resetPaymentLinkState()
+            }
+            is PaymentLinkUiState.Error -> {
+                android.widget.Toast.makeText(context, s.message, android.widget.Toast.LENGTH_LONG)
+                    .show()
+                viewModel.resetPaymentLinkState()
+            }
+            else -> {}
+        }
+    }
+
     if (showPaymentDialog) {
         AlertDialog(
             onDismissRequest = {
@@ -571,6 +593,17 @@ fun PosTerminalScreen(
                             }
                         else -> {}
                     }
+
+                    // Send a /shop/pay link to the selected customer over an
+                    // org-configured channel (opens the channel picker).
+                    AppTextButton(
+                        text = "Send payment link",
+                        onClick = {
+                            selectedChannelId = null
+                            viewModel.loadOrgNotificationChannels()
+                            viewModel.createPaymentLinkForSelectedCustomer()
+                        },
+                    )
                 }
             },
             confirmButton = {
@@ -588,6 +621,63 @@ fun PosTerminalScreen(
                         viewModel.resetCheckoutState()
                     },
                 )
+            },
+        )
+    }
+
+    // Channel picker: shown once a link is ready (or while sending).
+    val linkReady = paymentLinkState as? PaymentLinkUiState.Ready
+    if (linkReady != null || paymentLinkState is PaymentLinkUiState.Sending) {
+        AlertDialog(
+            onDismissRequest = { viewModel.resetPaymentLinkState() },
+            shape = ShapeTokens.dialog,
+            title = { Text("Send payment link", style = MaterialTheme.typography.titleLarge) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(SpacingTokens.sm)) {
+                    linkReady?.let {
+                        Text(
+                            "Link: /shop/pay/${it.token.take(6)}…",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                    if (orgChannels.isEmpty()) {
+                        Text(
+                            "No notification channels configured. Add channel codes in Organisation Config.",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    } else {
+                        Text("Send over", style = MaterialTheme.typography.labelLarge)
+                        orgChannels.forEach { channel ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                RadioButton(
+                                    selected = selectedChannelId == channel.id,
+                                    onClick = { selectedChannelId = channel.id },
+                                )
+                                Text(
+                                    "${channel.label} (${channel.type})",
+                                    modifier = Modifier.padding(start = SpacingTokens.sm),
+                                )
+                            }
+                        }
+                    }
+                    if (paymentLinkState is PaymentLinkUiState.Sending) {
+                        Text("Sending…", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            },
+            confirmButton = {
+                AppPrimaryButton(
+                    text = if (paymentLinkState is PaymentLinkUiState.Sending) "Sending…" else "Send",
+                    onClick = { selectedChannelId?.let { viewModel.sendPaymentLink(it) } },
+                    enabled = selectedChannelId != null && paymentLinkState !is PaymentLinkUiState.Sending,
+                )
+            },
+            dismissButton = {
+                AppTextButton(text = "Cancel", onClick = { viewModel.resetPaymentLinkState() })
             },
         )
     }
