@@ -7,6 +7,7 @@ import com.ehealthwares.rxsoft.data.remote.dto.ReferenceDtoAdapter
 import com.ehealthwares.rxsoft.data.remote.interceptor.AuthInterceptor
 import com.ehealthwares.rxsoft.data.remote.interceptor.ServerUrlInterceptor
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import com.ehealthwares.rxsoft.data.remote.interceptor.TenantInterceptor
 import com.ehealthwares.rxsoft.data.remote.interceptor.TokenRefreshInterceptor
 import com.ehealthwares.rxsoft.data.remote.interceptor.TraceLoggingInterceptor
 import com.ehealthwares.rxsoft.util.ServerUrlManager
@@ -33,12 +34,14 @@ object NetworkModule {
     fun provideOkHttpClient(
         serverUrlInterceptor: ServerUrlInterceptor,
         authInterceptor: AuthInterceptor,
+        tenantInterceptor: TenantInterceptor,
         tokenRefreshInterceptor: TokenRefreshInterceptor,
         traceLoggingInterceptor: TraceLoggingInterceptor,
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(serverUrlInterceptor)
             .addInterceptor(authInterceptor)
+            .addInterceptor(tenantInterceptor)
             .addInterceptor(tokenRefreshInterceptor)
             .addInterceptor(traceLoggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
