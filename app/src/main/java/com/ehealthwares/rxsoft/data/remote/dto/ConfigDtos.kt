@@ -23,9 +23,9 @@ data class UserPosConfig(
 )
 
 /**
- * One org-configured notification channel (channel code). Staff pick one of
- * these before sending a payment link to a customer; the org manages them in
- * Organisation Config.
+ * One enabled notification-policy channel. Staff pick one of these before
+ * sending a payment link to a customer; the org manages them in
+ * Notifications → Notification Channels.
  */
 @JsonClass(generateAdapter = true)
 data class OrgNotificationChannelDto(
@@ -36,13 +36,47 @@ data class OrgNotificationChannelDto(
 )
 
 @JsonClass(generateAdapter = true)
+data class NotificationChannelPolicy(
+    val enabled: Boolean = true,
+    val code: String? = null,
+    @Json(name = "fallbackChannel") val fallbackChannel: String? = null,
+)
+
+@JsonClass(generateAdapter = true)
+data class NotificationEventPolicy(
+    val enabled: Boolean = true,
+    val channels: Map<String, Boolean> = emptyMap(),
+)
+
+@JsonClass(generateAdapter = true)
+data class NotificationPolicy(
+    val channels: Map<String, NotificationChannelPolicy> = emptyMap(),
+    val events: Map<String, NotificationEventPolicy> = emptyMap(),
+)
+
+@JsonClass(generateAdapter = true)
 data class OrganisationConfig(
     val id: String?,
     @Json(name = "posHeader") val posHeader: String?,
     @Json(name = "defaultLoginTimeoutMinutes") val defaultLoginTimeoutMinutes: Int,
-    @Json(name = "notificationChannels")
-    val notificationChannels: List<OrgNotificationChannelDto> = emptyList()
-)
+    @Json(name = "notificationPolicy")
+    val notificationPolicy: NotificationPolicy? = null,
+) {
+    /** Enabled channels for the send picker, in a stable display order. */
+    val notificationChannels: List<OrgNotificationChannelDto>
+        get() = notificationPolicy?.channels
+            ?.filterValues { it.enabled }
+            ?.map { (key, cfg) ->
+                OrgNotificationChannelDto(
+                    id = key,
+                    label = key.replaceFirstChar { it.uppercase() },
+                    type = key,
+                    code = cfg.code,
+                )
+            }
+            ?.sortedBy { it.id }
+            ?: emptyList()
+}
 
 @JsonClass(generateAdapter = true)
 data class PriceListDto(
