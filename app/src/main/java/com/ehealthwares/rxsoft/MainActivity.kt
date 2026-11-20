@@ -9,6 +9,15 @@ import com.ehealthwares.rxsoft.ui.auth.FacebookAuthBridge
 import com.ehealthwares.rxsoft.ui.navigation.AppNavigation
 import com.ehealthwares.rxsoft.ui.theme.RxSoftMobileTheme
 import dagger.hilt.android.AndroidEntryPoint
+import io.sentry.Sentry
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -17,8 +26,27 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RxSoftMobileTheme {
-                AppNavigation()
+                Box(modifier = Modifier.fillMaxSize()) {
+                    AppNavigation()
+                    // Visible Sentry test trigger (floats above the app UI).
+                    ExtendedFloatingActionButton(
+                        onClick = { triggerTestException() },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(16.dp),
+                    ) {
+                        Text(text = "Sentry Test")
+                    }
+                }
             }
+        }
+    }
+
+    private fun triggerTestException() {
+        try {
+            throw Exception("Sentry MCP Test Error: Android manual exception at ${System.currentTimeMillis()}")
+        } catch (e: Exception) {
+            Sentry.captureException(e)
         }
     }
 

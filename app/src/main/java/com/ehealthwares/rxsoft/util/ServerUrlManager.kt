@@ -106,7 +106,11 @@ class ServerUrlManager @Inject constructor(
     }
 
     fun getUrl(): String {
-        val raw = prefs.getString(KEY, null) ?: BuildConfig.API_BASE_URL
+        val saved = prefs.getString(KEY, null)
+        // Fresh installs have no saved URL: PRODUCTION mode must resolve to the
+        // production API, not the build-time emulator default.
+        val raw = saved
+            ?: if (getMode() == Mode.PRODUCTION) PRODUCTION_URL else BuildConfig.API_BASE_URL
         // One-time fix: older builds auto-appended /api and saved it — the prod
         // host does not serve under /api, so rewrite those to the real URL.
         if (raw in LEGACY_PROD_URLS) {
