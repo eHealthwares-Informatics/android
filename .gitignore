@@ -14,4 +14,14 @@
 /captures
 .externalNativeBuild
 .cxx
+
+# Python helper scripts
+__pycache__/
+
+# Release signing keystore (never commit private keys)
+ehealthwares-release-keystore.jks
+
 local.properties
+
+# Sentry Config File
+sentry.properties

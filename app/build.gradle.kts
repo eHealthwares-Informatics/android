@@ -1,32 +1,36 @@
 import java.util.Properties
 
+val localProperties = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.sentry.android)
 }
 
 android {
     namespace = "com.ehealthwares.rxsoft"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.ehealthwares.rxsoft"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 14
-        versionName = "1.9.2"
+        targetSdk = 36
+        versionCode = 17
+        versionName = "0.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8000/api/\"")
-        // Default web channel for the Conversation Engine chat (same id as the prognocare app).
         buildConfigField("String", "DEFAULT_WEB_CHANNEL_ID", "\"69bd061c11bf835d976c4e2f\"")
         buildConfigField("String", "PRINTER_URL", "\"http://10.0.2.2:8094\"")
 
-        // ── Social sign-in ────────────────────────────────────────────
         buildConfigField(
             "String",
             "GOOGLE_WEB_CLIENT_ID",
@@ -36,9 +40,6 @@ android {
             val f = rootProject.file("local.properties")
             if (f.exists()) f.inputStream().use { load(it) }
         }
-        // Facebook app id + client token are public; the app secret stays in
-        // the identity service env only. Overridable via git-ignored
-        // local.properties or env at build time.
         manifestPlaceholders["FACEBOOK_APP_ID"] =
             (localProps.getProperty("FACEBOOK_APP_ID") as String?)
                 ?: System.getenv("FACEBOOK_APP_ID") ?: "28296926366638041"
@@ -52,6 +53,7 @@ android {
             "\"${manifestPlaceholders["FACEBOOK_APP_ID"]}\"",
         )
     }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -59,16 +61,20 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Release builds ship pointing at production; the emulator default
+            // above is only for debug builds.
+            buildConfigField("String", "API_BASE_URL", "\"https://api.ehealthwares.com\"")
         }
     }
 
-    // Name the built APK with a `-rxsoft` suffix, e.g. app-debug-1.8.2-rxsoft.apk
+    // Name the built APK with app-specific prefix, e.g. rxsoft-release-1.0.3.apk
     applicationVariants.all {
         val variantName = name
         val vName = versionName
         outputs.all {
-            (this as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName =
-                "app-${variantName}-${vName}-rxsoft.apk"
+            val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            val ext = output.outputFile?.extension?.ifBlank { "apk" } ?: "apk"
+            output.outputFileName = "rxsoft-$variantName-$vName.$ext"
         }
     }
 
@@ -86,6 +92,23 @@ android {
         buildConfig = true
     }
 }
+
+// ── Sentry (same org/project as rxshop, prognocare, smsgateway) ──
+// Must live in the app module: the plugin ignores the configuration when it is
+// declared on the root project ("only supported for the app module" warning),
+// which made release builds fail with "A project ID or slug is required".
+sentry {
+    org.set("ehealthwares")
+    projectName.set("ehealthwares_android")
+}
+
+// ── Release signing (configured after android block for Kotlin DSL compatibility) ──
+val releaseSigningConfig = android.signingConfigs.create("release")
+releaseSigningConfig.setStoreFile(file(localProperties.getProperty("RELEASE_KEYSTORE_PATH") ?: ""))
+releaseSigningConfig.setStorePassword(localProperties.getProperty("RELEASE_KEYSTORE_PASSWORD") ?: "")
+releaseSigningConfig.setKeyAlias(localProperties.getProperty("RELEASE_KEY_ALIAS") ?: "release")
+releaseSigningConfig.setKeyPassword(localProperties.getProperty("RELEASE_KEY_PASSWORD") ?: "")
+android.buildTypes.getByName("release").setSigningConfig(releaseSigningConfig)
 
 dependencies {
     // Core
@@ -138,6 +161,9 @@ dependencies {
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
     implementation(libs.facebook.login)
+
+    // Sentry
+    implementation(libs.sentry.android)
 
     // Security
     implementation(libs.androidx.security.crypto)
